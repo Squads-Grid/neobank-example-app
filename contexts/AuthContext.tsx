@@ -1,19 +1,51 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { storage } from '@/utils/secure-storage';
+import { router } from 'expo-router';
 
 interface AuthContextType {
-  isAuthenticated: boolean;
-  email: string | null;
-  setEmail: (email: string) => void;
-  verifyCode: (code: string) => Promise<boolean>;
-  logout: () => void;
+  isAuthenticated: boolean | null;
+  user: User | null;
   signIn: (email: string, code: string) => Promise<void>;
+  logout: () => Promise<void>;
+  isLoading: boolean;
+  initialAuthCheck: boolean;
+}
+
+interface User {
+  id: string;
+  email: string;
+}
+
+interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: User;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [email, setEmail] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [initialAuthCheck, setInitialAuthCheck] = useState(false);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const { accessToken } = await storage.getTokens();
+      setIsAuthenticated(!!accessToken);
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+      setInitialAuthCheck(true);
+    }
+  };
 
   const verifyCode = async (code: string): Promise<boolean> => {
     // TODO: Implement actual verification logic with your backend
@@ -25,23 +57,89 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return false;
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    setEmail(null);
+  const logout = async () => {
+    try {
+      setIsLoading(true);
+      // Clear tokens
+      await storage.clearTokens();
+      // Reset state
+      setIsAuthenticated(false);
+      setUser(null);
+      // Navigate to login
+      router.replace('/(auth)/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  const callLogin = async (email: string, code: string): Promise<LoginResponse> => {
+    try {
+      // const response = await fetch('YOUR_API_URL/auth/login', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ email, code }),
+      // });
+
+      // Mock api call
+      const response = await new Promise<LoginResponse>((resolve) => setTimeout(() => {
+        resolve({
+          accessToken: 'mock_access_token',
+          refreshToken: 'mock_refresh_token',
+          user: { id: '1', email: 'test@example.com' },
+        });
+      }, 1000));
+
+      return response;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  };
+
+
+  
+
   const signIn = async (email: string, code: string): Promise<void> => {
-    const success = await verifyCode(code);
-    if (success) {
+    try {
+      setIsLoading(true);
+      
+      const response = await callLogin(email, code);
+
+      const { accessToken, refreshToken, user } = response;
+
+      // Store tokens
+      await storage.saveTokens(accessToken, refreshToken);
+      
+      // Update state
       setIsAuthenticated(true);
-      setEmail(email);
-    } else {
-      throw new Error('Invalid verification code');
+      setUser(user);
+      
+      // Navigate to main app
+      // router.replace('/(tabs)');
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, email, setEmail, verifyCode, logout, signIn }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        user,
+        signIn,
+        logout,
+        isLoading,
+        initialAuthCheck,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -2,32 +2,51 @@ import { useFonts } from 'expo-font';
 import { Stack, router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
-import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@react-navigation/native';
-import { lightTheme, darkTheme } from '../constants/Theme';
+import { lightTheme, darkTheme } from '@/constants/Theme';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import LoginScreen from './(auth)/login';
+import StartScreen from './(auth)/start';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 function RootLayoutNav() {
   const { isAuthenticated } = useAuth();
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.replace('/(auth)/login' as any);
+    setIsReady(false);
+    if (isAuthenticated !== null) {
+      console.log('isAuthenticated', isAuthenticated);
+      setIsReady(true);
     }
   }, [isAuthenticated]);
 
-  return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-    </Stack>
-  );
+  // Don't render anything until we're ready
+  if (!isReady) {
+    return <LoadingSpinner />;
+  }
+
+  if(isAuthenticated){
+    return (<Stack
+      initialRouteName={isAuthenticated === true ? '(tabs)' : '(auth)'}
+      screenOptions={{ headerShown: false }}
+    > 
+        <Stack.Screen name="(tabs)" />
+      
+    </Stack>)
+  }else{
+    return (
+      <StartScreen />
+    )
+  }
+  
 }
 
 export default function RootLayout() {

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { ThemedView } from '@/components/ui/ThemedView';
 import LoginForm from '@/components/LoginForm';
 import { useAuth } from '@/contexts/AuthContext';
+import { ScreenLayout } from '@/components/ui/ScreenLayout';
 
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,9 +25,9 @@ export default function LoginScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ScreenLayout>
       <LoginForm onSubmit={handleSubmit} isLoading={isLoading} />
-    </ThemedView>
+    </ScreenLayout>
   );
 }
 
