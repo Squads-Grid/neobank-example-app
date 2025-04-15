@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
-import ThemedView from '@/components/ui/ThemedView';
+import { ThemedView } from '@/components/ui/ThemedView';
 import LoginForm from '@/components/LoginForm';
 import { useAuth } from '@/contexts/AuthContext';
 

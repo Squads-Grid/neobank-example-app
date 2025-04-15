@@ -6,6 +6,7 @@ interface AuthContextType {
   setEmail: (email: string) => void;
   verifyCode: (code: string) => Promise<boolean>;
   logout: () => void;
+  signIn: (email: string, code: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,8 +30,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setEmail(null);
   };
 
+  const signIn = async (email: string, code: string): Promise<void> => {
+    const success = await verifyCode(code);
+    if (success) {
+      setIsAuthenticated(true);
+      setEmail(email);
+    } else {
+      throw new Error('Invalid verification code');
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, email, setEmail, verifyCode, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, email, setEmail, verifyCode, logout, signIn }}>
       {children}
     </AuthContext.Provider>
   );
