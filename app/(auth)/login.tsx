@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { router } from 'expo-router';
 import { useTheme } from '@react-navigation/native';
+import ThemedTextInput from '../../components/ThemedTextInput';
+import ThemedButton from '../../components/ThemedButton';
+import { Spacing } from '@/constants/Spacing';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -36,47 +39,34 @@ export default function LoginScreen() {
           {!showCodeInput ? (
             <>
               <Text style={[styles.subtitle, { color: colors.text }]}>Enter your email to sign in</Text>
-              <TextInput
-                style={[styles.input, { 
-                  borderColor: colors.border,
-                  color: colors.text,
-                  backgroundColor: colors.card 
-                }]}
+              <ThemedTextInput
                 placeholder="Email"
-                placeholderTextColor={colors.text + '80'}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
-              <TouchableOpacity 
-                style={[styles.button, { backgroundColor: colors.primary }]} 
+              <ThemedButton
+                title="Continue"
                 onPress={handleEmailSubmit}
-              >
-                <Text style={styles.buttonText}>Continue</Text>
-              </TouchableOpacity>
+                disabled={!email}
+                style={{ marginTop: Spacing.md }}
+              />
             </>
           ) : (
             <>
               <Text style={[styles.subtitle, { color: colors.text }]}>Enter the verification code sent to {email}</Text>
-              <TextInput
-                style={[styles.input, { 
-                  borderColor: colors.border,
-                  color: colors.text,
-                  backgroundColor: colors.card 
-                }]}
+              <ThemedTextInput
                 placeholder="Verification code"
-                placeholderTextColor={colors.text + '80'}
                 value={code}
                 onChangeText={setCode}
                 keyboardType="number-pad"
               />
-              <TouchableOpacity 
-                style={[styles.button, { backgroundColor: colors.primary }]} 
+              <ThemedButton
+                title="Verify"
                 onPress={handleCodeSubmit}
-              >
-                <Text style={styles.buttonText}>Verify</Text>
-              </TouchableOpacity>
+                disabled={!code}
+              />
             </>
           )}
         </View>
@@ -108,22 +98,5 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textAlign: 'center',
     opacity: 0.8,
-  },
-  input: {
-    borderWidth: 1,
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 20,
-    fontSize: 16,
-  },
-  button: {
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
   },
 }); 
