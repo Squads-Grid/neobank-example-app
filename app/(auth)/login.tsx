@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
-import LoginForm from '@/components/LoginForm';
 import { useAuth } from '@/contexts/AuthContext';
 import { ScreenLayout } from '@/components/ui/ScreenLayout';
+import LoginForm from '@/components/LoginForm';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,6 +17,8 @@ export default function LoginScreen() {
       } else {
         // Here you would typically send the verification code to the user's email
         console.log('Sending verification code to:', email);
+        // Simulate verification delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -26,13 +29,10 @@ export default function LoginScreen() {
 
   return (
     <ScreenLayout>
-      <LoginForm onSubmit={handleSubmit} isLoading={isLoading} />
+      <LoginForm 
+        onSubmit={handleSubmit} 
+        isLoading={isLoading}
+      />
     </ScreenLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-}); 

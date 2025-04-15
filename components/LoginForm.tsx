@@ -6,6 +6,7 @@ import { ThemedText } from '@/components/ui/ThemedText';
 import { ThemedTextInput } from '@/components/ui/ThemedTextInput';
 import { ThemedButton } from '@/components/ui/ThemedButton';
 import { Spacing } from '@/constants/Spacing';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 interface LoginFormProps {
   onSubmit: (email: string, code?: string) => void;
@@ -32,7 +33,7 @@ export default function LoginForm({ onSubmit, isLoading = false }: LoginFormProp
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
+      {isLoading ? <LoadingSpinner />:<KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.content}
       >
@@ -88,7 +89,7 @@ export default function LoginForm({ onSubmit, isLoading = false }: LoginFormProp
             </>
           )}
         </ThemedView>
-      </KeyboardAvoidingView>
+      </KeyboardAvoidingView>}
     </SafeAreaView>
   );
 }
