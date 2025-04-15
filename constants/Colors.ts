@@ -3,13 +3,24 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
+import { ColorSchemeName, useColorScheme } from 'react-native';
+
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
+
+export type ThemeProps = {
+  lightColor?: string;
+  darkColor?: string;
+};
 
 export const Colors = {
   light: {
     text: '#11181C',
     background: '#fff',
+    primary: '#2f95dc',
+    border: '#ccc',
+    card: '#fff',
+    notification: '#2f95dc',
     tint: tintColorLight,
     icon: '#687076',
     tabIconDefault: '#687076',
@@ -18,9 +29,27 @@ export const Colors = {
   dark: {
     text: '#ECEDEE',
     background: '#151718',
+    primary: '#0a84ff',
+    border: '#333',
+    card: '#000',
+    notification: '#0a84ff',
     tint: tintColorDark,
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
   },
 };
+
+export function useThemeColor(
+  props: { light?: string; dark?: string },
+  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+) {
+  const theme = useColorScheme() ?? 'light';
+  const colorFromProps = props[theme];
+
+  if (colorFromProps) {
+    return colorFromProps;
+  } else {
+    return Colors[theme][colorName];
+  }
+}

@@ -1,26 +1,30 @@
 import React from 'react';
-import { TextInput, TextInputProps, StyleSheet } from 'react-native';
-import { useTheme } from '@react-navigation/native';
+import { TextInput, TextInputProps, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { Spacing } from '@/constants/Spacing';
 
 interface ThemedTextInputProps extends TextInputProps {
   error?: boolean;
 }
 
 export default function ThemedTextInput({ style, error, ...props }: ThemedTextInputProps) {
-  const { colors } = useTheme();
+  const borderColor = useThemeColor({}, 'border');
+  const textColor = useThemeColor({}, 'text');
+  const backgroundColor = useThemeColor({}, 'background');
+  const errorColor = useThemeColor({}, 'primary');
 
   return (
     <TextInput
       style={[
         styles.input,
         {
-          borderColor: error ? colors.notification : colors.border,
-          color: colors.text,
-          backgroundColor: colors.card,
+          borderColor: error ? errorColor : borderColor,
+          color: textColor,
+          backgroundColor: backgroundColor,
         },
         style,
       ]}
-      placeholderTextColor={colors.text + '80'}
+      placeholderTextColor={textColor + '80'}
       {...props}
     />
   );
@@ -29,8 +33,12 @@ export default function ThemedTextInput({ style, error, ...props }: ThemedTextIn
 const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
-    padding: 15,
     borderRadius: 8,
+    padding: Spacing.md,
     fontSize: 16,
+    width: '100%',
+  },
+  error: {
+    borderColor: 'red',
   },
 }); 

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { router } from 'expo-router';
-import { useTheme } from '@react-navigation/native';
 import ThemedTextInput from '../../components/ThemedTextInput';
 import ThemedButton from '../../components/ThemedButton';
+import { ThemedText } from '../../components/ThemedText';
+import { ThemedView } from '../../components/ThemedView';
+import { useThemeColor } from '../../hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
 
 export default function LoginScreen() {
@@ -12,7 +14,7 @@ export default function LoginScreen() {
   const [code, setCode] = useState('');
   const [showCodeInput, setShowCodeInput] = useState(false);
   const { setEmail: setAuthEmail, verifyCode } = useAuth();
-  const { colors } = useTheme();
+  const backgroundColor = useThemeColor({}, 'background');
 
   const handleEmailSubmit = async () => {
     // TODO: Implement actual email sending logic with your backend
@@ -28,39 +30,40 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
-        <View style={styles.content}>
-          <Text style={[styles.title, { color: colors.text }]}>Welcome</Text>
+        <ThemedView style={styles.content}>
+          <ThemedText type="title">Welcome</ThemedText>
           
           {!showCodeInput ? (
             <>
-              <Text style={[styles.subtitle, { color: colors.text }]}>Enter your email to sign in</Text>
+              <ThemedText style={{ marginBottom: Spacing.xl }} type="defaultSemiBold">Enter your email to sign in</ThemedText>
               <ThemedTextInput
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
+                style={{ marginBottom: Spacing.md }}
               />
               <ThemedButton
                 title="Continue"
                 onPress={handleEmailSubmit}
                 disabled={!email}
-                style={{ marginTop: Spacing.md }}
               />
             </>
           ) : (
             <>
-              <Text style={[styles.subtitle, { color: colors.text }]}>Enter the verification code sent to {email}</Text>
+              <ThemedText style={{ marginBottom: Spacing.xl }} type="defaultSemiBold">Enter the verification code sent to {email}</ThemedText>
               <ThemedTextInput
                 placeholder="Verification code"
                 value={code}
                 onChangeText={setCode}
                 keyboardType="number-pad"
+                style={{ marginBottom: Spacing.md }}
               />
               <ThemedButton
                 title="Verify"
@@ -69,7 +72,7 @@ export default function LoginScreen() {
               />
             </>
           )}
-        </View>
+        </ThemedView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -84,19 +87,25 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 20,
+    padding: Spacing.lg,
+    alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: Spacing.lg,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    marginBottom: 30,
+    marginBottom: Spacing.xl,
     textAlign: 'center',
-    opacity: 0.8,
+  },
+  input: {
+    marginBottom: Spacing.lg,
+  },
+  button: {
+    marginTop: Spacing.md,
   },
 }); 

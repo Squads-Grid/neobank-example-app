@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { useTheme } from '@react-navigation/native';
-import { Spacing } from '../constants/Spacing';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { Spacing } from '@/constants/Spacing';
 
 interface ThemedButtonProps {
   onPress: () => void;
@@ -12,39 +12,50 @@ interface ThemedButtonProps {
   disabled?: boolean;
 }
 
-export default function ThemedButton({ 
-  onPress, 
-  title, 
+export default function ThemedButton({
+  onPress,
+  title,
   variant = 'primary',
   style,
   textStyle,
-  disabled = false
+  disabled = false,
 }: ThemedButtonProps) {
-  const { colors } = useTheme();
+  const primaryColor = useThemeColor({}, 'primary');
+  const textColor = useThemeColor({}, 'text');
+  const backgroundColor = useThemeColor({}, 'background');
+  const borderColor = useThemeColor({}, 'border');
 
-  const getButtonStyle = () => {
+  const getButtonStyle = (): ViewStyle => {
     switch (variant) {
       case 'primary':
-        return { backgroundColor: colors.primary };
+        return {
+          backgroundColor: disabled ? borderColor : primaryColor,
+          borderColor: disabled ? borderColor : primaryColor,
+        };
       case 'secondary':
-        return { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border };
+        return {
+          backgroundColor: disabled ? borderColor : backgroundColor,
+          borderColor: disabled ? borderColor : primaryColor,
+        };
       case 'outline':
-        return { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.primary };
-      default:
-        return { backgroundColor: colors.primary };
+        return {
+          backgroundColor: backgroundColor,
+          borderColor: disabled ? borderColor : primaryColor,
+        };
     }
   };
 
-  const getTextStyle = () => {
+  const getTextStyle = (): TextStyle => {
     switch (variant) {
       case 'primary':
-        return { color: '#fff' };
+        return {
+          color: disabled ? textColor : backgroundColor,
+        };
       case 'secondary':
-        return { color: colors.text };
       case 'outline':
-        return { color: colors.primary };
-      default:
-        return { color: '#fff' };
+        return {
+          color: disabled ? borderColor : primaryColor,
+        };
     }
   };
 
@@ -53,15 +64,12 @@ export default function ThemedButton({
       style={[
         styles.button,
         getButtonStyle(),
-        disabled && styles.disabled,
         style,
       ]}
       onPress={onPress}
       disabled={disabled}
     >
-      <Text style={[styles.text, getTextStyle(), textStyle]}>
-        {title}
-      </Text>
+      <Text style={[styles.text, getTextStyle(), textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
 }
@@ -70,14 +78,13 @@ const styles = StyleSheet.create({
   button: {
     padding: Spacing.md,
     borderRadius: 8,
+    borderWidth: 1,
     alignItems: 'center',
-    marginTop: Spacing.md,
+    justifyContent: 'center',
+    width: '100%',
   },
   text: {
     fontSize: 16,
     fontWeight: '600',
-  },
-  disabled: {
-    opacity: 0.5,
   },
 }); 
