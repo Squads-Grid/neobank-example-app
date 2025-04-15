@@ -12,7 +12,7 @@ interface ThemedButtonProps {
   disabled?: boolean;
 }
 
-export default function ThemedButton({
+export function ThemedButton({
   onPress,
   title,
   variant = 'primary',

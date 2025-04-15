@@ -7,7 +7,7 @@ interface ThemedTextInputProps extends TextInputProps {
   error?: boolean;
 }
 
-export default function ThemedTextInput({ style, error, ...props }: ThemedTextInputProps) {
+export function ThemedTextInput({ style, error, ...props }: ThemedTextInputProps) {
   const borderColor = useThemeColor({}, 'border');
   const textColor = useThemeColor({}, 'text');
   const backgroundColor = useThemeColor({}, 'background');
