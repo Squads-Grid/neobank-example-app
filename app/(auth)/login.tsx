@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { ScreenLayout } from '@/components/ui/ScreenLayout';
 import LoginForm from '@/components/LoginForm';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { HeaderText } from '@/components/ui/HeaderText';
+import { View } from 'react-native';
 
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +29,11 @@ export default function LoginScreen() {
 
   return (
     <ScreenLayout>
+      <HeaderText 
+        title="Bright" 
+        subtitle="Your finances, upgraded" 
+        flex={0.3}
+      />
       <LoginForm 
         onSubmit={handleSubmit} 
         isLoading={isLoading}

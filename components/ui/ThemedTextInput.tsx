@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { TextInput, TextInputProps, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
@@ -7,7 +7,7 @@ interface ThemedTextInputProps extends TextInputProps {
   error?: boolean;
 }
 
-export function ThemedTextInput({ style, error, ...props }: ThemedTextInputProps) {
+export const ThemedTextInput = forwardRef<TextInput, ThemedTextInputProps>(({ style, error, ...props }, ref) => {
   const borderColor = useThemeColor({}, 'border');
   const textColor = useThemeColor({}, 'text');
   const backgroundColor = useThemeColor({}, 'background');
@@ -15,6 +15,7 @@ export function ThemedTextInput({ style, error, ...props }: ThemedTextInputProps
 
   return (
     <TextInput
+      ref={ref}
       style={[
         styles.input,
         {
@@ -28,7 +29,7 @@ export function ThemedTextInput({ style, error, ...props }: ThemedTextInputProps
       {...props}
     />
   );
-}
+});
 
 const styles = StyleSheet.create({
   input: {
