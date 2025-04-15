@@ -16,7 +16,7 @@ export default function StartScreen() {
       </View>
       <View>
         <ThemedButton style={{marginBottom: Spacing.md}} title="Login" onPress={() => router.push('/login')} />
-        <ThemedButton title="Sign up" onPress={() => router.push('/login')} />
+        <ThemedButton variant="secondary" title="Sign up" onPress={() => router.push('/login')} />
       </View>
     </ScreenLayout>
   );

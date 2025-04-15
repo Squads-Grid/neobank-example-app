@@ -37,10 +37,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkAuth = async () => {
     try {
       const { accessToken } = await storage.getTokens();
+      if (!accessToken) {
+        router.replace('/(auth)/start');
+      }
       setIsAuthenticated(!!accessToken);
     } catch (error) {
       console.error('Auth check failed:', error);
       setIsAuthenticated(false);
+      router.replace('/(auth)/start');
     } finally {
       setIsLoading(false);
       setInitialAuthCheck(true);
@@ -101,9 +105,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-
-  
-
   const signIn = async (email: string, code: string): Promise<void> => {
     try {
       setIsLoading(true);
@@ -120,7 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(user);
       
       // Navigate to main app
-      // router.replace('/(tabs)');
+      router.replace('/(tabs)');
     } catch (error) {
       console.error('Login error:', error);
       throw error;

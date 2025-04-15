@@ -10,43 +10,18 @@ import { lightTheme, darkTheme } from '@/constants/Theme';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import LoginScreen from './(auth)/login';
-import StartScreen from './(auth)/start';
+
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 function RootLayoutNav() {
-  const { isAuthenticated } = useAuth();
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    setIsReady(false);
-    if (isAuthenticated !== null) {
-      console.log('isAuthenticated', isAuthenticated);
-      setIsReady(true);
-    }
-  }, [isAuthenticated]);
-
-  // Don't render anything until we're ready
-  if (!isReady) {
-    return <LoadingSpinner />;
-  }
-
-  if(isAuthenticated){
-    return (<Stack
-      initialRouteName={isAuthenticated === true ? '(tabs)' : '(auth)'}
-      screenOptions={{ headerShown: false }}
-    > 
-        <Stack.Screen name="(tabs)" />
-      
-    </Stack>)
-  }else{
-    return (
-      <StartScreen />
-    )
-  }
-  
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(tabs)" />
+    </Stack>
+  );
 }
 
 export default function RootLayout() {
@@ -54,15 +29,17 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
+      setReady(true);
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
+  if (!ready) {
+    return <LoadingSpinner />;
   }
 
   return (

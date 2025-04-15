@@ -21,6 +21,7 @@ export function ThemedButton({
   disabled = false,
 }: ThemedButtonProps) {
   const primaryColor = useThemeColor({}, 'primary');
+  const primaryLight = useThemeColor({}, 'primaryLight');
   const textColor = useThemeColor({}, 'text');
   const backgroundColor = useThemeColor({}, 'background');
   const borderColor = useThemeColor({}, 'border');
@@ -34,7 +35,7 @@ export function ThemedButton({
         };
       case 'secondary':
         return {
-          backgroundColor: disabled ? borderColor : backgroundColor,
+          backgroundColor: disabled ? borderColor : primaryLight,
           borderColor: disabled ? borderColor : primaryColor,
         };
       case 'outline':
@@ -51,7 +52,11 @@ export function ThemedButton({
         return {
           color: disabled ? textColor : backgroundColor,
         };
-      case 'secondary':
+      case 'secondary': {
+        return {
+          color: disabled ? textColor : primaryColor,
+        };
+      }
       case 'outline':
         return {
           color: disabled ? borderColor : primaryColor,
