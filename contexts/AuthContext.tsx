@@ -63,19 +63,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      setIsLoading(true);
-      // Clear tokens
+      // Clear tokens from storage
       await storage.clearTokens();
-      // Reset state
-      setIsAuthenticated(false);
+      
+      // Clear auth state
       setUser(null);
-      // Navigate to login
-      router.replace('/(auth)/login');
+      setIsAuthenticated(false);
+      
+      // Replace the entire stack with the start screen
+      router.replace('/(auth)/start');
     } catch (error) {
       console.error('Logout error:', error);
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
