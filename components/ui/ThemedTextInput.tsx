@@ -34,7 +34,7 @@ export const ThemedTextInput = forwardRef<TextInput, ThemedTextInputProps>(({ st
 const styles = StyleSheet.create({
     input: {
         borderWidth: 1,
-        borderRadius: 8,
+        borderRadius: 421,
         padding: Spacing.md,
         fontSize: 16,
         width: '100%',

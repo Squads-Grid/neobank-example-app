@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, Platform, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedView } from '@/components/ui/ThemedView';
 import { ThemedText } from '@/components/ui/ThemedText';
@@ -8,14 +8,15 @@ import { ThemedButton } from '@/components/ui/ThemedButton';
 import { VerificationCodeInput } from '@/components/ui/VerificationCodeInput';
 import { Spacing } from '@/constants/Spacing';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { InputWithButton } from './ui/InputWithButton';
 
 interface LoginFormProps {
     onSubmit: (email: string, code?: string) => void;
     isLoading?: boolean;
-    customBackgroundColor?: string;
+    style?: ViewStyle;
 }
 
-export function LoginForm({ onSubmit, isLoading = false, customBackgroundColor }: LoginFormProps) {
+export function LoginForm({ onSubmit, isLoading = false, style }: LoginFormProps) {
     const [email, setEmail] = useState('');
     const [code, setCode] = useState('');
     const [showCodeInput, setShowCodeInput] = useState(false);
@@ -32,26 +33,23 @@ export function LoginForm({ onSubmit, isLoading = false, customBackgroundColor }
     };
 
     return (
-        <SafeAreaView style={{ backgroundColor: customBackgroundColor }}>
-            {isLoading ? <LoadingSpinner /> : <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            >
-                <ThemedView style={{ backgroundColor: customBackgroundColor }}>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={[styles.container, style]}
+        >
+            {isLoading ? <LoadingSpinner /> : (
+                <ThemedView lightColor="transparent" darkColor="transparent" style={styles.themedViewInner}>
                     {!showCodeInput ? (
                         <>
-                            <ThemedTextInput
-                                placeholder="Email"
+                            <InputWithButton
+                                placeholder="Enter your e-mail"
                                 value={email}
                                 onChangeText={setEmail}
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 autoComplete="email"
+                                onButtonPress={handleEmailSubmit}
                                 style={{ marginBottom: Spacing.md }}
-                            />
-                            <ThemedButton
-                                title="Continue"
-                                onPress={handleEmailSubmit}
-                                disabled={!email.trim() || isLoading}
                             />
                         </>
                     ) : (
@@ -64,12 +62,20 @@ export function LoginForm({ onSubmit, isLoading = false, customBackgroundColor }
                                 title="Back"
                                 variant="outline"
                                 onPress={() => setShowCodeInput(false)}
-
                             />
                         </>
                     )}
                 </ThemedView>
-            </KeyboardAvoidingView>}
-        </SafeAreaView>
+            )}
+        </KeyboardAvoidingView>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        width: '100%',
+    },
+    themedViewInner: {
+        paddingHorizontal: Spacing.md,
+    }
+});

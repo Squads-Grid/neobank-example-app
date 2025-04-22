@@ -5,70 +5,77 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
 
 interface CircleButtonProps {
-  icon: keyof typeof Ionicons.glyphMap;
-  label: string;
-  onPress: () => void;
-  size?: number;
+    icon: keyof typeof Ionicons.glyphMap;
+    label: string;
+    onPress: () => void;
+    size?: number;
+    backgroundColor?: string;
+    iconColor?: string;
 }
 
-export function CircleButton({ 
-  icon, 
-  label, 
-  onPress, 
-  size = 45 
+export function CircleButton({
+    icon,
+    label,
+    onPress,
+    size = 45,
+    backgroundColor: customBackgroundColor,
+    iconColor: customIconColor,
 }: CircleButtonProps) {
-  const backgroundColor = useThemeColor({}, 'primary');
-  const buttonTextColor = useThemeColor({}, 'background');
-  const textColor = useThemeColor({}, 'text');
-  const shadowColor = useThemeColor({}, 'border');
+    const themeBackgroundColor = useThemeColor({}, 'primary');
+    const themeIconColor = useThemeColor({}, 'background');
 
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity 
-        onPress={onPress}
-        style={[
-          styles.button,
-          { 
-            width: size,
-            height: size,
-            backgroundColor: backgroundColor,
-            shadowColor: shadowColor,
-          }
-        ]}
-      >
-        <Ionicons 
-          name={icon} 
-          size={size * 0.5} 
-          color={buttonTextColor}
-        />
-      </TouchableOpacity>
-      <Text style={[styles.label, { color: textColor }]}>
-        {label}
-      </Text>
-    </View>
-  );
+    const backgroundColor = customBackgroundColor || themeBackgroundColor;
+    const buttonTextColor = customIconColor || themeIconColor;
+
+    const textColor = useThemeColor({}, 'text');
+    const shadowColor = useThemeColor({}, 'border');
+
+    return (
+        <View style={styles.container}>
+            <TouchableOpacity
+                onPress={onPress}
+                style={[
+                    styles.button,
+                    {
+                        width: size,
+                        height: size,
+                        backgroundColor: backgroundColor,
+                        shadowColor: shadowColor,
+                    }
+                ]}
+            >
+                <Ionicons
+                    name={icon}
+                    size={size * 0.5}
+                    color={buttonTextColor}
+                />
+            </TouchableOpacity>
+            {label && <Text style={[styles.label, { color: textColor }]}>
+                {label}
+            </Text>}
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    marginRight: Spacing.lg,
-  },
-  button: {
-    borderRadius: 999,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowOffset: {
-      width: 0,
-      height: 2,
+    container: {
+        alignItems: 'center',
     },
-    shadowOpacity: 0.1,
-    shadowRadius: Spacing.xs,
-    elevation: 3,
-  },
-  label: {
-    marginTop: Spacing.xs,
-    fontSize: 12,
-    fontWeight: '500',
-  },
+    button: {
+        borderRadius: 999,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: Spacing.xs,
+        elevation: 3,
+    },
+    label: {
+        marginTop: Spacing.xs,
+        fontSize: 12,
+        fontWeight: '500',
+    },
 }); 
