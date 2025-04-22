@@ -1,35 +1,34 @@
-import { Text, type TextProps, StyleSheet } from 'react-native';
+import React from 'react';
+import { Text, TextProps, StyleSheet } from 'react-native';
+import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 
-import { useThemeColor } from '@/hooks/useThemeColor';
-
-export type ThemedTextProps = TextProps & {
-    lightColor?: string;
-    darkColor?: string;
+export type ThemedScreenTextProps = TextProps & {
     type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
 };
 
-export function ThemedText({
+export function ThemedScreenText({
+    children,
     style,
-    lightColor,
-    darkColor,
     type = 'default',
-    ...rest
-}: ThemedTextProps) {
-    const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+    ...props
+}: ThemedScreenTextProps) {
+    const { textColor } = useScreenTheme();
 
     return (
         <Text
             style={[
-                { color },
+                { color: textColor },
                 type === 'default' ? styles.default : undefined,
                 type === 'title' ? styles.title : undefined,
                 type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
                 type === 'subtitle' ? styles.subtitle : undefined,
                 type === 'link' ? styles.link : undefined,
-                style,
+                style
             ]}
-            {...rest}
-        />
+            {...props}
+        >
+            {children}
+        </Text>
     );
 }
 
@@ -57,6 +56,6 @@ const styles = StyleSheet.create({
     link: {
         lineHeight: 30,
         fontSize: 16,
-        color: '#0a7ea4',
+        color: '#FFFFFF',
     },
 });

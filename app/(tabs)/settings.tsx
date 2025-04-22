@@ -1,5 +1,5 @@
-import { ThemedText } from '@/components/ui/ThemedText';
-import { ThemedButton } from '@/components/ui/ThemedButton';
+import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
+import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 import { useAuth } from '@/contexts/AuthContext';
 import { ScreenLayout } from '@/components/ui/ScreenLayout';
 
@@ -8,8 +8,8 @@ export default function SettingsScreen() {
 
     return (
         <ScreenLayout>
-            <ThemedText type="title">Settings</ThemedText>
-            <ThemedButton
+            <ThemedScreenText type="title">Settings</ThemedScreenText>
+            <ThemedScreenButton
                 title="Logout"
                 onPress={logout}
                 variant="outline"

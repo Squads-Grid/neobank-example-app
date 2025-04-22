@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, Platform, ViewStyle } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedView } from '@/components/ui/ThemedView';
-import { ThemedText } from '@/components/ui/ThemedText';
-import { ThemedTextInput } from '@/components/ui/ThemedTextInput';
-import { ThemedButton } from '@/components/ui/ThemedButton';
-import { VerificationCodeInput } from '@/components/ui/VerificationCodeInput';
+import { ScreenVerificationCodeInput } from '@/components/ui/ScreenVerificationCodeInput';
 import { Spacing } from '@/constants/Spacing';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { InputWithButton } from './ui/InputWithButton';
+import { ThemedScreenInputWithButton } from '@/components/ui/ThemedScreenInputWithButton';
+import { ThemedScreenText } from './ui/ThemedScreenText';
 
 interface LoginFormProps {
     onSubmit: (email: string, code?: string) => void;
@@ -41,7 +38,7 @@ export function LoginForm({ onSubmit, isLoading = false, style }: LoginFormProps
                 <ThemedView lightColor="transparent" darkColor="transparent" style={styles.themedViewInner}>
                     {!showCodeInput ? (
                         <>
-                            <InputWithButton
+                            <ThemedScreenInputWithButton
                                 placeholder="Enter your e-mail"
                                 value={email}
                                 onChangeText={setEmail}
@@ -54,10 +51,10 @@ export function LoginForm({ onSubmit, isLoading = false, style }: LoginFormProps
                         </>
                     ) : (
                         <>
-                            <ThemedText lightColor="#ffffff" darkColor="#ffffff" style={{ textAlign: 'center', marginBottom: Spacing.lg, maxWidth: 300, alignSelf: 'center' }}>
+                            <ThemedScreenText style={{ textAlign: 'center', marginBottom: Spacing.lg, maxWidth: 300, alignSelf: 'center' }}>
                                 Enter the code from your e-mail
-                            </ThemedText>
-                            <VerificationCodeInput onCodeComplete={handleCodeComplete} />
+                            </ThemedScreenText>
+                            <ScreenVerificationCodeInput onCodeComplete={handleCodeComplete} />
 
                         </>
                     )}

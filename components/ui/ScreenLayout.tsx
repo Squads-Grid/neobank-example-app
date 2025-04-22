@@ -19,15 +19,15 @@ export function ScreenLayout({
     ...rest
 }: ScreenLayoutProps) {
     const effectiveBackgroundColor = useThemeColor(
-        { light: lightColor, dark: darkColor },
-        'background'
+        { light: lightColor, dark: darkColor }, // Pass potential overrides
+        'background' // Default semantic name if no overrides match the theme
     );
     return (
-        <SafeAreaView style={[styles.safeArea, { backgroundColor: effectiveBackgroundColor }]}>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: lightColor }]}>
             <ThemedView
                 style={[styles.container, style]}
-                lightColor={effectiveBackgroundColor}
-                darkColor={effectiveBackgroundColor}
+                lightColor={lightColor}
+                darkColor={darkColor}
                 {...rest}
             >
                 {children}

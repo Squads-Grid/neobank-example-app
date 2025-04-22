@@ -1,18 +1,21 @@
 import React, { useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
-import { ThemedTextInput } from './ThemedTextInput';
+import { ThemedScreenTextInput } from './ThemedScreenTextInput';
 import { Spacing } from '@/constants/Spacing';
-import tinycolor from 'tinycolor2';
-import { useThemeColor } from '@/hooks/useThemeColor';
-interface VerificationCodeInputProps {
+import { useScreenTheme } from '@/contexts/ScreenThemeContext';
+
+interface ScreenVerificationCodeInputProps {
     onCodeComplete: (code: string) => void;
 }
 
-export function VerificationCodeInput({ onCodeComplete }: VerificationCodeInputProps) {
+export function ScreenVerificationCodeInput({ onCodeComplete }: ScreenVerificationCodeInputProps) {
     const [code, setCode] = useState(['', '', '', '', '', '']);
     const inputRefs = useRef<(TextInput | null)[]>([]);
-    const backgroundColor = '#FFFFFF';
-    const bgColorInstance = tinycolor(backgroundColor);
+    const { textColor, backgroundColor } = useScreenTheme();
+
+    const isBackgroundDark = backgroundColor === '#000000' || backgroundColor.toLowerCase() === '#000';
+    const inputBackgroundColor = isBackgroundDark ? '#FFFFFF' : '#000000';
+    const iconColor = isBackgroundDark ? '#000000' : '#FFFFFF';
 
     const handleChange = (text: string, index: number) => {
         const newCode = [...code];
@@ -40,7 +43,7 @@ export function VerificationCodeInput({ onCodeComplete }: VerificationCodeInputP
     return (
         <View style={styles.container}>
             {code.map((digit, index) => (
-                <ThemedTextInput
+                <ThemedScreenTextInput
                     key={index}
                     ref={ref => {
                         inputRefs.current[index] = ref;
@@ -50,7 +53,7 @@ export function VerificationCodeInput({ onCodeComplete }: VerificationCodeInputP
                     onKeyPress={e => handleKeyPress(e, index)}
                     keyboardType="number-pad"
                     maxLength={1}
-                    style={[styles.input, { backgroundColor: bgColorInstance.setAlpha(0.4).toRgbString(), borderColor: bgColorInstance.setAlpha(0.2).toRgbString() }]}
+                    style={[styles.input, { backgroundColor: inputBackgroundColor + '40', borderColor: textColor + '20' }]}
                     textAlign="center"
                 />
             ))}
@@ -71,6 +74,5 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#ffffff',
     },
 }); 

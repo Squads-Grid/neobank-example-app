@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { ThemedText } from '@/components/ui/ThemedText';
+import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
 import { ScreenLayout } from '@/components/ui/ScreenLayout';
 import { Spacing } from '@/constants/Spacing';
 import { CircleButtonGroup } from '@/components/ui/CircleButtonGroup';
@@ -47,8 +47,8 @@ const transactionData = [
 export default function HomeScreen() {
     return (
         <ScreenLayout>
-            <ThemedText type="title">Home</ThemedText>
-            <ThemedText style={styles.balanceTextStyle}>$3,456.94</ThemedText>
+            <ThemedScreenText type="title">Home</ThemedScreenText>
+            <ThemedScreenText style={styles.balanceTextStyle}>$3,456.94</ThemedScreenText>
             <CircleButtonGroup buttons={actions} />
             <View style={{ height: Spacing.xl }} />
             <TransactionList transactions={transactionData} />

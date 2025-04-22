@@ -8,7 +8,7 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@react-navigation/native';
 import { lightTheme, darkTheme } from '@/constants/Theme';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-
+import { ScreenThemeProvider } from '@/contexts/ScreenThemeContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 
@@ -47,8 +47,10 @@ export default function RootLayout() {
     return (
         <AuthProvider>
             <ThemeProvider value={colorScheme === 'dark' ? darkTheme : lightTheme}>
-                <RootLayoutNav />
-                <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+                <ScreenThemeProvider>
+                    <RootLayoutNav />
+                    <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+                </ScreenThemeProvider>
             </ThemeProvider>
         </AuthProvider>
     );

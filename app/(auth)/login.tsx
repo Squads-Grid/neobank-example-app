@@ -2,15 +2,20 @@ import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ScreenLayout } from '@/components/ui/ScreenLayout';
 import { LoginForm } from '@/components/LoginForm';
-import { HeaderText } from '@/components/ui/HeaderText';
+import { ScreenHeaderText } from '@/components/ui/ScreenHeaderText';
 import { Image, StyleSheet, View } from 'react-native';
+
+import { withScreenTheme } from '@/components/withScreenTheme';
+import { ThemedScreen } from '@/components/ui/ThemedScreen';
+import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
+import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 
 // Require the new image - ADJUST PATH IF NEEDED
 const starburstTopImage = require('@/assets/images/starburst-top.png');
 
 const FIXED_BACKGROUND_COLOR = '#000000';
 
-export default function LoginScreen() {
+function LoginScreen() {
     const [isLoading, setIsLoading] = useState(false);
     const { signIn } = useAuth();
 
@@ -33,7 +38,7 @@ export default function LoginScreen() {
     };
 
     return (
-        <ScreenLayout lightColor={FIXED_BACKGROUND_COLOR} darkColor={FIXED_BACKGROUND_COLOR}>
+        <ThemedScreen>
             {/* Background Image - Top */}
             <Image
                 source={starburstTopImage}
@@ -45,7 +50,7 @@ export default function LoginScreen() {
             <View style={styles.contentContainer}>
                 {/* Wrap HeaderText to apply flex style */}
                 <View style={styles.headerContainer}>
-                    <HeaderText
+                    <ScreenHeaderText
                         title="Bright"
                         subtitle="Your finances, upgraded"
                     />
@@ -56,9 +61,15 @@ export default function LoginScreen() {
                 />
                 <View />
             </View>
-        </ScreenLayout>
+        </ThemedScreen>
     );
 }
+
+export default withScreenTheme(LoginScreen, {
+    backgroundColor: '#000000',
+    textColor: '#FFFFFF',
+    primaryColor: '#FFFFFF'
+});
 
 // Add StyleSheet
 const styles = StyleSheet.create({
