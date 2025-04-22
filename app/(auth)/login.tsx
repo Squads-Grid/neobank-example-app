@@ -3,19 +3,17 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ScreenLayout } from '@/components/ui/ScreenLayout';
 import { LoginForm } from '@/components/LoginForm';
 import { ScreenHeaderText } from '@/components/ui/ScreenHeaderText';
-import { Image, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen } from '@/components/ui/ThemedScreen';
 import { ThemedScreenActionText } from '@/components/ui/ThemedScreenActionText';
 import { useResendTimer } from '@/hooks/useResendTimer';
-
-// Require the new image - ADJUST PATH IF NEEDED
-const starburstTopImage = require('@/assets/images/starburst-top.png');
+import { StarburstBackground } from '@/components/ui/StarburstBackground';
+import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 
 // Mock verification code
 const MOCK_VERIFICATION_CODE = '123123';
-
 
 function LoginScreen() {
     const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +21,7 @@ function LoginScreen() {
     const [showCodeInput, setShowCodeInput] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { signIn } = useAuth();
+    const { primaryColor } = useScreenTheme();
 
     const sendVerificationCode = async () => {
         try {
@@ -79,42 +78,40 @@ function LoginScreen() {
 
     return (
         <ThemedScreen>
-            {/* Background Image - Top */}
-            <Image
-                source={starburstTopImage}
-                style={styles.backgroundImage}
-                resizeMode="cover" // Adjust as needed
-            />
+            <StarburstBackground primaryColor={error ? '#FF0048' : "#0080FF"} />
 
-            {/* Content Container */}
             <KeyboardAvoidingView
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 72 : 0}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                style={[styles.contentContainer, { justifyContent: 'space-between' }]}>
-                <View style={styles.contentContainer}>
-                    <View style={styles.headerContainer}>
-                        <ScreenHeaderText
-                            title="Bright"
-                            subtitle="Your finances, upgraded"
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+                style={styles.contentContainer}
+            >
+                <View style={[styles.contentContainer, { justifyContent: 'space-between' }]}>
+                    <View style={{ flex: 1 }}>
+                        <View style={styles.headerContainer}>
+                            <ScreenHeaderText
+                                title="Bright"
+                                subtitle="Your finances, upgraded"
+                            />
+                        </View>
+                        <LoginForm
+                            onSubmit={handleSubmit}
+                            isLoading={isLoading}
+                            error={error}
                         />
                     </View>
-                    <LoginForm
-                        onSubmit={handleSubmit}
-                        isLoading={isLoading}
-                        error={error}
-                    />
+
+                    {showCodeInput && !isLoading && (
+                        <View style={styles.actionContainer}>
+                            <ThemedScreenActionText
+                                onPress={handleResend}
+                                disabled={isDisabled}
+                                countdown={countdown}
+                                activeText="Resend code"
+                                disabledText="Resend code in"
+                            />
+                        </View>
+                    )}
                 </View>
-                {showCodeInput && !isLoading && (
-                    <View>
-                        <ThemedScreenActionText
-                            onPress={handleResend}
-                            disabled={isDisabled}
-                            countdown={countdown}
-                            activeText="Resend code"
-                            disabledText="Resend code in"
-                        />
-                    </View>
-                )}
             </KeyboardAvoidingView>
         </ThemedScreen>
     );
@@ -126,28 +123,19 @@ export default withScreenTheme(LoginScreen, {
     primaryColor: '#FFFFFF'
 });
 
-// Add StyleSheet
 const styles = StyleSheet.create({
-    backgroundImage: {
-        position: 'absolute',
-        left: '-18%',
-        top: '-10%',
-        width: '150%',
-        height: '150%',
-    },
     contentContainer: {
         flex: 1,
         zIndex: 1,
     },
     headerContainer: {
-        flex: 0.5,
         justifyContent: 'flex-start',
         alignItems: 'center',
         marginBottom: 72,
     },
     actionContainer: {
-        flex: 0.4,
+        flex: 0.1,
         alignItems: 'center',
-        marginVertical: 16,
+        // marginBottom: 42
     },
 });
