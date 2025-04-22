@@ -1,10 +1,10 @@
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
+import { Stack, router } from 'expo-router';
+// import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@react-navigation/native';
 import { lightTheme, darkTheme } from '@/constants/Theme';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -13,7 +13,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+// SplashScreen.preventAutoHideAsync();
 
 function RootLayoutNav() {
     return (
@@ -33,7 +33,7 @@ export default function RootLayout() {
 
     useEffect(() => {
         if (loaded) {
-            SplashScreen.hideAsync();
+            // SplashScreen.hideAsync();
             setTimeout(() => {
                 setReady(true);
             }, 1000);
