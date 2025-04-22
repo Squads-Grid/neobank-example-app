@@ -32,11 +32,10 @@ export const InputWithButton = forwardRef<TextInput, InputWithButtonProps>(
         const borderColor = useThemeColor({}, 'border');
         // Fetch text color suitable for dark/colored backgrounds
         const textColor = useThemeColor({}, 'textOnColored');
-        const backgroundColor = useThemeColor({}, 'background'); // Base color for fixed background calculation
-        const errorColor = useThemeColor({}, 'error'); // Assuming you added 'error' color
+        const backgroundColor = '#FFFFFF';
+        const errorColor = useThemeColor({}, 'error');
         const iconColor = useThemeColor({}, 'text');
 
-        const containerBorderColor = error ? errorColor : borderColor;
         const bgColorInstance = tinycolor(backgroundColor);
 
         return (

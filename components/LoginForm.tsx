@@ -54,15 +54,11 @@ export function LoginForm({ onSubmit, isLoading = false, style }: LoginFormProps
                         </>
                     ) : (
                         <>
-                            <ThemedText type="defaultSemiBold" style={{ textAlign: 'center', marginBottom: Spacing.lg, maxWidth: 300, alignSelf: 'center' }}>
-                                Enter the code we sent to {email}
+                            <ThemedText lightColor="#ffffff" darkColor="#ffffff" style={{ textAlign: 'center', marginBottom: Spacing.lg, maxWidth: 300, alignSelf: 'center' }}>
+                                Enter the code from your e-mail
                             </ThemedText>
                             <VerificationCodeInput onCodeComplete={handleCodeComplete} />
-                            <ThemedButton
-                                title="Back"
-                                variant="outline"
-                                onPress={() => setShowCodeInput(false)}
-                            />
+
                         </>
                     )}
                 </ThemedView>
