@@ -3,21 +3,21 @@ import { router } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }
 
-export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated } = useAuth();
+export function ProtectedRoute({ children }: ProtectedRouteProps) {
+    const { isAuthenticated } = useAuth();
 
-  useEffect(() => {
+    useEffect(() => {
+        if (!isAuthenticated) {
+            router.replace('/(auth)/login' as any);
+        }
+    }, [isAuthenticated]);
+
     if (!isAuthenticated) {
-      router.replace('/(auth)/login' as any);
+        return null;
     }
-  }, [isAuthenticated]);
 
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  return <>{children}</>;
+    return <>{children}</>;
 } 
