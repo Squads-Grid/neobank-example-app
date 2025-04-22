@@ -4,6 +4,8 @@ import { ScreenLayout } from '@/components/ui/ScreenLayout';
 import { LoginForm } from '@/components/LoginForm';
 import { HeaderText } from '@/components/ui/HeaderText';
 
+const FIXED_BACKGROUND_COLOR = '#000000'; // Or your specific start screen color
+
 export default function LoginScreen() {
     const [isLoading, setIsLoading] = useState(false);
     const { signIn } = useAuth();
@@ -27,13 +29,14 @@ export default function LoginScreen() {
     };
 
     return (
-        <ScreenLayout>
+        <ScreenLayout lightColor={FIXED_BACKGROUND_COLOR} darkColor={FIXED_BACKGROUND_COLOR}>
             <HeaderText
                 title="Bright"
                 subtitle="Your finances, upgraded"
                 flex={0.3}
             />
             <LoginForm
+                customBackgroundColor={FIXED_BACKGROUND_COLOR}
                 onSubmit={handleSubmit}
                 isLoading={isLoading}
             />

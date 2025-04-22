@@ -12,9 +12,10 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 interface LoginFormProps {
     onSubmit: (email: string, code?: string) => void;
     isLoading?: boolean;
+    customBackgroundColor?: string;
 }
 
-export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
+export function LoginForm({ onSubmit, isLoading = false, customBackgroundColor }: LoginFormProps) {
     const [email, setEmail] = useState('');
     const [code, setCode] = useState('');
     const [showCodeInput, setShowCodeInput] = useState(false);
@@ -31,11 +32,11 @@ export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
     };
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{ backgroundColor: customBackgroundColor }}>
             {isLoading ? <LoadingSpinner /> : <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
-                <ThemedView>
+                <ThemedView style={{ backgroundColor: customBackgroundColor }}>
                     {!showCodeInput ? (
                         <>
                             <ThemedTextInput

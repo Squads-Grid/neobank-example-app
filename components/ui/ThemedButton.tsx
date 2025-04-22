@@ -6,7 +6,7 @@ import { Spacing } from '@/constants/Spacing';
 interface ThemedButtonProps {
     onPress: () => void;
     title: string;
-    variant?: 'primary' | 'secondary' | 'outline';
+    variant?: 'primary' | 'secondary' | 'outline' | 'primaryInverted' | 'secondaryInverted' | 'onColorPrimary' | 'onColorSecondary';
     style?: ViewStyle;
     textStyle?: TextStyle;
     disabled?: boolean;
@@ -43,6 +43,21 @@ export function ThemedButton({
                     backgroundColor: backgroundColor,
                     borderColor: disabled ? borderColor : primaryColor,
                 };
+            case 'onColorPrimary':
+                return {
+                    backgroundColor: '#384149',
+                    borderColor: '#FFFFFF',
+                };
+            case 'onColorSecondary':
+                return {
+                    backgroundColor: '#ffffff',
+                    borderColor: '#ffffff',
+                };
+            default:
+                return {
+                    backgroundColor: disabled ? borderColor : primaryColor,
+                    borderColor: disabled ? borderColor : primaryColor,
+                };
         }
     };
 
@@ -60,6 +75,18 @@ export function ThemedButton({
             case 'outline':
                 return {
                     color: disabled ? borderColor : primaryColor,
+                };
+            case 'onColorPrimary':
+                return {
+                    color: '#ffffff',
+                };
+            case 'onColorSecondary':
+                return {
+                    color: '#000000',
+                };
+            default:
+                return {
+                    color: disabled ? textColor : backgroundColor,
                 };
         }
     };
