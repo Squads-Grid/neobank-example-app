@@ -11,9 +11,10 @@ interface LoginFormProps {
     onSubmit: (email: string, code?: string) => void;
     isLoading?: boolean;
     style?: ViewStyle;
+    error?: string | null;
 }
 
-export function LoginForm({ onSubmit, isLoading = false, style }: LoginFormProps) {
+export function LoginForm({ onSubmit, isLoading = false, style, error }: LoginFormProps) {
     const [email, setEmail] = useState('');
     const [code, setCode] = useState('');
     const [showCodeInput, setShowCodeInput] = useState(false);
@@ -55,7 +56,17 @@ export function LoginForm({ onSubmit, isLoading = false, style }: LoginFormProps
                                 Enter the code from your e-mail
                             </ThemedScreenText>
                             <ScreenVerificationCodeInput onCodeComplete={handleCodeComplete} />
-
+                            {error && (
+                                <ThemedScreenText
+                                    style={{
+                                        textAlign: 'center',
+                                        marginTop: Spacing.md,
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    {error}
+                                </ThemedScreenText>
+                            )}
                         </>
                     )}
                 </ThemedView>

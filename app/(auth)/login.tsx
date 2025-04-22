@@ -7,33 +7,35 @@ import { Image, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-n
 
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen } from '@/components/ui/ThemedScreen';
-import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
-import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 import { ThemedScreenActionText } from '@/components/ui/ThemedScreenActionText';
 import { useResendTimer } from '@/hooks/useResendTimer';
-import { Spacing } from '@/constants/Spacing';
 
 // Require the new image - ADJUST PATH IF NEEDED
 const starburstTopImage = require('@/assets/images/starburst-top.png');
 
-const FIXED_BACKGROUND_COLOR = '#000000';
+// Mock verification code
+const MOCK_VERIFICATION_CODE = '123123';
+
 
 function LoginScreen() {
     const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [showCodeInput, setShowCodeInput] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const { signIn } = useAuth();
 
     const sendVerificationCode = async () => {
         try {
             setIsLoading(true);
+            setError(null);
             // Here you would typically send the verification code to the user's email
             console.log('Sending verification code to:', email);
             // Simulate verification delay
             await new Promise(resolve => setTimeout(resolve, 1000));
+            console.log('Mock verification code:', MOCK_VERIFICATION_CODE);
         } catch (error) {
             console.error('Error sending code:', error);
-            throw error; // Propagate error to be handled by the resend timer
+            throw error;
         } finally {
             setIsLoading(false);
         }
@@ -44,11 +46,24 @@ function LoginScreen() {
         onResend: sendVerificationCode
     });
 
+    const verifyCode = async (code: string): Promise<boolean> => {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return code === MOCK_VERIFICATION_CODE;
+    };
+
     const handleSubmit = async (submittedEmail: string, code?: string) => {
         try {
             setIsLoading(true);
-            setEmail(submittedEmail); // Store email for resend functionality
+            setError(null);
+            setEmail(submittedEmail);
+
             if (code) {
+                const isValid = await verifyCode(code);
+                if (!isValid) {
+                    setError('Invalid code');
+                    return;
+                }
                 await signIn(submittedEmail, code);
             } else {
                 setShowCodeInput(true);
@@ -56,6 +71,7 @@ function LoginScreen() {
             }
         } catch (error) {
             console.error('Login error:', error);
+            setError('An error occurred. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -85,6 +101,7 @@ function LoginScreen() {
                     <LoginForm
                         onSubmit={handleSubmit}
                         isLoading={isLoading}
+                        error={error}
                     />
                 </View>
                 {showCodeInput && !isLoading && (
