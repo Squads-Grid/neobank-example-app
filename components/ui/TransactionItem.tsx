@@ -3,6 +3,7 @@ import { StyleSheet, View, Pressable } from 'react-native';
 import { ThemedScreenText } from './ThemedScreenText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
+import { AppIcon } from './AppIcon';
 
 interface TransactionItemProps {
     type: string;
@@ -16,6 +17,10 @@ export function TransactionItem({ type, date, amount, isLast, onPress }: Transac
     const borderColor = useThemeColor({}, 'border');
     const highlightColor = useThemeColor({}, 'card');
     const textColor = useThemeColor({}, 'text');
+
+    // Determine which icon to use based on whether money was sent or received
+    const iconName = amount < 0 ? 'sent' : 'money-added';
+
     return (
         <Pressable
             style={({ pressed }) => [
@@ -25,9 +30,10 @@ export function TransactionItem({ type, date, amount, isLast, onPress }: Transac
             ]}
             onPress={onPress}
         >
-            <View style={styles.iconPlaceholder} />
+
+            <AppIcon name={iconName} size={34} />
             <View style={styles.details}>
-                <ThemedScreenText type="defaultSemiBold">{type}</ThemedScreenText>
+                <ThemedScreenText type="defaultSemiBold" style={styles.type}>{type}</ThemedScreenText>
                 <ThemedScreenText type="default" style={styles.date}>{date}</ThemedScreenText>
             </View>
             <ThemedScreenText
@@ -49,23 +55,35 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: Spacing.sm,
         paddingHorizontal: Spacing.md,
-        backgroundColor: 'transparent', // Important for the pressed state
+        backgroundColor: 'transparent',
     },
-    iconPlaceholder: {
+    iconContainer: {
         width: 40,
         height: 40,
         backgroundColor: '#E5E5E5',
         borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     details: {
         flex: 1,
-        marginLeft: Spacing.sm,
+        flexDirection: 'column',
+        height: 34,
+        marginLeft: 10,
+        justifyContent: 'space-between',
+        paddingTop: 2,
+    },
+    type: {
+        fontSize: 14,
+        lineHeight: 14,
     },
     date: {
-        marginTop: 2,
         opacity: 0.6,
+        fontSize: 12,
+        lineHeight: 12,
     },
     amount: {
-        marginLeft: Spacing.sm,
+        fontSize: 14,
+        textAlign: 'right',
     },
 }); 

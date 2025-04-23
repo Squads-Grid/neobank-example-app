@@ -3,7 +3,8 @@ import { Image, ImageStyle } from 'react-native';
 
 // Icon names mapping
 const ICONS = {
-    dot: require('@/assets/icons/dot.png'),
+    sent: require('@/assets/icons/sent.png'),
+    'money-added': require('@/assets/icons/money-added.png'),
     // Add more icons as needed
 };
 
