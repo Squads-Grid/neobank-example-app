@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
 import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
+import { AppIcon } from '@/components/ui/AppIcon';
 
 export default function AmountScreen() {
     const [amount, setAmount] = useState('0');
@@ -75,17 +76,24 @@ export default function AmountScreen() {
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                     <Ionicons name="chevron-back" size={28} color={textColor} />
                 </TouchableOpacity>
-                <ThemedScreenText type="defaultSemiBold" style={styles.headerTitle}>
-                    {title || 'Send'}
-                </ThemedScreenText>
+                <View style={styles.headerTitleContainer}>
+                    <ThemedScreenText type="defaultSemiBold" style={styles.headerTitle}>
+                        {title || 'Send'}
+                    </ThemedScreenText>
+                    <AppIcon name="sent" size={24} />
+                </View>
+                <View style={styles.headerRightContainer}>
+                </View>
             </View>
 
             <View style={styles.container}>
-                <ThemedScreenText type="default" style={styles.label}>Enter amount</ThemedScreenText>
+                <View style={styles.amountContainer}>
+                    <ThemedScreenText type="default" style={styles.label}>Enter amount</ThemedScreenText>
 
-                <Text style={[styles.amountText, { color: textColor }]}>
-                    {formattedAmount()}
-                </Text>
+                    <Text style={[styles.amountText, { color: textColor }]}>
+                        {formattedAmount()}
+                    </Text>
+                </View>
 
                 <View style={styles.keypadContainer}>
                     <Keypad onKeyPress={handleKeyPress} />
@@ -100,6 +108,16 @@ export default function AmountScreen() {
 }
 
 const styles = StyleSheet.create({
+    headerTitleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    amountContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     container: {
         flex: 1,
         alignItems: 'center',
@@ -110,35 +128,36 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: Spacing.md,
-        paddingVertical: Spacing.md,
+        justifyContent: 'space-between',
+        height: 60,
     },
     headerTitle: {
-        flex: 1,
-        textAlign: 'center',
         fontSize: 18,
-        marginRight: 28, // To balance the back button width
+        marginRight: Spacing.sm,
     },
     backButton: {
+        width: 50,
         padding: Spacing.xs,
+    },
+    headerRightContainer: {
+        width: 50,
+        paddingVertical: Spacing.xs,
     },
     label: {
         fontSize: 16,
-        marginTop: 40,
-        marginBottom: 8,
-        opacity: 0.7,
+        lineHeight: 30,
+        fontWeight: '600',
     },
     amountText: {
         fontSize: 48,
         fontWeight: 'bold',
         textAlign: 'center',
-        marginVertical: Spacing.lg,
+        lineHeight: 58,
     },
     keypadContainer: {
         flex: 1,
         width: '100%',
         justifyContent: 'center',
-        marginTop: Spacing.lg,
     },
     continueButton: {
         width: '100%',

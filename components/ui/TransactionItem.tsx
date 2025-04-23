@@ -15,7 +15,6 @@ interface TransactionItemProps {
 }
 
 export function TransactionItem({ type, date, amount, isLast, onPress, walletAddress }: TransactionItemProps) {
-    const highlightColor = useThemeColor({}, 'card');
     const textColor = useThemeColor({}, 'text');
 
     // Determine which icon to use based on whether money was sent or received
