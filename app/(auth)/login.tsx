@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { ScreenLayout } from '@/components/ui/ScreenLayout';
 import { LoginForm } from '@/components/LoginForm';
 import { ScreenHeaderText } from '@/components/ui/ScreenHeaderText';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
@@ -136,6 +135,5 @@ const styles = StyleSheet.create({
     actionContainer: {
         flex: 0.1,
         alignItems: 'center',
-        // marginBottom: 42
     },
 });
