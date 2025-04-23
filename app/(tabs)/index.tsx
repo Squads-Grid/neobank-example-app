@@ -1,5 +1,6 @@
 import { Platform, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from 'react';
 
 import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
 import { Spacing } from '@/constants/Spacing';
@@ -8,31 +9,116 @@ import { TransactionList } from '@/components/ui/TransactionList';
 import { ThemedScreen } from '@/components/ui/ThemedScreen';
 import { Transaction, TransactionGroup } from '@/types/Transaction';
 import { Image } from 'react-native';
+import { SendMoneyModal } from '@/components/ui/SendMoneyModal';
 
 const placeholder = require('@/assets/images/no-txn.png');
 
-const actions: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void }[] = [
-    {
-        icon: 'add-outline',
-        label: 'Add Money',
-        onPress: () => { /* handle add money */ },
+export default function HomeScreen() {
+    const [isSendModalVisible, setIsSendModalVisible] = useState(false);
+
+    const openSendModal = () => {
+        setIsSendModalVisible(true);
+    };
+
+    const closeSendModal = () => {
+        setIsSendModalVisible(false);
+    };
+
+    const handleSendToWallet = () => {
+        // Handle sending to wallet - you would navigate to a wallet form screen
+        console.log('Sending to wallet');
+        closeSendModal();
+    };
+
+    const handleSendToBank = () => {
+        // Handle sending to bank - you would navigate to a bank form screen
+        console.log('Sending to bank account');
+        closeSendModal();
+    };
+
+    // Explicitly type the actions array to ensure icon is a valid Ionicons name
+    const actions: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void }[] = [
+        {
+            icon: 'add-outline',
+            label: 'Add Money',
+            onPress: () => { /* handle add money */ },
+        },
+        {
+            icon: 'arrow-forward-outline',
+            label: 'Send Money',
+            onPress: openSendModal,
+        },
+        {
+            icon: 'calendar-outline',
+            label: 'Scheduled',
+            onPress: () => { /* handle scheduled */ },
+        },
+        {
+            icon: 'cash-outline',
+            label: 'Invest',
+            onPress: () => { /* handle pay */ },
+        }
+    ];
+
+    return (
+        <ThemedScreen>
+            <ThemedScreenText style={styles.headline}>Home · Balance</ThemedScreenText>
+            <ThemedScreenText style={styles.balanceTextStyle}>$3,456.94</ThemedScreenText>
+            <CircleButtonGroup buttons={actions} />
+            <View style={{ height: Spacing.xl }} />
+            {transactionData.length > 0 ? <TransactionList transactions={transactionData} /> : (
+                <View style={styles.emptyContainer}>
+                    <Image
+                        source={placeholder}
+                        style={styles.placeholderImage}
+                    />
+                    <ThemedScreenText style={styles.placeholderText}>No transactions yet</ThemedScreenText>
+                </View>
+            )}
+
+            <SendMoneyModal
+                visible={isSendModalVisible}
+                onClose={closeSendModal}
+                onSendToWallet={handleSendToWallet}
+                onSendToBank={handleSendToBank}
+            />
+        </ThemedScreen>
+    );
+}
+
+const styles = StyleSheet.create({
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingBottom: Platform.OS === 'ios' ? 60 : 50,
     },
-    {
-        icon: 'arrow-forward-outline',
-        label: 'Send Money',
-        onPress: () => { /* handle send money */ },
+    headline: {
+        fontSize: 16,
+        opacity: 0.3,
+        textAlign: 'center',
+        lineHeight: 19.2,
+        marginTop: Spacing.xl,
     },
-    {
-        icon: 'calendar-outline',
-        label: 'Scheduled',
-        onPress: () => { /* handle scheduled */ },
+    balanceTextStyle: {
+        fontSize: 56,
+        lineHeight: 67.2,
+        marginTop: Spacing.sm,
+        marginBottom: Spacing.lg,
+        textAlign: 'center',
+        fontWeight: 'bold',
     },
-    {
-        icon: 'cash-outline',
-        label: 'Invest',
-        onPress: () => { /* handle pay */ },
+    placeholderImage: {
+        height: 46,
+        resizeMode: 'contain',
+    },
+    placeholderText: {
+        marginTop: Spacing.lg,
+        textAlign: 'center',
+        fontSize: 14,
+        opacity: 0.23,
     }
-];
+});
 
 const transactionData: TransactionGroup[] = [
     {
@@ -109,57 +195,3 @@ const transactionData: TransactionGroup[] = [
         ]
     }
 ];
-
-export default function HomeScreen() {
-    return (
-        <ThemedScreen>
-            <ThemedScreenText style={styles.headline}>Home · Balance</ThemedScreenText>
-            <ThemedScreenText style={styles.balanceTextStyle}>$3,456.94</ThemedScreenText>
-            <CircleButtonGroup buttons={actions} />
-            <View style={{ height: Spacing.xl }} />
-            {transactionData.length > 0 ? <TransactionList transactions={transactionData} /> : (
-                <View style={styles.emptyContainer}>
-                    <Image
-                        source={placeholder}
-                        style={styles.placeholderImage}
-                    />
-                    <ThemedScreenText style={styles.placeholderText}>No transactions yet</ThemedScreenText>
-                </View>
-            )}
-        </ThemedScreen>
-    );
-}
-
-const styles = StyleSheet.create({
-    emptyContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingBottom: Platform.OS === 'ios' ? 60 : 50,
-    },
-    headline: {
-        fontSize: 16,
-        opacity: 0.3,
-        textAlign: 'center',
-        lineHeight: 19.2,
-        marginTop: Spacing.xl,
-    },
-    balanceTextStyle: {
-        fontSize: 56,
-        lineHeight: 67.2,
-        marginTop: Spacing.sm,
-        marginBottom: Spacing.lg,
-        textAlign: 'center',
-        fontWeight: 'bold',
-    },
-    placeholderImage: {
-        height: 46,
-        resizeMode: 'contain',
-    },
-    placeholderText: {
-        marginTop: Spacing.lg,
-        textAlign: 'center',
-        fontSize: 14,
-        opacity: 0.23,
-    }
-});
