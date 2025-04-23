@@ -35,22 +35,25 @@ const actions: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: (
 ];
 
 const transactionData: TransactionGroup[] = [
-    // {
-    //     title: 'Today',
-    //     data: [
-    //         { id: '1', type: 'Transfer', date: '04. April', amount: -100.00 },
-    //         { id: '2', type: 'Transfer', date: '04. April', amount: -100.00 },
-    //         { id: '3', type: 'Transfer', date: '04. April', amount: -100.00 },
-    //     ]
-    // },
-    // {
-    //     title: 'Yesterday',
-    //     data: [
-    //         { id: '4', type: 'Transfer', date: '03. April', amount: -100.00 },
-    //         { id: '5', type: 'Transfer', date: '03. April', amount: -100.00 },
-    //         { id: '6', type: 'Transfer', date: '03. April', amount: -100.00 },
-    //     ]
-    // }
+    {
+        title: 'Today',
+        data: [
+            { id: '1', type: 'Transfer', date: '04. April', amount: +100.00 },
+            { id: '2', type: 'Transfer', date: '04. April', amount: -100.00 },
+            { id: '3', type: 'Transfer', date: '04. April', amount: -100.00 },
+        ]
+    },
+    {
+        title: 'Yesterday',
+        data: [
+            { id: '4', type: 'Transfer', date: '03. April', amount: +100.00 },
+            { id: '5', type: 'Transfer', date: '03. April', amount: +100.00 },
+            { id: '6', type: 'Transfer', date: '03. April', amount: -100.00 },
+            { id: '7', type: 'Transfer', date: '03. April', amount: -100.00 },
+            { id: '8', type: 'Transfer', date: '03. April', amount: +100.00 },
+            { id: '9', type: 'Transfer', date: '03. April', amount: -100.00 },
+        ]
+    }
 ];
 
 export default function HomeScreen() {

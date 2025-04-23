@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Pressable } from 'react-native';
 import { ThemedScreenText } from './ThemedScreenText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
@@ -9,25 +9,37 @@ interface TransactionItemProps {
     date: string;
     amount: number;
     isLast?: boolean;
+    onPress?: () => void;
 }
 
-export function TransactionItem({ type, date, amount, isLast }: TransactionItemProps) {
+export function TransactionItem({ type, date, amount, isLast, onPress }: TransactionItemProps) {
     const borderColor = useThemeColor({}, 'border');
-
+    const highlightColor = useThemeColor({}, 'card');
+    const textColor = useThemeColor({}, 'text');
     return (
-        <View style={[
-            styles.container,
-            !isLast && { borderBottomWidth: 1, borderBottomColor: borderColor }
-        ]}>
+        <Pressable
+            style={({ pressed }) => [
+                styles.container,
+                !isLast && { borderBottomWidth: 1, borderBottomColor: borderColor },
+                pressed && { backgroundColor: highlightColor }
+            ]}
+            onPress={onPress}
+        >
             <View style={styles.iconPlaceholder} />
             <View style={styles.details}>
                 <ThemedScreenText type="defaultSemiBold">{type}</ThemedScreenText>
                 <ThemedScreenText type="default" style={styles.date}>{date}</ThemedScreenText>
             </View>
-            <ThemedScreenText type="defaultSemiBold" style={styles.amount}>
-                {amount < 0 ? '-' : '+'}${Math.abs(amount).toFixed(2)}
+            <ThemedScreenText
+                type="defaultSemiBold"
+                style={[
+                    styles.amount,
+                    { color: amount < 0 ? textColor : '#34C759' }
+                ]}
+            >
+                {amount < 0 ? '' : '+'}${Math.abs(amount).toFixed(2)}
             </ThemedScreenText>
-        </View>
+        </Pressable>
     );
 }
 
@@ -37,6 +49,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: Spacing.sm,
         paddingHorizontal: Spacing.md,
+        backgroundColor: 'transparent', // Important for the pressed state
     },
     iconPlaceholder: {
         width: 40,
@@ -50,6 +63,7 @@ const styles = StyleSheet.create({
     },
     date: {
         marginTop: 2,
+        opacity: 0.6,
     },
     amount: {
         marginLeft: Spacing.sm,

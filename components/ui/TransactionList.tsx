@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, SectionList } from 'react-native';
 import { ThemedScreenText } from './ThemedScreenText';
 import { TransactionItem } from './TransactionItem';
 import { Spacing } from '@/constants/Spacing';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { TransactionGroup } from '@/types/Transaction';
+import { Transaction, TransactionGroup } from '@/types/Transaction';
 
 interface TransactionListProps {
     transactions: TransactionGroup[];
@@ -13,28 +13,48 @@ interface TransactionListProps {
 export function TransactionList({ transactions }: TransactionListProps) {
     const borderColor = useThemeColor({}, 'border');
     const backgroundColor = useThemeColor({}, 'background');
+    const textColor = useThemeColor({}, 'text');
+
+    // Use a very light tint of the text color (or any contrasting color you prefer)
+    const sectionHeaderBg = useThemeColor({}, 'card');
+
+    const renderSectionHeader = ({ section }: { section: TransactionGroup }) => (
+        <View style={[styles.sectionHeaderContainer, { backgroundColor: sectionHeaderBg }]}>
+            <ThemedScreenText type="subtitle" style={styles.groupTitle}>
+                {section.title}
+            </ThemedScreenText>
+        </View>
+    );
+
+    const renderItem = ({ item, index, section }: {
+        item: Transaction;
+        index: number;
+        section: TransactionGroup
+    }) => (
+        <TransactionItem
+            key={item.id}
+            type={item.type}
+            date={item.date}
+            amount={item.amount}
+            isLast={index === section.data.length - 1}
+        />
+    );
 
     return (
-        <ScrollView style={styles.container}>
-            {transactions.map((group, index) => (
-                <View key={index} style={styles.groupContainer}>
-                    <ThemedScreenText type="subtitle" style={styles.groupTitle}>
-                        {group.title}
-                    </ThemedScreenText>
-                    <View style={[styles.group, { borderColor, backgroundColor }]}>
-                        {group.data.map((transaction, idx) => (
-                            <TransactionItem
-                                key={transaction.id}
-                                type={transaction.type}
-                                date={transaction.date}
-                                amount={transaction.amount}
-                                isLast={idx === group.data.length - 1}
-                            />
-                        ))}
-                    </View>
-                </View>
-            ))}
-        </ScrollView>
+        <SectionList
+            style={styles.container}
+            sections={transactions}
+            keyExtractor={(item) => item.id}
+            renderSectionHeader={renderSectionHeader}
+            renderItem={renderItem}
+            stickySectionHeadersEnabled={true}
+            contentContainerStyle={styles.contentContainer}
+            ListEmptyComponent={() => (
+                <ThemedScreenText style={styles.emptyText}>
+                    No transactions yet
+                </ThemedScreenText>
+            )}
+        />
     );
 }
 
@@ -42,15 +62,20 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    groupContainer: {
-        marginBottom: Spacing.md,
+    contentContainer: {
+        paddingBottom: Spacing.lg,
+    },
+    sectionHeaderContainer: {
+        paddingTop: Spacing.xl,
+        zIndex: 1,
     },
     groupTitle: {
         paddingVertical: Spacing.xs,
+        fontWeight: '600',
     },
-    group: {
-        borderWidth: 1,
-        borderRadius: 12,
-        overflow: 'hidden',
+    emptyText: {
+        textAlign: 'center',
+        marginTop: Spacing.xl,
+        opacity: 0.5,
     },
 }); 
