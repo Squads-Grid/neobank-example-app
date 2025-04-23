@@ -31,7 +31,7 @@ export function CircleButtonGroup({ buttons }: CircleButtonGroupProps) {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        justifyContent: 'flex-start',
+        justifyContent: 'space-evenly',
         alignItems: 'center',
         paddingVertical: Spacing.sm,
     },

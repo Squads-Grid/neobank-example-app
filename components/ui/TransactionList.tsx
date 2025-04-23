@@ -4,18 +4,7 @@ import { ThemedScreenText } from './ThemedScreenText';
 import { TransactionItem } from './TransactionItem';
 import { Spacing } from '@/constants/Spacing';
 import { useThemeColor } from '@/hooks/useThemeColor';
-
-interface Transaction {
-    id: string;
-    type: string;
-    date: string;
-    amount: number;
-}
-
-interface TransactionGroup {
-    title: string;
-    data: Transaction[];
-}
+import { TransactionGroup } from '@/types/Transaction';
 
 interface TransactionListProps {
     transactions: TransactionGroup[];
