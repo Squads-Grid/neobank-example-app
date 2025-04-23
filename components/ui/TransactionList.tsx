@@ -11,12 +11,9 @@ interface TransactionListProps {
 }
 
 export function TransactionList({ transactions }: TransactionListProps) {
-    const borderColor = useThemeColor({}, 'border');
-    const backgroundColor = useThemeColor({}, 'background');
-    const textColor = useThemeColor({}, 'text');
 
     // Use a very light tint of the text color (or any contrasting color you prefer)
-    const sectionHeaderBg = useThemeColor({}, 'card');
+    const sectionHeaderBg = useThemeColor({}, 'background');
 
     const renderSectionHeader = ({ section }: { section: TransactionGroup }) => (
         <View style={[styles.sectionHeaderContainer, { backgroundColor: sectionHeaderBg }]}>
