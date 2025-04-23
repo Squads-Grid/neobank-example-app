@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
@@ -7,6 +7,9 @@ import { CircleButtonGroup } from '@/components/ui/CircleButtonGroup';
 import { TransactionList } from '@/components/ui/TransactionList';
 import { ThemedScreen } from '@/components/ui/ThemedScreen';
 import { Transaction, TransactionGroup } from '@/types/Transaction';
+import { Image } from 'react-native';
+
+const placeholder = require('@/assets/images/no-txn.png');
 
 const actions: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void }[] = [
     {
@@ -57,12 +60,26 @@ export default function HomeScreen() {
             <ThemedScreenText style={styles.balanceTextStyle}>$3,456.94</ThemedScreenText>
             <CircleButtonGroup buttons={actions} />
             <View style={{ height: Spacing.xl }} />
-            <TransactionList transactions={transactionData} />
+            {transactionData.length > 0 ? <TransactionList transactions={transactionData} /> : (
+                <View style={styles.emptyContainer}>
+                    <Image
+                        source={placeholder}
+                        style={styles.placeholderImage}
+                    />
+                    <ThemedScreenText style={styles.placeholderText}>No transactions yet</ThemedScreenText>
+                </View>
+            )}
         </ThemedScreen>
     );
 }
 
 const styles = StyleSheet.create({
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingBottom: Platform.OS === 'ios' ? 60 : 50,
+    },
     headline: {
         fontSize: 16,
         opacity: 0.3,
@@ -78,4 +95,14 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
     },
+    placeholderImage: {
+        height: 46,
+        resizeMode: 'contain',
+    },
+    placeholderText: {
+        marginTop: Spacing.lg,
+        textAlign: 'center',
+        fontSize: 14,
+        opacity: 0.23,
+    }
 });
