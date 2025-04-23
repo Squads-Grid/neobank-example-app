@@ -1,6 +1,7 @@
 import { Platform, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
+import { router } from 'expo-router';
 
 import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
 import { Spacing } from '@/constants/Spacing';
@@ -29,24 +30,48 @@ export default function HomeScreen() {
 
     // Send action handlers
     const handleSendToWallet = () => {
-        console.log('Sending to wallet');
         closeSendModal();
+        router.push({
+            pathname: '/amount',
+            params: {
+                type: 'wallet',
+                title: 'Send'
+            }
+        });
     };
 
     const handleSendToBank = () => {
-        console.log('Sending to bank account');
         closeSendModal();
+        router.push({
+            pathname: '/amount',
+            params: {
+                type: 'bank',
+                title: 'Send'
+            }
+        });
     };
 
     // Receive action handlers
     const handleReceiveToWallet = () => {
-        console.log('Receiving to wallet');
         closeReceiveModal();
+        router.push({
+            pathname: '/amount',
+            params: {
+                type: 'wallet',
+                title: 'Receive'
+            }
+        });
     };
 
     const handleReceiveFromBank = () => {
-        console.log('Receiving from bank account');
         closeReceiveModal();
+        router.push({
+            pathname: '/amount',
+            params: {
+                type: 'bank',
+                title: 'Receive'
+            }
+        });
     };
 
     // Define options for Send modal
