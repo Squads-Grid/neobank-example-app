@@ -36,6 +36,7 @@ export function TransactionList({ transactions }: TransactionListProps) {
             type={item.type}
             date={item.date}
             amount={item.amount}
+            walletAddress={item.walletAddress}
             isLast={index === section.data.length - 1}
         />
     );
@@ -67,11 +68,13 @@ const styles = StyleSheet.create({
     },
     sectionHeaderContainer: {
         paddingTop: Spacing.xl,
+        paddingHorizontal: Spacing.md,
         zIndex: 1,
     },
     groupTitle: {
-        paddingVertical: Spacing.xs,
         fontWeight: '600',
+        fontSize: 16,
+        opacity: 0.23,
     },
     emptyText: {
         textAlign: 'center',

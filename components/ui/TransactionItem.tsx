@@ -10,31 +10,36 @@ interface TransactionItemProps {
     date: string;
     amount: number;
     isLast?: boolean;
+    walletAddress: string;
     onPress?: () => void;
 }
 
-export function TransactionItem({ type, date, amount, isLast, onPress }: TransactionItemProps) {
-    const borderColor = useThemeColor({}, 'border');
+export function TransactionItem({ type, date, amount, isLast, onPress, walletAddress }: TransactionItemProps) {
     const highlightColor = useThemeColor({}, 'card');
     const textColor = useThemeColor({}, 'text');
 
     // Determine which icon to use based on whether money was sent or received
     const iconName = amount < 0 ? 'sent' : 'money-added';
 
+    // Format wallet address with prefix and truncation
+    const prefix = amount < 0 ? 'To: ' : 'From: ';
+    const truncatedAddress = walletAddress.substring(0, 5);
+    const formattedAddress = `${prefix}${truncatedAddress}`;
+
     return (
         <Pressable
-            style={({ pressed }) => [
-                styles.container,
-                !isLast && { borderBottomWidth: 1, borderBottomColor: borderColor },
-                pressed && { backgroundColor: highlightColor }
-            ]}
+            style={styles.container}
             onPress={onPress}
         >
-
             <AppIcon name={iconName} size={34} />
             <View style={styles.details}>
                 <ThemedScreenText type="defaultSemiBold" style={styles.type}>{type}</ThemedScreenText>
-                <ThemedScreenText type="default" style={styles.date}>{date}</ThemedScreenText>
+                <View style={styles.transactionDetails}>
+                    <ThemedScreenText type="default" style={[styles.address]}>
+                        {formattedAddress}
+                    </ThemedScreenText>
+                    <ThemedScreenText type="default" style={styles.date}> • {date}</ThemedScreenText>
+                </View>
             </View>
             <ThemedScreenText
                 type="defaultSemiBold"
@@ -53,17 +58,9 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: Spacing.sm,
         paddingHorizontal: Spacing.md,
         backgroundColor: 'transparent',
-    },
-    iconContainer: {
-        width: 40,
-        height: 40,
-        backgroundColor: '#E5E5E5',
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
+        paddingVertical: Spacing.md,
     },
     details: {
         flex: 1,
@@ -82,8 +79,17 @@ const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 12,
     },
+    address: {
+        fontSize: 12,
+        lineHeight: 12,
+        fontWeight: '500',
+    },
     amount: {
         fontSize: 14,
         textAlign: 'right',
     },
+    transactionDetails: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    }
 }); 

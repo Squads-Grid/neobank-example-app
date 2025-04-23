@@ -6,6 +6,7 @@ export interface Transaction {
     type: string;
     date: string;
     amount: number;
+    walletAddress: string;
 }
 
 /**

@@ -38,20 +38,74 @@ const transactionData: TransactionGroup[] = [
     {
         title: 'Today',
         data: [
-            { id: '1', type: 'Transfer', date: '04. April', amount: +100.00 },
-            { id: '2', type: 'Transfer', date: '04. April', amount: -100.00 },
-            { id: '3', type: 'Transfer', date: '04. April', amount: -100.00 },
+            {
+                id: '1',
+                type: 'Money Added',
+                date: 'April 4',
+                amount: +100.00,
+                walletAddress: '5YNmS1R9nNSCDzb5a7mMJ1dwK9uHeAAF4CerVnZgX37B'
+            },
+            {
+                id: '2',
+                type: 'Transfer',
+                date: 'April 4',
+                amount: -100.00,
+                walletAddress: 'GsbwXfJUJimiJWeSmFhRnWxvuPcFNQS8gQxLxNpzBxr9'
+            },
+            {
+                id: '3',
+                type: 'Payment',
+                date: 'April 4',
+                amount: -100.00,
+                walletAddress: 'DEhAasscXF4kEGxFgJ3bq4PpVGp5wyUxMRvn6TzGVHaw'
+            },
         ]
     },
     {
         title: 'Yesterday',
         data: [
-            { id: '4', type: 'Transfer', date: '03. April', amount: +100.00 },
-            { id: '5', type: 'Transfer', date: '03. April', amount: +100.00 },
-            { id: '6', type: 'Transfer', date: '03. April', amount: -100.00 },
-            { id: '7', type: 'Transfer', date: '03. April', amount: -100.00 },
-            { id: '8', type: 'Transfer', date: '03. April', amount: +100.00 },
-            { id: '9', type: 'Transfer', date: '03. April', amount: -100.00 },
+            {
+                id: '4',
+                type: 'Money Added',
+                date: 'April 3',
+                amount: +100.00,
+                walletAddress: '5YNmS1R9nNSCDzb5a7mMJ1dwK9uHeAAF4CerVnZgX37B'
+            },
+            {
+                id: '5',
+                type: 'Received',
+                date: 'April 3',
+                amount: +100.00,
+                walletAddress: 'HAWy8kV3bD4gHn6gV3KBQvNJB8fJoU7Va2cmT4U4storm'
+            },
+            {
+                id: '6',
+                type: 'Transfer',
+                date: 'April 3',
+                amount: -100.00,
+                walletAddress: '9aE476sH92Vz7DMPyq5WLPkrKWivxeuTKEFKd2sZZcde'
+            },
+            {
+                id: '7',
+                type: 'Coffee',
+                date: 'April 3',
+                amount: -100.00,
+                walletAddress: 'EWmowPNdC9VHMRPM37usiKsNwXnhXNTLL2v4BQvnjeV5'
+            },
+            {
+                id: '8',
+                type: 'Rent',
+                date: 'April 3',
+                amount: +100.00,
+                walletAddress: 'So11111111111111111111111111111111111111112'
+            },
+            {
+                id: '9',
+                type: 'Groceries',
+                date: 'April 3',
+                amount: -100.00,
+                walletAddress: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+            },
         ]
     }
 ];
