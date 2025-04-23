@@ -9,39 +9,88 @@ import { TransactionList } from '@/components/ui/TransactionList';
 import { ThemedScreen } from '@/components/ui/ThemedScreen';
 import { Transaction, TransactionGroup } from '@/types/Transaction';
 import { Image } from 'react-native';
-import { SendMoneyModal } from '@/components/ui/SendMoneyModal';
+import { ActionModal, ActionOption } from '@/components/ui/ActionModal';
 
 const placeholder = require('@/assets/images/no-txn.png');
+const bankIcon = require('@/assets/icons/bank.png');
+const walletIcon = require('@/assets/icons/wallet.png');
 
 export default function HomeScreen() {
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
+    const [isReceiveModalVisible, setIsReceiveModalVisible] = useState(false);
 
-    const openSendModal = () => {
-        setIsSendModalVisible(true);
-    };
+    // Send modal handlers
+    const openSendModal = () => setIsSendModalVisible(true);
+    const closeSendModal = () => setIsSendModalVisible(false);
 
-    const closeSendModal = () => {
-        setIsSendModalVisible(false);
-    };
+    // Receive modal handlers
+    const openReceiveModal = () => setIsReceiveModalVisible(true);
+    const closeReceiveModal = () => setIsReceiveModalVisible(false);
 
+    // Send action handlers
     const handleSendToWallet = () => {
-        // Handle sending to wallet - you would navigate to a wallet form screen
         console.log('Sending to wallet');
         closeSendModal();
     };
 
     const handleSendToBank = () => {
-        // Handle sending to bank - you would navigate to a bank form screen
         console.log('Sending to bank account');
         closeSendModal();
     };
+
+    // Receive action handlers
+    const handleReceiveToWallet = () => {
+        console.log('Receiving to wallet');
+        closeReceiveModal();
+    };
+
+    const handleReceiveFromBank = () => {
+        console.log('Receiving from bank account');
+        closeReceiveModal();
+    };
+
+    // Define options for Send modal
+    const sendOptions: ActionOption[] = [
+        {
+            key: 'wallet',
+            title: 'To Wallet',
+            description: 'Send assets to wallet address',
+            icon: walletIcon,
+            onPress: handleSendToWallet
+        },
+        {
+            key: 'bank',
+            title: 'To Bank Account',
+            description: 'Send USDC to Bank Account',
+            icon: bankIcon,
+            onPress: handleSendToBank
+        }
+    ];
+
+    // Define options for Receive modal
+    const receiveOptions: ActionOption[] = [
+        {
+            key: 'wallet',
+            title: 'Onchain',
+            description: 'Receive via wallet address',
+            icon: walletIcon,
+            onPress: handleReceiveToWallet
+        },
+        {
+            key: 'bank',
+            title: 'Bank',
+            description: 'Receive via bank transfer',
+            icon: bankIcon,
+            onPress: handleReceiveFromBank
+        }
+    ];
 
     // Explicitly type the actions array to ensure icon is a valid Ionicons name
     const actions: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void }[] = [
         {
             icon: 'add-outline',
             label: 'Add Money',
-            onPress: () => { /* handle add money */ },
+            onPress: openReceiveModal,
         },
         {
             icon: 'arrow-forward-outline',
@@ -76,11 +125,20 @@ export default function HomeScreen() {
                 </View>
             )}
 
-            <SendMoneyModal
+            {/* Send Money Modal */}
+            <ActionModal
                 visible={isSendModalVisible}
                 onClose={closeSendModal}
-                onSendToWallet={handleSendToWallet}
-                onSendToBank={handleSendToBank}
+                title="Send"
+                options={sendOptions}
+            />
+
+            {/* Receive Money Modal */}
+            <ActionModal
+                visible={isReceiveModalVisible}
+                onClose={closeReceiveModal}
+                title="Receive"
+                options={receiveOptions}
             />
         </ThemedScreen>
     );
