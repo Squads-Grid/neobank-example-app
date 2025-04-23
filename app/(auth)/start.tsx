@@ -24,13 +24,13 @@ export function StartScreen() {
                 <View style={styles.buttonContainer}>
                     <ThemedScreenButton
                         title="Login"
-                        onPress={() => router.push('/login')}
+                        onPress={() => router.push('/(auth)/login')}
                         variant="primary"
                         style={styles.button}
                     />
                     <ThemedScreenButton
                         title="Sign up"
-                        onPress={() => router.push('/login')}
+                        onPress={() => router.push('/(auth)/login')}
                         variant="secondary"
                         style={styles.button}
                     />

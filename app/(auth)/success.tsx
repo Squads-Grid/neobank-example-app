@@ -58,27 +58,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingHorizontal: 24,
     },
-    iconContainer: {
-        marginBottom: 24,
-    },
-    checkmarkBorder: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        borderWidth: 3,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    checkmark: {
-        fontSize: 40,
-        fontWeight: 'bold',
-    },
-    title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        marginBottom: 8,
-        textAlign: 'center',
-    },
     subtitle: {
         fontSize: 16,
         opacity: 0.8,
