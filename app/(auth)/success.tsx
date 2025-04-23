@@ -1,14 +1,15 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
-import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 import { StarburstFull } from '@/components/ui/StarburstFull';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Spacing } from '@/constants/Spacing';
-export default function SuccessScreen() {
+import { withScreenTheme } from '@/components/withScreenTheme';
+
+export function SuccessScreen() {
     const { primaryColor } = useScreenTheme();
 
     const handleContinue = () => {
@@ -34,6 +35,12 @@ export default function SuccessScreen() {
         </SafeAreaView>
     );
 }
+
+export default withScreenTheme(SuccessScreen, {
+    backgroundColor: '#000000',
+    textColor: '#FFFFFF',
+    primaryColor: '#FFFFFF'
+});
 
 const styles = StyleSheet.create({
     container: {
@@ -77,9 +84,5 @@ const styles = StyleSheet.create({
         opacity: 0.8,
         marginBottom: 32,
         textAlign: 'center',
-    },
-    button: {
-        width: '100%',
-        maxWidth: 280,
     },
 }); 
