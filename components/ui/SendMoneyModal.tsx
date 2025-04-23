@@ -4,6 +4,8 @@ import { BlurView } from 'expo-blur';
 import { ThemedScreenText } from './ThemedScreenText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
+import { CircleButton } from './CircleButton';
+import { Ionicons } from '@expo/vector-icons';
 
 interface SendMoneyModalProps {
     visible: boolean;
@@ -16,9 +18,11 @@ export function SendMoneyModal({ visible, onClose, onSendToWallet, onSendToBank 
     const backgroundColor = useThemeColor({}, 'background');
     const textColor = useThemeColor({}, 'text');
     const borderColor = useThemeColor({}, 'border');
+    const primaryColor = useThemeColor({}, 'primary');
 
     const bankIcon = require('@/assets/icons/bank.png');
     const walletIcon = require('@/assets/icons/wallet.png');
+    const arrowBackground = "#D5D5D5";
 
     return (
         <Modal
@@ -45,7 +49,15 @@ export function SendMoneyModal({ visible, onClose, onSendToWallet, onSendToBank 
                             <ThemedScreenText type="default" style={styles.topText}>To Wallet</ThemedScreenText>
                             <ThemedScreenText type="default" style={styles.subText}>Send assets to wallet address</ThemedScreenText>
                         </View>
-                        <Text style={[styles.arrow, { color: textColor }]}>›</Text>
+                        <View style={styles.arrowContainer}>
+                            <CircleButton
+                                icon="chevron-forward"
+                                label=""
+                                onPress={onSendToWallet}
+                                size={24}
+                                backgroundColor={arrowBackground}
+                            />
+                        </View>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -54,10 +66,18 @@ export function SendMoneyModal({ visible, onClose, onSendToWallet, onSendToBank 
                     >
                         <Image source={bankIcon} style={styles.icon} />
                         <View style={styles.optionTextContainer}>
-                            <ThemedScreenText type="default" style={styles.topText}> To Bank Account</ThemedScreenText>
+                            <ThemedScreenText type="default" style={styles.topText}>To Bank Account</ThemedScreenText>
                             <ThemedScreenText type="default" style={styles.subText}>Send USDC to Bank Account</ThemedScreenText>
                         </View>
-                        <Text style={[styles.arrow, { color: textColor }]}>›</Text>
+                        <View style={styles.arrowContainer}>
+                            <CircleButton
+                                icon="chevron-forward"
+                                label=""
+                                onPress={onSendToBank}
+                                size={24}
+                                backgroundColor={arrowBackground}
+                            />
+                        </View>
                     </TouchableOpacity>
                 </View>
             </BlurView >
@@ -124,9 +144,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         lineHeight: 14,
     },
-    arrow: {
-        fontSize: 24,
-        fontWeight: '300',
+    arrowContainer: {
         marginLeft: Spacing.sm,
     },
 }); 
