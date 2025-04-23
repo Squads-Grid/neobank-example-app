@@ -3,6 +3,7 @@ import { View, StyleSheet, ViewStyle } from 'react-native';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { Spacing } from '@/constants/Spacing';
 
 interface ThemedScreenProps {
     children: React.ReactNode;
@@ -28,6 +29,6 @@ export function ThemedScreen({ children, style }: ThemedScreenProps) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        padding: Spacing.md,
     },
 });

@@ -52,17 +52,13 @@ export function LoginForm({ onSubmit, isLoading = false, style, error }: LoginFo
                         </>
                     ) : (
                         <>
-                            <ThemedScreenText style={{ textAlign: 'center', marginBottom: Spacing.lg, maxWidth: 300, alignSelf: 'center' }}>
+                            <ThemedScreenText style={styles.text}>
                                 Enter the code from your e-mail
                             </ThemedScreenText>
                             <ScreenVerificationCodeInput onCodeComplete={handleCodeComplete} />
                             {error && (
                                 <ThemedScreenText
-                                    style={{
-                                        textAlign: 'center',
-                                        marginTop: Spacing.md,
-                                        fontWeight: 'bold',
-                                    }}
+                                    style={styles.errorText}
                                 >
                                     {error}
                                 </ThemedScreenText>
@@ -81,5 +77,16 @@ const styles = StyleSheet.create({
     },
     themedViewInner: {
         paddingHorizontal: Spacing.md,
+    },
+    text: {
+        textAlign: 'center',
+        marginBottom: Spacing.lg,
+        maxWidth: 300,
+        alignSelf: 'center',
+    },
+    errorText: {
+        textAlign: 'center',
+        marginTop: Spacing.md,
+        fontWeight: 'bold',
     }
 });

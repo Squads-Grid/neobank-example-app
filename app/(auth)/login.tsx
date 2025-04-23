@@ -10,6 +10,7 @@ import { ThemedScreenActionText } from '@/components/ui/ThemedScreenActionText';
 import { useResendTimer } from '@/hooks/useResendTimer';
 import { StarburstBackground } from '@/components/ui/StarburstBackground';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
+import { Spacing } from '@/constants/Spacing';
 
 // Mock verification code
 const MOCK_VERIFICATION_CODE = '123123';
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
     headerContainer: {
         justifyContent: 'flex-start',
         alignItems: 'center',
-        marginBottom: 72,
+        marginBottom: Spacing.lg * 3,
     },
     actionContainer: {
         flex: 0.1,

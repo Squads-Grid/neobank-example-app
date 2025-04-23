@@ -8,6 +8,7 @@ import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Spacing } from '@/constants/Spacing';
 import { withScreenTheme } from '@/components/withScreenTheme';
+import { ThemedScreen } from '@/components/ui/ThemedScreen';
 
 export function SuccessScreen() {
     const { primaryColor } = useScreenTheme();
@@ -18,7 +19,7 @@ export function SuccessScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <ThemedScreen style={styles.container}>
             <StarburstFull
                 primaryColor="#00FF80"
                 opacity={0.7}
@@ -32,7 +33,7 @@ export function SuccessScreen() {
                 <IconSymbol name="checkmark.circle" size={80} color={primaryColor} style={{ marginBottom: Spacing.md }} />
                 <ThemedScreenText style={styles.subtitle}>All done!</ThemedScreenText>
             </TouchableOpacity>
-        </SafeAreaView>
+        </ThemedScreen>
     );
 }
 
@@ -45,7 +46,6 @@ export default withScreenTheme(SuccessScreen, {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000',
     },
     background: {
         position: 'absolute',
@@ -56,12 +56,12 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 24,
+        paddingHorizontal: Spacing.lg,
     },
     subtitle: {
         fontSize: 16,
         opacity: 0.8,
-        marginBottom: 32,
+        marginBottom: Spacing.xl,
         textAlign: 'center',
     },
 }); 
