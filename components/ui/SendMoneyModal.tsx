@@ -6,6 +6,8 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
 import { CircleButton } from './CircleButton';
 import { Ionicons } from '@expo/vector-icons';
+import tinycolor from 'tinycolor2';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 interface SendMoneyModalProps {
     visible: boolean;
@@ -19,10 +21,16 @@ export function SendMoneyModal({ visible, onClose, onSendToWallet, onSendToBank 
     const textColor = useThemeColor({}, 'text');
     const borderColor = useThemeColor({}, 'border');
     const primaryColor = useThemeColor({}, 'primary');
+    const colorScheme = useColorScheme() || 'light';
 
     const bankIcon = require('@/assets/icons/bank.png');
     const walletIcon = require('@/assets/icons/wallet.png');
     const arrowBackground = "#D5D5D5";
+
+    // Create dynamic overlay background color based on theme
+    const bgBase = colorScheme === 'dark' ? '#000000' : '#FFFFFF';
+    const overlayBackgroundColor = colorScheme === 'dark' ? 'rgba(51, 51, 51, 0.4)' : 'rgba(177, 177, 177, 0.40)';
+    const blurTint = colorScheme === 'dark' ? 'dark' : 'light';
 
     return (
         <Modal
@@ -31,7 +39,7 @@ export function SendMoneyModal({ visible, onClose, onSendToWallet, onSendToBank 
             animationType="fade"
             onRequestClose={onClose}
         >
-            <BlurView intensity={10} style={styles.overlay} tint="dark">
+            <BlurView intensity={10} style={[styles.overlay, { backgroundColor: overlayBackgroundColor }]} tint={blurTint}>
                 <View style={[styles.modalContainer, { backgroundColor }]}>
                     <View style={styles.header}>
                         <ThemedScreenText type="defaultSemiBold" style={styles.title}>Send</ThemedScreenText>
@@ -51,7 +59,7 @@ export function SendMoneyModal({ visible, onClose, onSendToWallet, onSendToBank 
                         </View>
                         <View style={styles.arrowContainer}>
                             <CircleButton
-                                icon="chevron-forward"
+                                icon="arrow-forward-outline"
                                 label=""
                                 onPress={onSendToWallet}
                                 size={24}
@@ -71,7 +79,7 @@ export function SendMoneyModal({ visible, onClose, onSendToWallet, onSendToBank 
                         </View>
                         <View style={styles.arrowContainer}>
                             <CircleButton
-                                icon="chevron-forward"
+                                icon="arrow-forward-outline"
                                 label=""
                                 onPress={onSendToBank}
                                 size={24}
@@ -90,7 +98,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-end',
         alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.6)',
     },
     modalContainer: {
         width: '90%',
