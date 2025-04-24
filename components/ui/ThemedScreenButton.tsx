@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { Spacing } from '@/constants/Spacing';
+import tinycolor from 'tinycolor2';
 
 interface ThemedScreenButtonProps {
     onPress: () => void;
@@ -21,6 +22,7 @@ export function ThemedScreenButton({
     disabled = false,
 }: ThemedScreenButtonProps) {
     const { primaryColor, backgroundColor, textColor } = useScreenTheme();
+    const primaryColorInstance = tinycolor(primaryColor);
 
     const getButtonStyle = (): ViewStyle => {
         switch (variant) {
@@ -31,17 +33,18 @@ export function ThemedScreenButton({
                 };
             case 'secondary':
                 return {
-                    backgroundColor: 'transparent',
-                    borderColor: primaryColor,
+                    backgroundColor: primaryColorInstance.setAlpha(0.1).toRgbString(),
+                    borderColor: primaryColorInstance.setAlpha(0.4).toRgbString(),
                 };
             case 'outline':
                 return {
                     backgroundColor: 'transparent',
                     borderColor: textColor,
+                    borderWidth: 1,
                 };
             default:
                 return {
-                    backgroundColor: primaryColor,
+                    backgroundColor: 'red',
                     borderColor: primaryColor,
                 };
         }
@@ -52,6 +55,7 @@ export function ThemedScreenButton({
             case 'primary':
                 return backgroundColor;
             case 'secondary':
+                return textColor;
             case 'outline':
                 return textColor;
             default:
@@ -64,7 +68,6 @@ export function ThemedScreenButton({
             style={[
                 styles.button,
                 getButtonStyle(),
-                // disabled && styles.disabled,
                 style,
             ]}
             onPress={onPress}
@@ -88,7 +91,6 @@ const styles = StyleSheet.create({
     button: {
         padding: Spacing.md,
         borderRadius: 42,
-        borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',

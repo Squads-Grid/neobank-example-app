@@ -23,10 +23,10 @@ export function StartScreen() {
             <ScreenHeaderText title="Bright" subtitle="Your finances, upgraded" />
             <View>
                 <ButtonGroup
-                    primaryTitle="Login"
-                    primaryOnPress={() => router.push('/(auth)/login')}
-                    secondaryTitle="Sign up"
-                    secondaryOnPress={() => router.push('/(auth)/login')}
+                    leftTitle="Login"
+                    leftOnPress={() => router.push('/(auth)/login')}
+                    rightTitle="Sign up"
+                    rightOnPress={() => router.push('/(auth)/login')}
                 />
             </View>
         </ThemedScreen>

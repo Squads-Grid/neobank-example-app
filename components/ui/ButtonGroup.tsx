@@ -3,36 +3,37 @@ import { View, StyleSheet } from 'react-native';
 import { ThemedScreenButton } from './ThemedScreenButton';
 
 interface ButtonGroupProps {
-    primaryTitle: string;
-    primaryOnPress: () => void;
-    secondaryTitle: string;
-    secondaryOnPress: () => void;
-    primaryVariant?: 'primary' | 'secondary';
-    secondaryVariant?: 'primary' | 'secondary';
+    leftTitle: string;
+    leftOnPress: () => void;
+    rightTitle: string;
+    rightOnPress: () => void;
+    leftVariant?: 'primary' | 'secondary' | 'outline';
+    rightVariant?: 'primary' | 'secondary' | 'outline';
     style?: any;
 }
 
 export function ButtonGroup({
-    primaryTitle,
-    primaryOnPress,
-    secondaryTitle,
-    secondaryOnPress,
-    primaryVariant = 'primary',
-    secondaryVariant = 'secondary',
+    leftTitle,
+    leftOnPress,
+    rightTitle,
+    rightOnPress,
+    leftVariant = 'primary',
+    rightVariant = 'secondary',
     style,
 }: ButtonGroupProps) {
+
     return (
         <View style={[styles.buttonContainer, style]}>
             <ThemedScreenButton
-                title={primaryTitle}
-                onPress={primaryOnPress}
-                variant={primaryVariant}
+                title={leftTitle}
+                onPress={leftOnPress}
+                variant={leftVariant}
                 style={styles.button}
             />
             <ThemedScreenButton
-                title={secondaryTitle}
-                onPress={secondaryOnPress}
-                variant={secondaryVariant}
+                title={rightTitle}
+                onPress={rightOnPress}
+                variant={rightVariant}
                 style={styles.button}
             />
         </View>

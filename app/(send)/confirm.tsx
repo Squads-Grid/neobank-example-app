@@ -2,13 +2,13 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ThemedScreen } from '@/components/ui/ThemedScreen';
 import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
-import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Spacing } from '@/constants/Spacing';
 import { formatAmount } from '@/utils/helper';
 import { AppIcon, AppIconProps } from '@/components/ui/AppIcon';
 import { IconSymbol, IconSymbolName } from '@/components/ui/IconSymbol';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { ButtonGroup } from '@/components/ui/ButtonGroup';
 
 export default function ConfirmScreen() {
     const textColor = useThemeColor({}, 'text');
@@ -28,6 +28,15 @@ export default function ConfirmScreen() {
         // Navigate to success screen
         router.push({
             pathname: '/success',
+            params: { amount, type, title }
+        });
+    };
+
+    const handleCancel = () => {
+
+        // Navigate to home
+        router.push({
+            pathname: '/(tabs)',
             params: { amount, type, title }
         });
     };
@@ -58,10 +67,15 @@ export default function ConfirmScreen() {
                     {renderInfo('network', 'Network fee', '0.0004 SOL')}
                 </View>
 
-                <ThemedScreenButton
-                    title="Confirm"
-                    onPress={handleConfirm}
+                <ButtonGroup
+                    leftTitle='Cancel'
+                    leftVariant='secondary'
+                    rightTitle='Confirm'
+                    rightVariant='primary'
+                    leftOnPress={handleCancel}
+                    rightOnPress={handleConfirm}
                 />
+
             </View>
         </ThemedScreen>
     );
