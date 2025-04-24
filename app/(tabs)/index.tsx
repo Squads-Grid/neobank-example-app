@@ -14,7 +14,7 @@ import { ActionModal } from '@/components/ui/ActionModal';
 import { ModalOptionsList, ActionOption } from '@/components/ui/ModalOptionsList';
 import QRCode from 'react-native-qrcode-svg';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { Size } from '@/constants/Typography';
+import { Height, Size, Weight } from '@/constants/Typography';
 
 const placeholder = require('@/assets/images/no-txn.png');
 const bankIcon = require('@/assets/icons/bank.png');
@@ -214,9 +214,9 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
     qrCodeCopyText: {
-        color: 'white',
         fontSize: Size.regular,
-        fontWeight: '600',
+        fontWeight: Weight.semiBoldWeight,
+        color: 'white',
         textAlign: 'center',
         marginLeft: Spacing.xxs
     },
@@ -234,17 +234,18 @@ const styles = StyleSheet.create({
         opacity: 0.4
     },
     qrCodeSupportText: {
-        color: 'white',
         fontSize: Size.tiny,
+        fontWeight: Weight.regularWeight,
+        lineHeight: Size.tiny * Height.lineHeightMedium,
+        color: 'white',
         textAlign: 'center',
-        lineHeight: 19.2,
         marginLeft: Spacing.xxs
     },
     qrCodeAddress: {
-        color: 'white',
         fontSize: Size.medium,
+        lineHeight: Size.medium * Height.lineHeightMedium,
+        color: 'white',
         textAlign: 'center',
-        lineHeight: 19.2,
         paddingHorizontal: 32,
         marginTop: Spacing.lg
     },
@@ -256,27 +257,28 @@ const styles = StyleSheet.create({
     },
     headline: {
         fontSize: Size.medium,
+        fontWeight: Weight.mediumWeight,
+        lineHeight: Size.medium * Height.lineHeightNormal,
         opacity: 0.3,
         textAlign: 'center',
-        lineHeight: 19.2,
         marginTop: Spacing.xl,
     },
     balanceTextStyle: {
         fontSize: Size.giant,
-        lineHeight: 67.2,
+        fontWeight: Weight.boldWeight,
+        lineHeight: Size.giant * Height.lineHeightNormal,
         marginTop: Spacing.sm,
         marginBottom: Spacing.lg,
         textAlign: 'center',
-        fontWeight: 'bold',
     },
     placeholderImage: {
         height: 46,
         resizeMode: 'contain',
     },
     placeholderText: {
+        fontSize: Size.regular,
         marginTop: Spacing.lg,
         textAlign: 'center',
-        fontSize: Size.regular,
         opacity: 0.23,
     },
     qrCodeContainer: {
@@ -286,7 +288,7 @@ const styles = StyleSheet.create({
     },
     qrCodeHeadline: {
         fontSize: Size.xlarge,
-        fontWeight: '600',
+        fontWeight: Weight.semiBoldWeight,
         textAlign: 'center',
         marginBottom: 31
     }

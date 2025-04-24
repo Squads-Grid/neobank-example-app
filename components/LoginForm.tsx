@@ -6,6 +6,7 @@ import { Spacing } from '@/constants/Spacing';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ThemedScreenTextInput } from '@/components/ui/ThemedScreenTextInput';
 import { ThemedScreenText } from './ui/ThemedScreenText';
+import { Weight } from '@/constants/Typography';
 
 interface LoginFormProps {
     onSubmit: (email: string, code?: string) => void;
@@ -89,6 +90,6 @@ const styles = StyleSheet.create({
     errorText: {
         textAlign: 'center',
         marginTop: Spacing.md,
-        fontWeight: 'bold',
+        fontWeight: Weight.semiBoldWeight,
     }
 });

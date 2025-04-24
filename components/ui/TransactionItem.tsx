@@ -4,7 +4,7 @@ import { ThemedScreenText } from './ThemedScreenText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
 import { AppIcon } from './AppIcon';
-import { Size } from '@/constants/Typography';
+import { Height, Size, Weight } from '@/constants/Typography';
 interface TransactionItemProps {
     type: string;
     date: string;
@@ -74,14 +74,16 @@ const styles = StyleSheet.create({
         lineHeight: 14,
     },
     date: {
-        opacity: 0.6,
         fontSize: Size.tiny,
-        lineHeight: 12,
+        fontWeight: Weight.mediumWeight,
+        lineHeight: Size.tiny * Height.lineHeightTight,
+        opacity: 0.6,
+
     },
     address: {
         fontSize: Size.tiny,
-        lineHeight: 12,
-        fontWeight: '500',
+        fontWeight: Weight.mediumWeight,
+        lineHeight: Size.tiny * Height.lineHeightTight,
     },
     amount: {
         fontSize: Size.regular,

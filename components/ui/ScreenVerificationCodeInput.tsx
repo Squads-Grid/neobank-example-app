@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { Spacing } from '@/constants/Spacing';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
-import { Size } from '@/constants/Typography';
+import { Size, Weight } from '@/constants/Typography';
 
 interface ScreenVerificationCodeInputProps {
     onCodeComplete: (code: string) => void;
@@ -74,12 +74,12 @@ const styles = StyleSheet.create({
         marginBottom: Spacing.lg,
     },
     input: {
+        fontSize: Size.xlarge,
+        fontWeight: Weight.semiBoldWeight,
         width: 45,
         height: 45,
         borderRadius: 12,
         textAlign: 'center',
-        fontSize: Size.xlarge,
-        fontWeight: 'bold',
         borderWidth: 1,
     },
 }); 

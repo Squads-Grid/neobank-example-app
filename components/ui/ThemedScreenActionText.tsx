@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, TextProps, StyleSheet, TouchableOpacity } from 'react-native';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
-import { Size } from '@/constants/Typography';
+import { Size, Weight } from '@/constants/Typography';
 interface ThemedScreenActionTextProps extends Omit<TextProps, 'style'> {
     onPress?: () => void;
     disabled?: boolean;
@@ -58,6 +58,6 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: Size.medium,
-        fontWeight: '500',
+        fontWeight: Weight.mediumWeight,
     },
 }); 

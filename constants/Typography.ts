@@ -12,14 +12,14 @@ export const Size = {
     xgiant: 65,      // Send balance
 } as const;
 
-export const LineHeight = {
+export const Height = {
     // Line heights
-    lineHeightTight: 1.15,    // For headlines and large text
-    lineHeightNormal: 1.4,    // For regular text
-    lineHeightRelaxed: 1.6,   // For descriptions
+    lineHeightTight: 1,
+    lineHeightNormal: 1.2,
+    lineHeightMedium: 1.3,
 } as const;
 
-export const FontWeight = {
+export const Weight = {
     // Font weights
     regularWeight: '400',
     mediumWeight: '500',

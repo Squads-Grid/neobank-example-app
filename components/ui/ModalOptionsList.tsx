@@ -3,7 +3,7 @@ import React from 'react';
 import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { ThemedScreenText } from './ThemedScreenText';
 import { CircleButton } from './CircleButton';
-import { Size } from '@/constants/Typography';
+import { Size, Height, Weight } from '@/constants/Typography';
 
 // Define interface for each option (like wallet or bank)
 export interface ActionOption {
@@ -65,13 +65,14 @@ const styles = StyleSheet.create({
     },
     subText: {
         fontSize: Size.tiny,
-        lineHeight: 12,
+        fontWeight: Weight.mediumWeight,
+        lineHeight: Size.tiny * Height.lineHeightMedium,
         opacity: 0.4,
     },
     topText: {
         fontSize: Size.regular,
-        fontWeight: '600',
-        lineHeight: 14,
+        fontWeight: Weight.semiBoldWeight,
+        lineHeight: Size.regular * Height.lineHeightNormal,
     },
     arrowContainer: {
         marginLeft: Spacing.sm,

@@ -8,6 +8,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Spacing } from '@/constants/Spacing';
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen } from '@/components/ui/ThemedScreen';
+import { Size } from '@/constants/Typography';
 
 export function SuccessScreen() {
     const { primaryColor } = useScreenTheme();
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: Spacing.lg,
     },
     subtitle: {
-        fontSize: 16,
+        fontSize: Size.medium,
         opacity: 0.8,
         marginBottom: Spacing.xl,
         textAlign: 'center',

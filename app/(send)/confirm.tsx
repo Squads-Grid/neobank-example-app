@@ -8,7 +8,7 @@ import { formatAmount } from '@/utils/helper';
 import { IconSymbol, IconSymbolName } from '@/components/ui/IconSymbol';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ButtonGroup } from '@/components/ui/ButtonGroup';
-import { Size } from '@/constants/Typography';
+import { Height, Size, Weight } from '@/constants/Typography';
 
 export default function ConfirmScreen() {
     const textColor = useThemeColor({}, 'text');
@@ -94,8 +94,8 @@ const styles = StyleSheet.create({
     },
     amountText: {
         fontSize: Size.jumbo,
-        fontWeight: '700',
-        lineHeight: 40,
+        fontWeight: Weight.boldWeight,
+        lineHeight: Size.jumbo * Height.lineHeightNormal,
     },
     labelContainer: {
         flexDirection: 'row',
@@ -106,13 +106,13 @@ const styles = StyleSheet.create({
     },
     labelText: {
         fontSize: Size.regular,
-        fontWeight: '500',
-        lineHeight: 18.2,
+        fontWeight: Weight.mediumWeight,
+        lineHeight: Size.regular * Height.lineHeightMedium,
     },
     infoText: {
         fontSize: Size.mediumLarge,
-        fontWeight: '600',
-        lineHeight: 24,
+        fontWeight: Weight.semiBoldWeight,
+        lineHeight: Size.mediumLarge * Height.lineHeightMedium,
     },
     label: {
         fontSize: Size.regular,

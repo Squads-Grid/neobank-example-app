@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
-import { Size } from '@/constants/Typography';
+import { Size, Weight } from '@/constants/Typography';
 
 interface CircleButtonProps {
     icon: keyof typeof Ionicons.glyphMap;
@@ -77,6 +77,6 @@ const styles = StyleSheet.create({
     label: {
         marginTop: Spacing.xs,
         fontSize: Size.tiny,
-        fontWeight: '500',
+        fontWeight: Weight.mediumWeight,
     },
 }); 

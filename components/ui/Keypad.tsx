@@ -3,6 +3,7 @@ import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
 import { Ionicons } from '@expo/vector-icons';
+import { Weight } from '@/constants/Typography';
 
 interface KeypadProps {
     onKeyPress: (key: string) => void;
@@ -70,6 +71,6 @@ const styles = StyleSheet.create({
     },
     keyText: {
         fontSize: 26,
-        fontWeight: '600',
+        fontWeight: Weight.semiBoldWeight,
     },
 }); 

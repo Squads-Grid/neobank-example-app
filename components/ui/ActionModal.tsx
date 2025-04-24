@@ -8,6 +8,8 @@ import { CircleButton } from './CircleButton';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { StarburstModalBackground } from './StarburstModalBackground';
+import { Weight } from '@/constants/Typography';
+import { Size } from '@/constants/Typography';
 
 // Main component props
 interface ActionModalProps {
@@ -98,8 +100,8 @@ const styles = StyleSheet.create({
         zIndex: 1,
     },
     title: {
-        fontSize: 18,
-        fontWeight: '600',
+        fontSize: Size.large,
+        fontWeight: Weight.semiBoldWeight,
     },
     closeButton: {
         opacity: 0.25,
