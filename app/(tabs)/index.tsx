@@ -10,7 +10,8 @@ import { TransactionList } from '@/components/ui/TransactionList';
 import { ThemedScreen } from '@/components/ui/ThemedScreen';
 import { Transaction, TransactionGroup } from '@/types/Transaction';
 import { Image } from 'react-native';
-import { ActionModal, ActionOption } from '@/components/ui/ActionModal';
+import { ActionModal } from '@/components/ui/ActionModal';
+import { ModalOptionsList, ActionOption } from '@/components/ui/ModalOptionsList';
 
 const placeholder = require('@/assets/images/no-txn.png');
 const bankIcon = require('@/assets/icons/bank.png');
@@ -155,16 +156,18 @@ export default function HomeScreen() {
                 visible={isSendModalVisible}
                 onClose={closeSendModal}
                 title="Send"
-                options={sendOptions}
-            />
+            >
+                <ModalOptionsList options={sendOptions} />
+            </ActionModal>
 
             {/* Receive Money Modal */}
             <ActionModal
                 visible={isReceiveModalVisible}
                 onClose={closeReceiveModal}
                 title="Receive"
-                options={receiveOptions}
-            />
+            >
+                <ModalOptionsList options={receiveOptions} />
+            </ActionModal>
         </ThemedScreen>
     );
 }
