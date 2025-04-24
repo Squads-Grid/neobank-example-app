@@ -154,7 +154,7 @@ export default function AmountScreen() {
                 {step === 1 && renderKeypad()}
                 <View style={styles.buttonContainer}>
                     <ThemedScreenButton
-                        title={step === 1 ? "Continue" : "Confirm"}
+                        title="Continue"
                         onPress={handleContinue}
                     />
                 </View>

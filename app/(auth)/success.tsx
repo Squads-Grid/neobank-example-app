@@ -3,7 +3,6 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
 import { StarburstFull } from '@/components/ui/StarburstFull';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Spacing } from '@/constants/Spacing';

@@ -70,16 +70,12 @@ export default function ConfirmScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // alignItems: 'center',
-        // justifyContent: 'space-between',
         paddingHorizontal: Spacing.lg,
         paddingTop: Spacing.xxl,
         paddingBottom: Spacing.xl,
     },
     content: {
         flex: 1,
-        // justifyContent: 'center',
-        // alignItems: 'center',
         gap: Spacing.lg,
     },
     amountText: {
