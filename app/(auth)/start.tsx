@@ -6,6 +6,7 @@ import { Spacing } from '@/constants/Spacing';
 import { ScreenHeaderText } from '@/components/ui/ScreenHeaderText';
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen } from '@/components/ui/ThemedScreen';
+import { ButtonGroup } from '../../components/ui/ButtonGroup';
 
 const starburstImage = require('@/assets/images/starburst.png');
 
@@ -21,20 +22,12 @@ export function StartScreen() {
             />
             <ScreenHeaderText title="Bright" subtitle="Your finances, upgraded" />
             <View>
-                <View style={styles.buttonContainer}>
-                    <ThemedScreenButton
-                        title="Login"
-                        onPress={() => router.push('/(auth)/login')}
-                        variant="primary"
-                        style={styles.button}
-                    />
-                    <ThemedScreenButton
-                        title="Sign up"
-                        onPress={() => router.push('/(auth)/login')}
-                        variant="secondary"
-                        style={styles.button}
-                    />
-                </View>
+                <ButtonGroup
+                    primaryTitle="Login"
+                    primaryOnPress={() => router.push('/(auth)/login')}
+                    secondaryTitle="Sign up"
+                    secondaryOnPress={() => router.push('/(auth)/login')}
+                />
             </View>
         </ThemedScreen>
     );
@@ -47,6 +40,17 @@ export default withScreenTheme(StartScreen, {
 });
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    starburst: {
+        position: 'absolute',
+        top: -100,
+        right: -100,
+        width: 300,
+        height: 300,
+        opacity: 0.1,
+    },
     backgroundImage: {
         position: 'absolute',
         left: '-18%',
