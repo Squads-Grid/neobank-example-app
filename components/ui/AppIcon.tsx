@@ -10,7 +10,7 @@ const ICONS = {
 
 export type IconName = keyof typeof ICONS;
 
-interface AppIconProps {
+export interface AppIconProps {
     name: IconName;
     size?: number;
     style?: ImageStyle;

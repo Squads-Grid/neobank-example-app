@@ -8,6 +8,17 @@ import { Spacing } from '@/constants/Spacing';
 export default function SendLayout() {
     const textColor = useThemeColor({}, 'text');
 
+    const getHeaderTitle = (title: string) => {
+        return (
+            <View style={styles.headerStyle}>
+                <ThemedScreenText type="defaultSemiBold" style={styles.headerTitle}>
+                    {title}
+                </ThemedScreenText>
+                <AppIcon name="sent" size={24} />
+            </View>
+        )
+    }
+
     return (
         <Stack
             screenOptions={{
@@ -21,22 +32,17 @@ export default function SendLayout() {
                 name="amount"
                 options={{
                     title: '',
-                    headerTitle: () => (
-                        <View style={styles.headerStyle}>
-                            <ThemedScreenText type="defaultSemiBold" style={styles.headerTitle}>
-                                Send
-                            </ThemedScreenText>
-                            <AppIcon name="sent" size={24} />
-                        </View>
-                    ),
+                    headerTitle: () => getHeaderTitle('Send'),
                 }}
             />
-            {/* <Stack.Screen
+            <Stack.Screen
                 name="confirm"
                 options={{
-                    title: 'Confirm',
+                    title: '',
+                    headerTitle: () => getHeaderTitle('Confirm'),
                 }}
             />
+            {/*
             <Stack.Screen
                 name="success"
                 options={{

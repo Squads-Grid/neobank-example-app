@@ -9,6 +9,7 @@ import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
 import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 import { ThemedScreenTextInput } from '@/components/ui/ThemedScreenTextInput';
 import * as Clipboard from 'expo-clipboard';
+import { formatAmount } from '@/utils/helper';
 
 
 
@@ -28,7 +29,7 @@ export default function AmountScreen() {
         },
         {
             index: 2,
-            label: 'Enter Destination',
+            label: 'Enter destination',
             render: () => renderTextInputs(),
         }
     ]
@@ -99,19 +100,6 @@ export default function AmountScreen() {
         }
     };
 
-    const formattedAmount = () => {
-        try {
-            return parseFloat(amount).toLocaleString('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: amount.includes('.') ? 2 : 0,
-                maximumFractionDigits: 2
-            });
-        } catch (e) {
-            return '$0';
-        }
-    };
-
     const renderKeypad = () => {
         return (
 
@@ -125,7 +113,7 @@ export default function AmountScreen() {
     const renderAmount = () => {
         return (
             <Text style={[styles.amountText, { color: textColor }]}>
-                {formattedAmount()}
+                {formatAmount(amount)}
             </Text>
         )
     }
