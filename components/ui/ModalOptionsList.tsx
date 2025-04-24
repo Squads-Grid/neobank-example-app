@@ -9,7 +9,7 @@ export interface ActionOption {
     key: string;
     title: string;
     description: string;
-    icon: any; // Image source
+    icon: any;
     onPress: () => void;
 }
 

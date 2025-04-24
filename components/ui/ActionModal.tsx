@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, StyleSheet, View, TouchableOpacity, Image, Text } from 'react-native';
+import { Modal, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { ThemedScreenText } from './ThemedScreenText';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -7,6 +7,7 @@ import { Spacing } from '@/constants/Spacing';
 import { CircleButton } from './CircleButton';
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { StarburstModalBackground } from './StarburstModalBackground';
 
 // Main component props
 interface ActionModalProps {
@@ -14,9 +15,18 @@ interface ActionModalProps {
     onClose: () => void;
     title?: string;
     children: React.ReactNode;
+    useStarburstModal?: boolean;
+    primaryColor?: string;
 }
 
-export function ActionModal({ visible, onClose, title, children }: ActionModalProps) {
+export function ActionModal({
+    visible,
+    onClose,
+    title = '',
+    children,
+    useStarburstModal = false,
+    primaryColor = '#0080FF'
+}: ActionModalProps) {
     const backgroundColor = useThemeColor({}, 'background');
     const textColor = useThemeColor({}, 'text');
     const colorScheme = useColorScheme() || 'light';
@@ -34,15 +44,21 @@ export function ActionModal({ visible, onClose, title, children }: ActionModalPr
             onRequestClose={onClose}
         >
             <BlurView intensity={30} style={[styles.overlay, { backgroundColor: overlayBackgroundColor }]} tint={blurTint}>
-                <View style={[styles.modalContainer, { backgroundColor }]}>
+                <View style={[styles.modalContainer, { backgroundColor: useStarburstModal ? '#000' : backgroundColor }]}>
+                    {useStarburstModal && (
+                        <View style={styles.backgroundContainer}>
+                            <StarburstModalBackground primaryColor={primaryColor} />
+                        </View>
+                    )}
                     <View style={styles.header}>
-                        {title && <ThemedScreenText type="defaultSemiBold" style={styles.title}>{title}</ThemedScreenText>}
+                        <ThemedScreenText type="defaultSemiBold" style={[styles.title, { color: useStarburstModal ? 'white' : textColor }]}>{title}</ThemedScreenText>
                         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                            <Text style={[styles.closeText, { color: textColor }]}>×</Text>
+                            <Text style={[styles.closeText, { color: useStarburstModal ? 'white' : textColor }]}>×</Text>
                         </TouchableOpacity>
                     </View>
-                    {children}
-
+                    <View style={styles.contentContainer}>
+                        {children}
+                    </View>
                 </View>
             </BlurView>
         </Modal>
@@ -60,12 +76,26 @@ const styles = StyleSheet.create({
         borderRadius: 32,
         padding: Spacing.lg,
         margin: 34,
+        overflow: 'hidden',
+        position: 'relative',
+    },
+    backgroundContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 0,
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: Spacing.sm,
+        zIndex: 1,
+    },
+    contentContainer: {
+        zIndex: 1,
     },
     title: {
         fontSize: 18,
@@ -78,5 +108,4 @@ const styles = StyleSheet.create({
         fontSize: 28,
         fontWeight: '300',
     },
-
 }); 

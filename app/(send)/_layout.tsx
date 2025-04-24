@@ -1,12 +1,15 @@
 import { Stack } from 'expo-router';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
 import { AppIcon } from '@/components/ui/AppIcon';
 import { Spacing } from '@/constants/Spacing';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 export default function SendLayout() {
     const textColor = useThemeColor({}, 'text');
+    const primaryColor = useThemeColor({}, 'primary');
 
     const getHeaderTitle = (title: string) => {
         return (
@@ -19,6 +22,18 @@ export default function SendLayout() {
         )
     }
 
+    const renderBackButton = () => {
+        return (
+            <TouchableOpacity
+                onPress={() => router.back()}
+                style={styles.backButton}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+                <Ionicons name="chevron-back" size={24} color={textColor} />
+            </TouchableOpacity>
+        );
+    };
+
     return (
         <Stack
             screenOptions={{
@@ -26,6 +41,8 @@ export default function SendLayout() {
                 headerShadowVisible: false,
                 headerBackTitle: 'Back',
                 headerTintColor: textColor,
+                headerBackVisible: true,
+                headerLeft: () => renderBackButton(),
             }}
         >
             <Stack.Screen
@@ -61,5 +78,8 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         marginRight: Spacing.sm
+    },
+    backButton: {
+        padding: Spacing.xs,
     }
 });

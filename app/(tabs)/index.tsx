@@ -12,10 +12,14 @@ import { Transaction, TransactionGroup } from '@/types/Transaction';
 import { Image } from 'react-native';
 import { ActionModal } from '@/components/ui/ActionModal';
 import { ModalOptionsList, ActionOption } from '@/components/ui/ModalOptionsList';
+import QRCode from 'react-native-qrcode-svg';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 
 const placeholder = require('@/assets/images/no-txn.png');
 const bankIcon = require('@/assets/icons/bank.png');
 const walletIcon = require('@/assets/icons/wallet.png');
+
+const SOLANA_ADDRESS = "5YNmS1R9nNSCDzb5a7mMJ1dwK9uHeAAF4CerVnZgX37B";
 
 export default function HomeScreen() {
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
@@ -28,6 +32,11 @@ export default function HomeScreen() {
     // Receive modal handlers
     const openReceiveModal = () => setIsReceiveModalVisible(true);
     const closeReceiveModal = () => setIsReceiveModalVisible(false);
+
+    // QR Code modal handlers
+    const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false);
+    const openQRCodeModal = () => setIsQRCodeModalVisible(true);
+    const closeQRCodeModal = () => setIsQRCodeModalVisible(false);
 
     // Send action handlers
     const handleSendToWallet = () => {
@@ -55,17 +64,12 @@ export default function HomeScreen() {
     // Receive action handlers
     const handleReceiveToWallet = () => {
         closeReceiveModal();
-        router.push({
-            pathname: '/(send)/amount',
-            params: {
-                type: 'wallet',
-                title: 'Receive'
-            }
-        });
+        openQRCodeModal();
     };
 
     const handleReceiveFromBank = () => {
         closeReceiveModal();
+
         // router.push({
         //     pathname: '/amount',
         //     params: {
@@ -135,6 +139,18 @@ export default function HomeScreen() {
         }
     ];
 
+    const renderQRCode = () => {
+        return (
+            <QRCode
+                value={SOLANA_ADDRESS}
+                size={250}
+                color="white"
+                backgroundColor="#000033"
+                ecl="H" // Error correction level - H is highest
+            />
+        );
+    }
+
     return (
         <ThemedScreen>
             <ThemedScreenText style={styles.headline}>Home · Balance</ThemedScreenText>
@@ -160,19 +176,77 @@ export default function HomeScreen() {
                 <ModalOptionsList options={sendOptions} />
             </ActionModal>
 
-            {/* Receive Money Modal */}
+            {/* Send Money Modal */}
             <ActionModal
                 visible={isReceiveModalVisible}
-                onClose={closeReceiveModal}
+                onClose={() => {
+                    closeReceiveModal()
+                }}
                 title="Receive"
             >
                 <ModalOptionsList options={receiveOptions} />
+            </ActionModal>
+
+            {/* QR Code Modal */}
+            <ActionModal
+                visible={isQRCodeModalVisible}
+                onClose={closeQRCodeModal}
+                useStarburstModal={true}
+            >
+                <View style={styles.qrCodeContainer}>
+                    <ThemedScreenText style={[styles.qrCodeHeadline, { color: 'white' }]}>Bright</ThemedScreenText>
+                    {renderQRCode()}
+                    <ThemedScreenText style={styles.qrCodeAddress}>{SOLANA_ADDRESS}</ThemedScreenText>
+                    <View style={styles.qrCodeSupportContainer}>
+                        <IconSymbol name="info.circle" size={16} color="white" />
+                        <ThemedScreenText style={styles.qrCodeSupportText}>We don't support NFT.</ThemedScreenText>
+                    </View>
+                    <View style={styles.qrCodeCopyContainer}>
+                        <IconSymbol name="doc.on.doc" size={16} color="white" />
+                        <ThemedScreenText style={styles.qrCodeCopyText}>Copy</ThemedScreenText>
+                    </View>
+                </View>
             </ActionModal>
         </ThemedScreen>
     );
 }
 
 const styles = StyleSheet.create({
+    qrCodeCopyText: {
+        color: 'white',
+        fontSize: 14,
+        fontWeight: '600',
+        textAlign: 'center',
+        marginLeft: Spacing.xxs
+    },
+    qrCodeCopyContainer: {
+        flexDirection: 'row',
+        paddingHorizontal: 32,
+        alignItems: 'center',
+        marginTop: Spacing.md,
+    },
+    qrCodeSupportContainer: {
+        flexDirection: 'row',
+        paddingHorizontal: 32,
+        alignItems: 'center',
+        marginTop: Spacing.lg,
+        opacity: 0.4
+    },
+    qrCodeSupportText: {
+        color: 'white',
+        fontSize: 12,
+        textAlign: 'center',
+        lineHeight: 19.2,
+        marginLeft: Spacing.xxs
+    },
+    qrCodeAddress: {
+        color: 'white',
+        fontSize: 16,
+        textAlign: 'center',
+        lineHeight: 19.2,
+        paddingHorizontal: 32,
+        marginTop: Spacing.lg
+    },
     emptyContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -203,6 +277,17 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 14,
         opacity: 0.23,
+    },
+    qrCodeContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: Spacing.lg,
+    },
+    qrCodeHeadline: {
+        fontSize: 24,
+        fontWeight: '600',
+        textAlign: 'center',
+        marginBottom: 31
     }
 });
 
