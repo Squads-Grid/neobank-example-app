@@ -35,6 +35,7 @@ export function ThemedScreen({
     if (useSafeArea) {
         return (
             <SafeAreaView
+
                 style={{ flex: 1, backgroundColor }}
                 edges={safeAreaEdges}
             >

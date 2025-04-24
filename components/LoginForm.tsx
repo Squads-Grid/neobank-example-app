@@ -4,7 +4,7 @@ import { ThemedView } from '@/components/ui/ThemedView';
 import { ScreenVerificationCodeInput } from '@/components/ui/ScreenVerificationCodeInput';
 import { Spacing } from '@/constants/Spacing';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { ThemedScreenInputWithButton } from '@/components/ui/ThemedScreenInputWithButton';
+import { ThemedScreenTextInput } from '@/components/ui/ThemedScreenTextInput';
 import { ThemedScreenText } from './ui/ThemedScreenText';
 
 interface LoginFormProps {
@@ -39,7 +39,7 @@ export function LoginForm({ onSubmit, isLoading = false, style, error }: LoginFo
                 <ThemedView lightColor="transparent" darkColor="transparent" style={styles.themedViewInner}>
                     {!showCodeInput ? (
                         <>
-                            <ThemedScreenInputWithButton
+                            <ThemedScreenTextInput
                                 placeholder="Enter your e-mail"
                                 value={email}
                                 onChangeText={setEmail}
@@ -47,8 +47,10 @@ export function LoginForm({ onSubmit, isLoading = false, style, error }: LoginFo
                                 autoCapitalize="none"
                                 autoComplete="email"
                                 onButtonPress={handleEmailSubmit}
+                                buttonIcon="arrow-forward"
                                 style={{ marginBottom: Spacing.md }}
                             />
+
                         </>
                     ) : (
                         <>

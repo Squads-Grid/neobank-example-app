@@ -1,42 +1,101 @@
 import React, { forwardRef } from 'react';
-import { TextInput, TextInputProps, StyleSheet, ViewStyle } from 'react-native';
+import { TextInput, TextInputProps, StyleSheet, View, ViewStyle, StyleProp, TouchableOpacity } from 'react-native';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { Spacing } from '@/constants/Spacing';
-
-interface ThemedScreenTextInputProps extends TextInputProps {
+import { CircleButton } from './CircleButton';
+interface ThemedScreenTextInputProps extends Omit<TextInputProps, 'style'> {
+    onButtonPress?: () => void;
+    buttonIcon?: keyof typeof import('@expo/vector-icons').Ionicons.glyphMap;
+    buttonDisabled?: boolean;
+    buttonSize?: number;
+    withButtonBackground?: boolean;
+    style?: StyleProp<ViewStyle>;
+    inputStyle?: TextInputProps['style'];
     error?: boolean;
 }
 
 export const ThemedScreenTextInput = forwardRef<TextInput, ThemedScreenTextInputProps>(
-    ({ style, error, ...props }, ref) => {
+    (
+        {
+            style,
+            inputStyle,
+            onButtonPress,
+            buttonIcon,
+            buttonDisabled = false,
+            buttonSize = 40,
+            withButtonBackground = true,
+            error,
+            ...textInputProps
+        },
+        ref
+    ) => {
         const { textColor, backgroundColor, primaryColor } = useScreenTheme();
         const errorColor = '#FF3B30'; // Standard error color
 
+        // Determine button color logic (invert of background color)
+        const isBackgroundDark = backgroundColor === '#000000' || backgroundColor.toLowerCase() === '#000';
+        const buttonBackground = isBackgroundDark ? '#FFFFFF' : '#000000';
+        const iconColor = isBackgroundDark ? '#000000' : '#FFFFFF';
+
         return (
-            <TextInput
-                ref={ref}
+            <View
                 style={[
-                    styles.input,
+                    styles.container,
                     {
-                        borderColor: error ? errorColor : textColor,
-                        color: textColor,
-                        backgroundColor: backgroundColor,
+                        borderColor: error ? errorColor : textColor + '20',
+                        backgroundColor: textColor + '20', // Changed to yellow
                     },
                     style,
                 ]}
-                placeholderTextColor={textColor + '80'}
-                {...props}
-            />
+            >
+                <TextInput
+                    ref={ref}
+                    style={[
+                        styles.input,
+                        {
+                            color: textColor,
+                        },
+                        inputStyle,
+                    ]}
+                    placeholderTextColor={textColor + '80'}
+                    {...textInputProps}
+                />
+                {buttonIcon && (
+                    <CircleButton
+                        icon={buttonIcon}
+                        label="" // No label needed visually inside the input
+                        onPress={onButtonPress ? onButtonPress : () => console.log('No onButtonPress defined')}
+                        size={buttonSize}
+                        backgroundColor={withButtonBackground ? buttonBackground : 'transparent'}
+                        iconColor={withButtonBackground ? iconColor : textColor}
+                    />
+                )}
+            </View>
         );
     }
 );
 
 const styles = StyleSheet.create({
-    input: {
-        borderWidth: 1,
-        borderRadius: 8,
-        padding: Spacing.md,
-        fontSize: 16,
+    container: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 0.5,
+        borderRadius: 421,
+        paddingHorizontal: Spacing.md,
+        paddingVertical: Spacing.sm,
         width: '100%',
-    }
+    },
+    input: {
+        flex: 1,
+        fontSize: 16,
+        height: 40,
+        paddingLeft: Spacing.md,
+    },
+    button: {
+        flex: 1,
+        fontSize: 18,
+        marginRight: Spacing.sm,
+        paddingVertical: 0,
+        marginLeft: Spacing.md,
+    },
 }); 

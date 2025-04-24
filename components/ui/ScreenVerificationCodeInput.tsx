@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
-import { ThemedScreenTextInput } from './ThemedScreenTextInput';
 import { Spacing } from '@/constants/Spacing';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 
@@ -43,7 +42,7 @@ export function ScreenVerificationCodeInput({ onCodeComplete }: ScreenVerificati
     return (
         <View style={styles.container}>
             {code.map((digit, index) => (
-                <ThemedScreenTextInput
+                <TextInput
                     key={index}
                     ref={ref => {
                         inputRefs.current[index] = ref;
@@ -53,7 +52,14 @@ export function ScreenVerificationCodeInput({ onCodeComplete }: ScreenVerificati
                     onKeyPress={e => handleKeyPress(e, index)}
                     keyboardType="number-pad"
                     maxLength={1}
-                    style={[styles.input, { backgroundColor: inputBackgroundColor + '40', borderColor: textColor + '20' }]}
+                    style={[
+                        styles.input,
+                        {
+                            backgroundColor: inputBackgroundColor + '40',
+                            borderColor: textColor + '20',
+                            color: textColor,
+                        }
+                    ]}
                     textAlign="center"
                 />
             ))}
@@ -74,5 +80,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 24,
         fontWeight: 'bold',
+        borderWidth: 1,
     },
 }); 
