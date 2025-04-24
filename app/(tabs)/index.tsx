@@ -43,7 +43,7 @@ export default function HomeScreen() {
     const handleSendToBank = () => {
         closeSendModal();
         router.push({
-            pathname: '/amount',
+            pathname: '/(send)/amount',
             params: {
                 type: 'bank',
                 title: 'Send'
@@ -55,7 +55,7 @@ export default function HomeScreen() {
     const handleReceiveToWallet = () => {
         closeReceiveModal();
         router.push({
-            pathname: '/amount',
+            pathname: '/(send)/amount',
             params: {
                 type: 'wallet',
                 title: 'Receive'
@@ -65,13 +65,13 @@ export default function HomeScreen() {
 
     const handleReceiveFromBank = () => {
         closeReceiveModal();
-        router.push({
-            pathname: '/amount',
-            params: {
-                type: 'bank',
-                title: 'Receive'
-            }
-        });
+        // router.push({
+        //     pathname: '/amount',
+        //     params: {
+        //         type: 'bank',
+        //         title: 'Receive'
+        //     }
+        // });
     };
 
     // Define options for Send modal

@@ -5,7 +5,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
 import { Keypad } from '@/components/ui/Keypad';
 import { Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, Stack } from 'expo-router';
 import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
 import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 import { AppIcon } from '@/components/ui/AppIcon';
@@ -71,25 +71,10 @@ export default function AmountScreen() {
     };
 
     return (
-        <ThemedScreen>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="chevron-back" size={28} color={textColor} />
-                </TouchableOpacity>
-                <View style={styles.headerTitleContainer}>
-                    <ThemedScreenText type="defaultSemiBold" style={styles.headerTitle}>
-                        {title || 'Send'}
-                    </ThemedScreenText>
-                    <AppIcon name="sent" size={24} />
-                </View>
-                <View style={styles.headerRightContainer}>
-                </View>
-            </View>
-
+        <ThemedScreen useSafeArea={true} safeAreaEdges={['bottom', 'left', 'right']}>
             <View style={styles.container}>
                 <View style={styles.amountContainer}>
                     <ThemedScreenText type="default" style={styles.label}>Enter amount</ThemedScreenText>
-
                     <Text style={[styles.amountText, { color: textColor }]}>
                         {formattedAmount()}
                     </Text>
@@ -108,11 +93,6 @@ export default function AmountScreen() {
 }
 
 const styles = StyleSheet.create({
-    headerTitleContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
     amountContainer: {
         flex: 1,
         alignItems: 'center',
@@ -120,28 +100,8 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: Spacing.lg,
         paddingBottom: Spacing.xl,
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        height: 60,
-    },
-    headerTitle: {
-        fontSize: 18,
-        marginRight: Spacing.sm,
-    },
-    backButton: {
-        width: 50,
-        padding: Spacing.xs,
-    },
-    headerRightContainer: {
-        width: 50,
-        paddingVertical: Spacing.xs,
     },
     label: {
         fontSize: 16,
@@ -158,18 +118,5 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         justifyContent: 'center',
-    },
-    continueButton: {
-        width: '100%',
-        paddingVertical: Spacing.md,
-        borderRadius: 28,
-        marginTop: Spacing.lg,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    continueButtonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: '600',
-    },
+    }
 }); 
