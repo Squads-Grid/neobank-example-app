@@ -53,7 +53,7 @@ export function ActionModal({
                         </View>
                     )}
                     <View style={styles.header}>
-                        <ThemedScreenText type="defaultSemiBold" style={[styles.title, { color: useStarburstModal ? 'white' : textColor }]}>{title}</ThemedScreenText>
+                        <ThemedScreenText type="subtitle" style={{ color: useStarburstModal ? 'white' : textColor }}>{title}</ThemedScreenText>
                         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                             <Text style={[styles.closeText, { color: useStarburstModal ? 'white' : textColor }]}>×</Text>
                         </TouchableOpacity>
@@ -98,10 +98,6 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         zIndex: 1,
-    },
-    title: {
-        fontSize: Size.large,
-        fontWeight: Weight.semiBoldWeight,
     },
     closeButton: {
         opacity: 0.25,

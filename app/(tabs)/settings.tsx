@@ -8,7 +8,7 @@ export default function SettingsScreen() {
 
     return (
         <ScreenLayout>
-            <ThemedScreenText type="title">Settings</ThemedScreenText>
+            <ThemedScreenText type="highlight">Settings</ThemedScreenText>
             <ThemedScreenButton
                 title="Logout"
                 onPress={logout}

@@ -155,7 +155,7 @@ export default function HomeScreen() {
     return (
         <ThemedScreen>
             <ThemedScreenText style={styles.headline}>Home · Balance</ThemedScreenText>
-            <ThemedScreenText style={styles.balanceTextStyle}>$3,456.94</ThemedScreenText>
+            <ThemedScreenText type="highlight" style={styles.balanceTextStyle}>$3,456.94</ThemedScreenText>
             <CircleButtonGroup buttons={actions} />
             <View style={{ height: Spacing.xl }} />
             {transactionData.length > 0 ? <TransactionList transactions={transactionData} /> : (
@@ -164,7 +164,7 @@ export default function HomeScreen() {
                         source={placeholder}
                         style={styles.placeholderImage}
                     />
-                    <ThemedScreenText style={styles.placeholderText}>No transactions yet</ThemedScreenText>
+                    <ThemedScreenText type="regular">No transactions yet</ThemedScreenText>
                 </View>
             )}
 
@@ -195,16 +195,16 @@ export default function HomeScreen() {
                 useStarburstModal={true}
             >
                 <View style={styles.qrCodeContainer}>
-                    <ThemedScreenText style={[styles.qrCodeHeadline, { color: 'white' }]}>Bright</ThemedScreenText>
+                    <ThemedScreenText type="large" style={[styles.qrCodeHeadline, { color: 'white' }]}>Bright</ThemedScreenText>
                     {renderQRCode()}
-                    <ThemedScreenText style={styles.qrCodeAddress}>{SOLANA_ADDRESS}</ThemedScreenText>
+                    <ThemedScreenText type="default" style={styles.qrCodeAddress}>{SOLANA_ADDRESS}</ThemedScreenText>
                     <View style={styles.qrCodeSupportContainer}>
                         <IconSymbol name="info.circle" size={16} color="white" />
-                        <ThemedScreenText style={styles.qrCodeSupportText}>We don't support NFT.</ThemedScreenText>
+                        <ThemedScreenText type="tiny" style={styles.qrCodeSupportText}>We don't support NFTs.</ThemedScreenText>
                     </View>
                     <View style={styles.qrCodeCopyContainer}>
                         <IconSymbol name="doc.on.doc" size={16} color="white" />
-                        <ThemedScreenText style={styles.qrCodeCopyText}>Copy</ThemedScreenText>
+                        <ThemedScreenText type="regularSemiBold" style={styles.qrCodeCopyText}>Copy</ThemedScreenText>
                     </View>
                 </View>
             </ActionModal>
@@ -214,8 +214,6 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
     qrCodeCopyText: {
-        fontSize: Size.regular,
-        fontWeight: Weight.semiBoldWeight,
         color: 'white',
         textAlign: 'center',
         marginLeft: Spacing.xxs
@@ -234,16 +232,11 @@ const styles = StyleSheet.create({
         opacity: 0.4
     },
     qrCodeSupportText: {
-        fontSize: Size.tiny,
-        fontWeight: Weight.regularWeight,
-        lineHeight: Size.tiny * Height.lineHeightMedium,
         color: 'white',
         textAlign: 'center',
         marginLeft: Spacing.xxs
     },
     qrCodeAddress: {
-        fontSize: Size.medium,
-        lineHeight: Size.medium * Height.lineHeightMedium,
         color: 'white',
         textAlign: 'center',
         paddingHorizontal: 32,
@@ -256,17 +249,11 @@ const styles = StyleSheet.create({
         paddingBottom: Platform.OS === 'ios' ? 60 : 50,
     },
     headline: {
-        fontSize: Size.medium,
-        fontWeight: Weight.mediumWeight,
-        lineHeight: Size.medium * Height.lineHeightNormal,
         opacity: 0.3,
         textAlign: 'center',
         marginTop: Spacing.xl,
     },
     balanceTextStyle: {
-        fontSize: Size.giant,
-        fontWeight: Weight.boldWeight,
-        lineHeight: Size.giant * Height.lineHeightNormal,
         marginTop: Spacing.sm,
         marginBottom: Spacing.lg,
         textAlign: 'center',
@@ -276,7 +263,6 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
     },
     placeholderText: {
-        fontSize: Size.regular,
         marginTop: Spacing.lg,
         textAlign: 'center',
         opacity: 0.23,
@@ -287,8 +273,6 @@ const styles = StyleSheet.create({
         marginBottom: Spacing.lg,
     },
     qrCodeHeadline: {
-        fontSize: Size.xlarge,
-        fontWeight: Weight.semiBoldWeight,
         textAlign: 'center',
         marginBottom: 31
     }

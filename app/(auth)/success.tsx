@@ -31,7 +31,7 @@ export function SuccessScreen() {
                 activeOpacity={0.8}
             >
                 <IconSymbol name="checkmark.circle" size={80} color={primaryColor} style={{ marginBottom: Spacing.md }} />
-                <ThemedScreenText style={styles.subtitle}>All done!</ThemedScreenText>
+                <ThemedScreenText type="default" style={styles.subtitle}>All done!</ThemedScreenText>
             </TouchableOpacity>
         </ThemedScreen>
     );
@@ -59,9 +59,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: Spacing.lg,
     },
     subtitle: {
-        fontSize: Size.medium,
-        opacity: 0.8,
-        marginBottom: Spacing.xl,
-        textAlign: 'center',
+        opacity: 0.7,
     },
 }); 

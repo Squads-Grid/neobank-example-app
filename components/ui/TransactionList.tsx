@@ -18,7 +18,7 @@ export function TransactionList({ transactions }: TransactionListProps) {
 
     const renderSectionHeader = ({ section }: { section: TransactionGroup }) => (
         <View style={[styles.sectionHeaderContainer, { backgroundColor: sectionHeaderBg }]}>
-            <ThemedScreenText type="subtitle" style={styles.groupTitle}>
+            <ThemedScreenText type="defaultSemiBold" style={styles.groupTitle}>
                 {section.title}
             </ThemedScreenText>
         </View>
@@ -70,9 +70,6 @@ const styles = StyleSheet.create({
         zIndex: 1,
     },
     groupTitle: {
-        fontSize: Size.medium,
-        fontWeight: Weight.semiBoldWeight,
-        lineHeight: Size.medium * Height.lineHeightTight,
         opacity: 0.23,
     },
     emptyText: {

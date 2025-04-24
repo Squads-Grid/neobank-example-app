@@ -17,7 +17,7 @@ export function ScreenHeaderText({ title, subtitle, flex }: ScreenHeaderTextProp
         <View style={[styles.container, flex ? { flex } : {}]}>
             <ThemedScreenText
                 style={[styles.title, { color: textColor }]}
-                type="title"
+                type="highlight"
             >
                 {title}
             </ThemedScreenText>

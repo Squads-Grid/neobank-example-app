@@ -31,8 +31,8 @@ export function ModalOptionsList({ options }: ModalOptionsListProps) {
                 >
                     <Image source={option.icon} style={styles.icon} />
                     <View style={styles.optionTextContainer}>
-                        <ThemedScreenText type="default" style={styles.topText}>{option.title}</ThemedScreenText>
-                        <ThemedScreenText type="default" style={styles.subText}>{option.description}</ThemedScreenText>
+                        <ThemedScreenText type="regularSemiBold">{option.title}</ThemedScreenText>
+                        <ThemedScreenText type="tiny" style={styles.subText}>{option.description}</ThemedScreenText>
                     </View>
                     <View style={styles.arrowContainer}>
                         <CircleButton
@@ -64,15 +64,7 @@ const styles = StyleSheet.create({
         marginLeft: Spacing.sm,
     },
     subText: {
-        fontSize: Size.tiny,
-        fontWeight: Weight.mediumWeight,
-        lineHeight: Size.tiny * Height.lineHeightMedium,
         opacity: 0.4,
-    },
-    topText: {
-        fontSize: Size.regular,
-        fontWeight: Weight.semiBoldWeight,
-        lineHeight: Size.regular * Height.lineHeightNormal,
     },
     arrowContainer: {
         marginLeft: Spacing.sm,

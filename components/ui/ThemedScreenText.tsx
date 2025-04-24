@@ -1,10 +1,10 @@
 import React from 'react';
 import { Text, TextProps, StyleSheet } from 'react-native';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
-import { Size } from '@/constants/Typography';
+import { Height, Size, Weight } from '@/constants/Typography';
 
 export type ThemedScreenTextProps = TextProps & {
-    type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
+    type?: 'default' | 'highlight' | 'defaultSemiBold' | 'subtitle' | 'link' | 'jumbo' | 'regular' | 'regularSemiBold' | 'tiny' | 'large';
 };
 
 export function ThemedScreenText({
@@ -20,10 +20,15 @@ export function ThemedScreenText({
             style={[
                 { color: textColor },
                 type === 'default' ? styles.default : undefined,
-                type === 'title' ? styles.title : undefined,
+                type === 'highlight' ? styles.highlight : undefined,
                 type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
                 type === 'subtitle' ? styles.subtitle : undefined,
                 type === 'link' ? styles.link : undefined,
+                type === 'jumbo' ? styles.jumbo : undefined,
+                type === 'regular' ? styles.regular : undefined,
+                type === 'regularSemiBold' ? styles.regularSemiBold : undefined,
+                type === 'tiny' ? styles.tiny : undefined,
+                type === 'large' ? styles.large : undefined,
                 style
             ]}
             {...props}
@@ -34,25 +39,51 @@ export function ThemedScreenText({
 }
 
 const styles = StyleSheet.create({
+    tiny: {
+        fontSize: Size.tiny,
+        fontWeight: Weight.mediumWeight,
+        lineHeight: Size.tiny * Height.lineHeightTight,
+    },
+    regular: {
+        fontSize: Size.regular,
+        fontWeight: Weight.mediumWeight,
+        lineHeight: Size.regular * Height.lineHeightMedium,
+
+    },
+    regularSemiBold: {
+        fontSize: Size.regular,
+        fontWeight: Weight.semiBoldWeight,
+        lineHeight: Size.regular * Height.lineHeightNormal,
+    },
     default: {
         fontSize: Size.medium,
-        lineHeight: 24,
+        fontWeight: Weight.regularWeight,
+        lineHeight: Size.medium * Height.lineHeightNormal,
     },
     defaultSemiBold: {
         fontSize: Size.medium,
-        lineHeight: 24,
-        fontWeight: '600',
+        fontWeight: Weight.semiBoldWeight,
+        lineHeight: Size.medium * Height.lineHeightMedium,
     },
-    title: {
+    highlight: {
         fontSize: Size.giant,
-        fontWeight: 'bold',
-        lineHeight: 56,
-        marginBottom: 20,
+        fontWeight: Weight.boldWeight,
+        lineHeight: Size.giant * Height.lineHeightNormal,
+
+    },
+    large: {
+        fontSize: Size.xlarge,
+        fontWeight: Weight.semiBoldWeight,
+        lineHeight: Size.xlarge * Height.lineHeightNormal,
+    },
+    jumbo: {
+        fontSize: Size.jumbo,
+        fontWeight: Weight.boldWeight,
+        lineHeight: Size.jumbo * Height.lineHeightNormal,
     },
     subtitle: {
         fontSize: Size.large,
-        fontWeight: 'bold',
-        marginBottom: 20,
+        fontWeight: Weight.semiBoldWeight,
     },
     link: {
         lineHeight: 30,

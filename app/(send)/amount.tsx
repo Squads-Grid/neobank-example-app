@@ -113,9 +113,9 @@ export default function AmountScreen() {
 
     const renderAmount = () => {
         return (
-            <Text style={[styles.amountText, { color: textColor }]}>
+            <ThemedScreenText type="highlight" style={{ color: textColor }}>
                 {formatAmount(amount)}
-            </Text>
+            </ThemedScreenText>
         )
     }
 
@@ -147,7 +147,7 @@ export default function AmountScreen() {
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
                 style={styles.container}>
                 <View style={styles.amountContainer}>
-                    <ThemedScreenText type="default" style={styles.label}>{steps[step - 1].label}</ThemedScreenText>
+                    <ThemedScreenText type="defaultSemiBold" style={styles.label}>{steps[step - 1].label}</ThemedScreenText>
 
                     {steps[step - 1].render()}
                 </View>
@@ -178,15 +178,7 @@ const styles = StyleSheet.create({
         paddingBottom: Spacing.xl,
     },
     label: {
-        fontSize: Size.medium,
-        fontWeight: Weight.semiBoldWeight,
-        lineHeight: Size.medium * Height.lineHeightMedium,
         marginBottom: Spacing.sm,
-    },
-    amountText: {
-        fontSize: Size.giant,
-        fontWeight: Weight.boldWeight,
-        textAlign: 'center',
     },
     keypadContainer: {
         flex: 1,

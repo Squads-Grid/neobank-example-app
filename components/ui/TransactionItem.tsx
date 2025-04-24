@@ -32,12 +32,12 @@ export function TransactionItem({ type, date, amount, isLast, onPress, walletAdd
         >
             <AppIcon name={iconName} size={34} />
             <View style={styles.details}>
-                <ThemedScreenText type="defaultSemiBold" style={styles.type}>{type}</ThemedScreenText>
+                <ThemedScreenText type="regular">{type}</ThemedScreenText>
                 <View style={styles.transactionDetails}>
-                    <ThemedScreenText type="default" style={[styles.address]}>
+                    <ThemedScreenText type="tiny" >
                         {formattedAddress}
                     </ThemedScreenText>
-                    <ThemedScreenText type="default" style={styles.date}> • {date}</ThemedScreenText>
+                    <ThemedScreenText type="tiny" style={styles.date}> • {date}</ThemedScreenText>
                 </View>
             </View>
             <ThemedScreenText
@@ -69,24 +69,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingTop: 2,
     },
-    type: {
-        fontSize: Size.regular,
-        lineHeight: 14,
-    },
     date: {
-        fontSize: Size.tiny,
-        fontWeight: Weight.mediumWeight,
-        lineHeight: Size.tiny * Height.lineHeightTight,
         opacity: 0.6,
 
     },
-    address: {
-        fontSize: Size.tiny,
-        fontWeight: Weight.mediumWeight,
-        lineHeight: Size.tiny * Height.lineHeightTight,
-    },
     amount: {
-        fontSize: Size.regular,
         textAlign: 'right',
     },
     transactionDetails: {

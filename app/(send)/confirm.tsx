@@ -47,7 +47,7 @@ export default function ConfirmScreen() {
             <View>
                 <View style={styles.labelContainer}>
                     <IconSymbol name={icon} size={16} color={iconColor} />
-                    <ThemedScreenText type="defaultSemiBold" style={[styles.labelText, { color: iconColor }]}>{label}</ThemedScreenText>
+                    <ThemedScreenText type="regular" style={{ color: iconColor }}>{label}</ThemedScreenText>
 
                 </View>
                 <ThemedScreenText type="default" style={styles.infoText}>{value}</ThemedScreenText>
@@ -60,8 +60,8 @@ export default function ConfirmScreen() {
             <View style={styles.container}>
                 <View style={styles.content}>
 
-                    <ThemedScreenText type="defaultSemiBold" style={styles.label}>Amount</ThemedScreenText>
-                    <ThemedScreenText type="default" style={styles.amountText}>{formatAmount(amount)}</ThemedScreenText>
+                    <ThemedScreenText type="regular">Amount</ThemedScreenText>
+                    <ThemedScreenText type="jumbo" >{formatAmount(amount)}</ThemedScreenText>
                     {renderInfo('arrow.forward', 'To', recipient)}
                     {renderInfo('person', 'Name', name)}
                     {renderInfo('network', 'Network fee', '0.0004 SOL')}
@@ -92,11 +92,6 @@ const styles = StyleSheet.create({
         flex: 1,
         gap: Spacing.lg,
     },
-    amountText: {
-        fontSize: Size.jumbo,
-        fontWeight: Weight.boldWeight,
-        lineHeight: Size.jumbo * Height.lineHeightNormal,
-    },
     labelContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -104,17 +99,9 @@ const styles = StyleSheet.create({
         marginBottom: Spacing.sm
 
     },
-    labelText: {
-        fontSize: Size.regular,
-        fontWeight: Weight.mediumWeight,
-        lineHeight: Size.regular * Height.lineHeightMedium,
-    },
     infoText: {
         fontSize: Size.mediumLarge,
         fontWeight: Weight.semiBoldWeight,
         lineHeight: Size.mediumLarge * Height.lineHeightMedium,
     },
-    label: {
-        fontSize: Size.regular,
-    }
 }); 
