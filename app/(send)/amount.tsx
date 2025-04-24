@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { ThemedScreen } from '@/components/ui/ThemedScreen';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
@@ -8,13 +8,30 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
 import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 import { ThemedScreenTextInput } from '@/components/ui/ThemedScreenTextInput';
+import * as Clipboard from 'expo-clipboard';
+
+
+
+
 export default function AmountScreen() {
     const [amount, setAmount] = useState('0');
     const [step, setStep] = useState(1);
     const [recipient, setRecipient] = useState('');
-    const [note, setNote] = useState('');
+    const [name, setName] = useState('');
     const textColor = useThemeColor({}, 'text');
-    const primaryColor = useThemeColor({}, 'primary');
+
+    const steps = [
+        {
+            index: 1,
+            label: 'Enter amount',
+            render: () => renderAmount(),
+        },
+        {
+            index: 2,
+            label: 'Enter Destination',
+            render: () => renderTextInputs(),
+        }
+    ]
 
     // Get params from the router
     const { type, title } = useLocalSearchParams<{ type: string; title: string }>();
@@ -55,7 +72,7 @@ export default function AmountScreen() {
                 params: {
                     amount,
                     recipient,
-                    note,
+                    name,
                     type,
                     title
                 }
@@ -71,9 +88,15 @@ export default function AmountScreen() {
         }
     };
 
-    const handleCopyRecipient = () => {
-        // Implement copy functionality
-        console.log('Copy recipient:', recipient);
+    const handleCopyRecipient = async () => {
+        try {
+            const clipboardContent = await Clipboard.getStringAsync();
+            if (clipboardContent) {
+                setRecipient(clipboardContent);
+            }
+        } catch (error) {
+            console.error('Failed to get clipboard content:', error);
+        }
     };
 
     const formattedAmount = () => {
@@ -120,8 +143,8 @@ export default function AmountScreen() {
                 />
                 <View style={{ marginBottom: Spacing.sm }} />
                 <ThemedScreenTextInput
-                    value={recipient}
-                    onChangeText={setRecipient}
+                    value={name}
+                    onChangeText={setName}
                     placeholder="Give it a name"
                 />
             </>
@@ -135,10 +158,9 @@ export default function AmountScreen() {
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
                 style={styles.container}>
                 <View style={styles.amountContainer}>
-                    <ThemedScreenText type="default" style={styles.label}>Enter amount</ThemedScreenText>
+                    <ThemedScreenText type="default" style={styles.label}>{steps[step - 1].label}</ThemedScreenText>
 
-                    {step === 1 && renderAmount()}
-                    {step === 2 && renderTextInputs()}
+                    {steps[step - 1].render()}
                 </View>
 
                 {step === 1 && renderKeypad()}

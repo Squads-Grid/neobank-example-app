@@ -41,7 +41,8 @@
     "react-native-svg": "^15.11.2",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "tinycolor2": "^1.6.0"
+    "tinycolor2": "^1.6.0",
+    "expo-clipboard": "~7.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
