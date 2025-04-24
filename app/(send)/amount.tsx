@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { ThemedScreen } from '@/components/ui/ThemedScreen';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
@@ -130,7 +130,10 @@ export default function AmountScreen() {
 
     return (
         <ThemedScreen useSafeArea={true} safeAreaEdges={['bottom', 'left', 'right']}>
-            <View style={styles.container}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+                style={styles.container}>
                 <View style={styles.amountContainer}>
                     <ThemedScreenText type="default" style={styles.label}>Enter amount</ThemedScreenText>
 
@@ -145,7 +148,7 @@ export default function AmountScreen() {
                         onPress={handleContinue}
                     />
                 </View>
-            </View>
+            </KeyboardAvoidingView>
         </ThemedScreen>
     );
 }
@@ -188,6 +191,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         width: '100%',
         marginTop: Spacing.lg,
+        marginBottom: Spacing.md,
     },
     inputWithIcon: {
         flexDirection: 'row',
