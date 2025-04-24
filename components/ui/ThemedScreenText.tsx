@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, TextProps, StyleSheet } from 'react-native';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
+import { Size } from '@/constants/Typography';
 
 export type ThemedScreenTextProps = TextProps & {
     type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
@@ -34,28 +35,28 @@ export function ThemedScreenText({
 
 const styles = StyleSheet.create({
     default: {
-        fontSize: 16,
+        fontSize: Size.medium,
         lineHeight: 24,
     },
     defaultSemiBold: {
-        fontSize: 16,
+        fontSize: Size.medium,
         lineHeight: 24,
         fontWeight: '600',
     },
     title: {
-        fontSize: 56,
+        fontSize: Size.giant,
         fontWeight: 'bold',
         lineHeight: 56,
         marginBottom: 20,
     },
     subtitle: {
-        fontSize: 20,
+        fontSize: Size.large,
         fontWeight: 'bold',
         marginBottom: 20,
     },
     link: {
         lineHeight: 30,
-        fontSize: 16,
+        fontSize: Size.medium,
         color: '#FFFFFF',
     },
 });

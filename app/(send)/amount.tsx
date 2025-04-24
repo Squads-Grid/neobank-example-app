@@ -10,6 +10,7 @@ import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 import { ThemedScreenTextInput } from '@/components/ui/ThemedScreenTextInput';
 import * as Clipboard from 'expo-clipboard';
 import { formatAmount } from '@/utils/helper';
+import { Size } from '@/constants/Typography';
 
 
 
@@ -177,13 +178,13 @@ const styles = StyleSheet.create({
         paddingBottom: Spacing.xl,
     },
     label: {
-        fontSize: 16,
+        fontSize: Size.medium,
         lineHeight: 30,
         fontWeight: '600',
         marginBottom: Spacing.sm,
     },
     amountText: {
-        fontSize: 48,
+        fontSize: Size.giant,
         fontWeight: 'bold',
         textAlign: 'center',
     },

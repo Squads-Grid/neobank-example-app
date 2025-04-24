@@ -14,6 +14,7 @@ import { ActionModal } from '@/components/ui/ActionModal';
 import { ModalOptionsList, ActionOption } from '@/components/ui/ModalOptionsList';
 import QRCode from 'react-native-qrcode-svg';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { Size } from '@/constants/Typography';
 
 const placeholder = require('@/assets/images/no-txn.png');
 const bankIcon = require('@/assets/icons/bank.png');
@@ -214,7 +215,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     qrCodeCopyText: {
         color: 'white',
-        fontSize: 14,
+        fontSize: Size.regular,
         fontWeight: '600',
         textAlign: 'center',
         marginLeft: Spacing.xxs
@@ -234,14 +235,14 @@ const styles = StyleSheet.create({
     },
     qrCodeSupportText: {
         color: 'white',
-        fontSize: 12,
+        fontSize: Size.tiny,
         textAlign: 'center',
         lineHeight: 19.2,
         marginLeft: Spacing.xxs
     },
     qrCodeAddress: {
         color: 'white',
-        fontSize: 16,
+        fontSize: Size.medium,
         textAlign: 'center',
         lineHeight: 19.2,
         paddingHorizontal: 32,
@@ -254,14 +255,14 @@ const styles = StyleSheet.create({
         paddingBottom: Platform.OS === 'ios' ? 60 : 50,
     },
     headline: {
-        fontSize: 16,
+        fontSize: Size.medium,
         opacity: 0.3,
         textAlign: 'center',
         lineHeight: 19.2,
         marginTop: Spacing.xl,
     },
     balanceTextStyle: {
-        fontSize: 56,
+        fontSize: Size.giant,
         lineHeight: 67.2,
         marginTop: Spacing.sm,
         marginBottom: Spacing.lg,
@@ -275,7 +276,7 @@ const styles = StyleSheet.create({
     placeholderText: {
         marginTop: Spacing.lg,
         textAlign: 'center',
-        fontSize: 14,
+        fontSize: Size.regular,
         opacity: 0.23,
     },
     qrCodeContainer: {
@@ -284,7 +285,7 @@ const styles = StyleSheet.create({
         marginBottom: Spacing.lg,
     },
     qrCodeHeadline: {
-        fontSize: 24,
+        fontSize: Size.xlarge,
         fontWeight: '600',
         textAlign: 'center',
         marginBottom: 31

@@ -23,7 +23,7 @@ export function ScreenHeaderText({ title, subtitle, flex }: ScreenHeaderTextProp
             </ThemedScreenText>
             {subtitle && (
                 <ThemedScreenText
-                    style={[styles.subtitle, { color: textColor }]}
+                    style={{ color: textColor }}
                     type="default"
                 >
                     {subtitle}
@@ -42,7 +42,4 @@ const styles = StyleSheet.create({
     title: {
         marginBottom: Spacing.sm,
     },
-    subtitle: {
-        // Additional styling if needed
-    }
 }); 

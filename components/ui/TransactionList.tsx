@@ -5,6 +5,7 @@ import { TransactionItem } from './TransactionItem';
 import { Spacing } from '@/constants/Spacing';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Transaction, TransactionGroup } from '@/types/Transaction';
+import { Size } from '@/constants/Typography';
 
 interface TransactionListProps {
     transactions: TransactionGroup[];
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
     },
     groupTitle: {
         fontWeight: '600',
-        fontSize: 16,
+        fontSize: Size.medium,
         opacity: 0.23,
     },
     emptyText: {

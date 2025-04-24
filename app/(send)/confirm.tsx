@@ -5,10 +5,10 @@ import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Spacing } from '@/constants/Spacing';
 import { formatAmount } from '@/utils/helper';
-import { AppIcon, AppIconProps } from '@/components/ui/AppIcon';
 import { IconSymbol, IconSymbolName } from '@/components/ui/IconSymbol';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ButtonGroup } from '@/components/ui/ButtonGroup';
+import { Size } from '@/constants/Typography';
 
 export default function ConfirmScreen() {
     const textColor = useThemeColor({}, 'text');
@@ -60,7 +60,7 @@ export default function ConfirmScreen() {
             <View style={styles.container}>
                 <View style={styles.content}>
 
-                    <ThemedScreenText type="defaultSemiBold">Amount</ThemedScreenText>
+                    <ThemedScreenText type="defaultSemiBold" style={styles.label}>Amount</ThemedScreenText>
                     <ThemedScreenText type="default" style={styles.amountText}>{formatAmount(amount)}</ThemedScreenText>
                     {renderInfo('arrow.forward', 'To', recipient)}
                     {renderInfo('person', 'Name', name)}
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
         gap: Spacing.lg,
     },
     amountText: {
-        fontSize: 40,
+        fontSize: Size.jumbo,
         fontWeight: '700',
         lineHeight: 40,
     },
@@ -105,13 +105,16 @@ const styles = StyleSheet.create({
 
     },
     labelText: {
-        fontSize: 14,
+        fontSize: Size.regular,
         fontWeight: '500',
         lineHeight: 18.2,
     },
     infoText: {
-        fontSize: 18,
+        fontSize: Size.mediumLarge,
         fontWeight: '600',
         lineHeight: 24,
+    },
+    label: {
+        fontSize: Size.regular,
     }
 }); 

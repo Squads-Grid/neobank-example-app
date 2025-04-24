@@ -9,7 +9,6 @@ import { ThemedScreen } from '@/components/ui/ThemedScreen';
 import { ThemedScreenActionText } from '@/components/ui/ThemedScreenActionText';
 import { useResendTimer } from '@/hooks/useResendTimer';
 import { StarburstBackground } from '@/components/ui/StarburstBackground';
-import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { Spacing } from '@/constants/Spacing';
 
 // Mock verification code
@@ -21,7 +20,6 @@ function LoginScreen() {
     const [showCodeInput, setShowCodeInput] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { signIn } = useAuth();
-    const { primaryColor } = useScreenTheme();
 
     const sendVerificationCode = async () => {
         try {

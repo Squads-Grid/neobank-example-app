@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { Spacing } from '@/constants/Spacing';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
+import { Size } from '@/constants/Typography';
 
 interface ScreenVerificationCodeInputProps {
     onCodeComplete: (code: string) => void;
@@ -14,7 +15,6 @@ export function ScreenVerificationCodeInput({ onCodeComplete }: ScreenVerificati
 
     const isBackgroundDark = backgroundColor === '#000000' || backgroundColor.toLowerCase() === '#000';
     const inputBackgroundColor = isBackgroundDark ? '#FFFFFF' : '#000000';
-    const iconColor = isBackgroundDark ? '#000000' : '#FFFFFF';
 
     const handleChange = (text: string, index: number) => {
         const newCode = [...code];
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
         height: 45,
         borderRadius: 12,
         textAlign: 'center',
-        fontSize: 24,
+        fontSize: Size.xlarge,
         fontWeight: 'bold',
         borderWidth: 1,
     },

@@ -4,7 +4,7 @@ import { ThemedScreenText } from './ThemedScreenText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
 import { AppIcon } from './AppIcon';
-
+import { Size } from '@/constants/Typography';
 interface TransactionItemProps {
     type: string;
     date: string;
@@ -70,21 +70,21 @@ const styles = StyleSheet.create({
         paddingTop: 2,
     },
     type: {
-        fontSize: 14,
+        fontSize: Size.regular,
         lineHeight: 14,
     },
     date: {
         opacity: 0.6,
-        fontSize: 12,
+        fontSize: Size.tiny,
         lineHeight: 12,
     },
     address: {
-        fontSize: 12,
+        fontSize: Size.tiny,
         lineHeight: 12,
         fontWeight: '500',
     },
     amount: {
-        fontSize: 14,
+        fontSize: Size.regular,
         textAlign: 'right',
     },
     transactionDetails: {

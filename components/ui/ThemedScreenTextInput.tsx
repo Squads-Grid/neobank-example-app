@@ -3,6 +3,7 @@ import { TextInput, TextInputProps, StyleSheet, View, ViewStyle, StyleProp, Touc
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { Spacing } from '@/constants/Spacing';
 import { CircleButton } from './CircleButton';
+import { Size } from '@/constants/Typography';
 interface ThemedScreenTextInputProps extends Omit<TextInputProps, 'style'> {
     onButtonPress?: () => void;
     buttonIcon?: keyof typeof import('@expo/vector-icons').Ionicons.glyphMap;
@@ -87,13 +88,13 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        fontSize: 16,
+        fontSize: Size.medium,
         height: 40,
         paddingLeft: Spacing.md,
     },
     button: {
         flex: 1,
-        fontSize: 18,
+        fontSize: Size.mediumLarge,
         marginRight: Spacing.sm,
         paddingVertical: 0,
         marginLeft: Spacing.md,

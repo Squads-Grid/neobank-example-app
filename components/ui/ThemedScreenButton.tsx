@@ -3,6 +3,7 @@ import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { Spacing } from '@/constants/Spacing';
 import tinycolor from 'tinycolor2';
+import { Size } from '@/constants/Typography';
 
 interface ThemedScreenButtonProps {
     onPress: () => void;
@@ -96,7 +97,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     text: {
-        fontSize: 16,
+        fontSize: Size.medium,
         fontWeight: '600',
     },
 }); 
