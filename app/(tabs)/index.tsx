@@ -213,35 +213,6 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-    qrCodeCopyText: {
-        color: 'white',
-        textAlign: 'center',
-        marginLeft: Spacing.xxs
-    },
-    qrCodeCopyContainer: {
-        flexDirection: 'row',
-        paddingHorizontal: 32,
-        alignItems: 'center',
-        marginTop: Spacing.md,
-    },
-    qrCodeSupportContainer: {
-        flexDirection: 'row',
-        paddingHorizontal: 32,
-        alignItems: 'center',
-        marginTop: Spacing.lg,
-        opacity: 0.4
-    },
-    qrCodeSupportText: {
-        color: 'white',
-        textAlign: 'center',
-        marginLeft: Spacing.xxs
-    },
-    qrCodeAddress: {
-        color: 'white',
-        textAlign: 'center',
-        paddingHorizontal: 32,
-        marginTop: Spacing.lg
-    },
     emptyContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -270,12 +241,34 @@ const styles = StyleSheet.create({
     qrCodeContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: Spacing.lg,
+        marginBottom: Spacing.md,
+        paddingHorizontal: Spacing.xl,
     },
     qrCodeHeadline: {
-        textAlign: 'center',
-        marginBottom: 31
-    }
+        marginBottom: Spacing.lg
+    },
+    qrCodeCopyText: {
+        color: 'white',
+        marginLeft: Spacing.xs
+    },
+    qrCodeCopyContainer: {
+        flexDirection: 'row',
+        marginTop: Spacing.xl,
+    },
+    qrCodeSupportContainer: {
+        flexDirection: 'row',
+        marginTop: Spacing.md,
+        opacity: 0.4
+    },
+    qrCodeSupportText: {
+        color: 'white',
+        marginLeft: Spacing.xxs
+    },
+    qrCodeAddress: {
+        color: 'white',
+        marginTop: Spacing.lg,
+        textAlign: 'center'
+    },
 });
 
 const transactionData: TransactionGroup[] = [
