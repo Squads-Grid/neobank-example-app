@@ -9,8 +9,41 @@ import CurrencySwitcher from '@/components/ui/CurrencySwitcher';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
 import { Chip } from '@/components/ui/Chip';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { IconSymbol, IconSymbolName } from '@/components/ui/IconSymbol';
 import { DashedDivider } from '@/components/ui/DashedDivider';
+import { Link } from 'expo-router';
+import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
+
+
+const bankDetails = [
+    {
+        label: 'Bank routing number',
+        value: '101019644'
+    },
+    {
+        label: 'Bank account number',
+        value: '1234567890'
+    },
+    {
+        label: 'Bank name',
+        value: 'Bank of Nowhere'
+    },
+    {
+        label: 'Bank beneficiary name',
+        value: 'DENI ERSHTUKAEV'
+    },
+    {
+        label: 'Bank address',
+        value: '123 Main St, Anytown, USA'
+    },
+
+]
+
+interface BankDetail {
+    label: string;
+    value: string;
+    icon?: IconSymbolName;
+}
 
 
 function BankDetailsScreen() {
@@ -28,6 +61,49 @@ function BankDetailsScreen() {
         )
     }
 
+    const renderChips = () => {
+        return (
+            <View style={styles.chipsContainer}>
+                {renderChipContent(
+                    <>
+                        <ThemedScreenText type="regular" style={{ color: textColor + 40 }}>
+                            Fees{' '}
+                        </ThemedScreenText>
+                        <ThemedScreenText type="regular">
+                            0.1%
+                        </ThemedScreenText>
+                    </>
+                )}
+                {renderChipContent(
+                    <>
+                        <ThemedScreenText type="regular">
+                            Limits{' '}
+                        </ThemedScreenText>
+                        <IconSymbol name="arrow.up.right" size={10} color={textColor} />
+                    </>
+                )}
+                {renderChipContent(
+                    <ThemedScreenText type="regular" style={{ color: textColor + 40 }}>
+                        Min. transfer is {selectedCurrency === 'USD' ? '$2' : '€2'}
+                    </ThemedScreenText>
+
+                )}
+            </View>
+        );
+    }
+
+    const renderInfo = (detail: BankDetail) => {
+        return (
+            <View key={detail.label} style={styles.infoContainer}>
+                <ThemedScreenText type="regular" style={{ color: textColor + 40 }}>{detail.label}</ThemedScreenText>
+                <View style={styles.infoValueContainer}>
+                    <ThemedScreenText type="regular">{detail.value}</ThemedScreenText>
+                    <IconSymbol name={detail.icon ?? 'doc.on.doc'} size={20} color={textColor + 40} />
+                </View>
+            </View>
+        )
+    }
+
     return (
         <ThemedScreen>
             <StarburstBank primaryColor={error ? '#FF0048' : "#0080FF"} />
@@ -39,34 +115,14 @@ function BankDetailsScreen() {
                 <ThemedScreenText type="regular" style={[styles.subtitle, { color: textColor + 40 }]} >
                     Accept ACH & Wire Payments
                 </ThemedScreenText>
-                <View style={styles.chipsContainer}>
-                    {renderChipContent(
-                        <>
-                            <ThemedScreenText type="regular" style={{ color: textColor + 40 }}>
-                                Fees{' '}
-                            </ThemedScreenText>
-                            <ThemedScreenText type="regular">
-                                0.1%
-                            </ThemedScreenText>
-                        </>
-                    )}
-                    {renderChipContent(
-                        <>
-                            <ThemedScreenText type="regular">
-                                Limits{' '}
-                            </ThemedScreenText>
-                            <IconSymbol name="arrow.up.right" size={10} color={textColor} />
-                        </>
-                    )}
-                    {renderChipContent(
-                        <ThemedScreenText type="regular" style={{ color: textColor + 40 }}>
-                            Min. transfer is {selectedCurrency === 'USD' ? '$2' : '€2'}
-                        </ThemedScreenText>
-
-                    )}
-                </View>
+                {renderChips()}
                 <DashedDivider color={textColor + 10} thickness={1} />
+                {bankDetails.map((detail) => renderInfo(detail))}
             </View>
+            <ThemedScreenText type="tiny" style={[styles.footerText, { color: textColor + 40 }]}>
+                For assistance regarding issues with transfers and deposits, reach out to <Link href="mailto:support@bridge.xyz">support@bridge.xyz</Link>
+            </ThemedScreenText>
+            <ThemedScreenButton onPress={() => { }} title="Copy all details" />
         </ThemedScreen>
     );
 }
@@ -80,9 +136,9 @@ export default withScreenTheme(BankDetailsScreen, {
 const styles = StyleSheet.create({
     contentContainer: {
         flex: 1,
-        zIndex: 1,
         alignItems: 'center',
-        marginTop: Spacing.lg * 2
+        marginTop: Spacing.lg * 2,
+        marginHorizontal: Spacing.md
     },
     subtitle: {
         marginTop: Spacing.sm
@@ -91,5 +147,22 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: Spacing.xs,
         marginTop: Spacing.md
+    },
+    infoContainer: {
+        width: '100%',
+        marginTop: Spacing.md,
+        paddingBottom: Spacing.sm
+    },
+    infoValueContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: Spacing.xxs
+    },
+    footerText: {
+        width: '80%',
+        textAlign: 'center',
+        alignSelf: 'center',
+        marginBottom: Spacing.xl
     }
 });
