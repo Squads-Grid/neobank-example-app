@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, View, TouchableOpacity, Animated, PanResponder } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { router, useGlobalSearchParams } from 'expo-router';
 
@@ -16,9 +16,9 @@ import { DashedDivider } from '@/components/ui/DashedDivider';
 import { Link } from 'expo-router';
 import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 import * as Haptics from 'expo-haptics';
+import { SwipeableModal } from '@/components/ui/SwipeableModal';
 
-
-const usBankDetails = [
+const US_BANK_DETAILS = [
     {
         label: 'Bank routing number',
         value: '101019644'
@@ -41,7 +41,7 @@ const usBankDetails = [
     },
 ];
 
-const euBankDetails = [
+const EU_BANK_DETAILS = [
     {
         label: 'IBAN',
         value: 'DE89 3704 0044 0532 0130 00'
@@ -70,7 +70,6 @@ interface BankDetail {
     icon?: IconSymbolName;
 }
 
-
 function BankDetailsModal() {
     const params = useGlobalSearchParams();
     const initialCurrency = params.currency as string || 'USD';
@@ -81,38 +80,12 @@ function BankDetailsModal() {
     const [copiedField, setCopiedField] = useState<string | null>(null);
 
     // Get the appropriate bank details based on selected currency
-    const bankDetails = selectedCurrency === 'USD' ? usBankDetails : euBankDetails;
+    const bankDetails = selectedCurrency === 'USD' ? US_BANK_DETAILS : EU_BANK_DETAILS;
 
-    // Animation value for dismissal gesture
-    const pan = useRef(new Animated.ValueXY()).current;
-
-    // Create the pan responder
-    const panResponder = useRef(
-        PanResponder.create({
-            onMoveShouldSetPanResponder: (evt, gestureState) => {
-                // Only respond to vertical gestures from the top area
-                return Math.abs(gestureState.dy) > 10 && gestureState.dy > 0;
-            },
-            onPanResponderMove: (evt, gestureState) => {
-                // Follow the gesture
-                if (gestureState.dy > 0) { // Only allow downward movement
-                    pan.y.setValue(gestureState.dy);
-                }
-            },
-            onPanResponderRelease: (evt, gestureState) => {
-                // If swiped down with enough velocity or distance, dismiss
-                if (gestureState.dy > 100 || (gestureState.vy > 0.5 && gestureState.dy > 50)) {
-                    handleClose();
-                } else {
-                    // Otherwise bounce back
-                    Animated.spring(pan, {
-                        toValue: { x: 0, y: 0 },
-                        useNativeDriver: true,
-                    }).start();
-                }
-            },
-        })
-    ).current;
+    // Handle close modal
+    const handleClose = () => {
+        router.back();
+    };
 
     // Handle copying a single field
     const handleCopy = async (label: string, value: string) => {
@@ -151,11 +124,6 @@ function BankDetailsModal() {
         } catch (e) {
             setError('Failed to copy to clipboard');
         }
-    };
-
-    // Handle close modal
-    const handleClose = () => {
-        router.back();
     };
 
     const renderChipContent = (content: React.ReactNode) => {
@@ -229,18 +197,11 @@ function BankDetailsModal() {
     }
 
     return (
-        <Animated.View
-            style={{
-                ...styles.modalContainer,
-                transform: [{ translateY: pan.y }],
-            }}
-            {...panResponder.panHandlers}
-        >
-            <ThemedScreen>
-                {/* Add a visual indicator for the modal pull-down behavior */}
-                <View style={styles.pullIndicator} />
 
+        <ThemedScreen>
+            <SwipeableModal onDismiss={handleClose}>
                 <StarburstBank primaryColor={error ? '#FF0048' : "#0080FF"} />
+                <View style={{ height: Spacing.md }} />
                 <CurrencySwitcher onCurrencyChange={setSelectedCurrency} backgroundColor={textColor} textColor={backgroundColor} />
                 <View style={styles.contentContainer}>
                     <ThemedScreenText type="subtitle">
@@ -261,8 +222,9 @@ function BankDetailsModal() {
                     title={copiedField === 'all' ? 'Copied!' : 'Copy all details'}
                     variant={copiedField === 'all' ? 'outline' : 'primary'}
                 />
-            </ThemedScreen>
-        </Animated.View>
+            </SwipeableModal>
+        </ThemedScreen>
+
     );
 }
 
@@ -273,29 +235,10 @@ export default withScreenTheme(BankDetailsModal, {
 });
 
 const styles = StyleSheet.create({
-    modalContainer: {
-        flex: 1,
-    },
-    pullIndicator: {
-        width: 40,
-        height: 5,
-        backgroundColor: 'rgba(255, 255, 255, 0.3)',
-        borderRadius: 3,
-        alignSelf: 'center',
-        marginTop: 10,
-        marginBottom: 15,
-    },
-    closeButton: {
-        position: 'absolute',
-        top: 15,
-        right: 15,
-        zIndex: 10,
-        padding: 5,
-    },
     contentContainer: {
         flex: 1,
         alignItems: 'center',
-        marginTop: Spacing.md, // Reduced top margin to account for pull indicator
+        marginTop: Spacing.xl,
         marginHorizontal: Spacing.md
     },
     subtitle: {
@@ -308,7 +251,6 @@ const styles = StyleSheet.create({
     },
     infoContainer: {
         width: '100%',
-        marginTop: Spacing.md,
         paddingBottom: Spacing.sm
     },
     infoValueContainer: {

@@ -14,13 +14,21 @@ import { ActionModal } from '@/components/ui/ActionModal';
 import { ModalOptionsList, ActionOption } from '@/components/ui/ModalOptionsList';
 import QRCode from 'react-native-qrcode-svg';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { Height, Size, Weight } from '@/constants/Typography';
 
 const placeholder = require('@/assets/images/no-txn.png');
 const bankIcon = require('@/assets/icons/bank.png');
 const walletIcon = require('@/assets/icons/wallet.png');
 
 const SOLANA_ADDRESS = "5YNmS1R9nNSCDzb5a7mMJ1dwK9uHeAAF4CerVnZgX37B";
+
+enum BankStatus {
+    NEW = 'new',
+    KYC = 'kyc',
+    FINISHED = 'finished'
+}
+
+// Define as a mutable variable with explicit type
+let bankStatus: BankStatus = BankStatus.NEW;
 
 export default function HomeScreen() {
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
@@ -71,7 +79,12 @@ export default function HomeScreen() {
     const handleReceiveFromBank = () => {
         closeReceiveModal();
 
-        router.push('/(modals)/bankdetails?currency=EUR');
+        // Use simpler if/else instead of switch for string enums
+        if (bankStatus === BankStatus.NEW) {
+            router.push('/(modals)/create-bank-account');
+        } else if (bankStatus === BankStatus.KYC || bankStatus === BankStatus.FINISHED) {
+            router.push('/(modals)/bankdetails?currency=EUR');
+        }
 
         // router.push({
         //     pathname: '/(receive)/bankdetails',
