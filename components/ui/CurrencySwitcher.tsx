@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { BlurView } from 'expo-blur';
 import tinycolor from 'tinycolor2'; // Import tinycolor
 
@@ -27,6 +27,10 @@ const CurrencySwitcher = ({ onCurrencyChange, backgroundColor = 'white', textCol
         onCurrencyChange(currency);
     }
 
+    // Flag icons
+    const usFlagIcon = require('@/assets/images/us-flag-round.png');
+    const euFlagIcon = require('@/assets/images/eu-flag-round.png');
+
     return (
         <View style={styles.wrapper}>
             <BlurView intensity={20} tint="dark" style={[styles.container, { backgroundColor: unselectedBackgroundColor }]}>
@@ -41,10 +45,13 @@ const CurrencySwitcher = ({ onCurrencyChange, backgroundColor = 'white', textCol
                     ]}
                     onPress={() => handleCurrencyChange('USD')}
                 >
-                    <Text style={[
-                        styles.tabText,
-                        { color: selectedCurrency === 'USD' ? textColor : unselectedTextColor }
-                    ]}>🇺🇸 USD</Text>
+                    <View style={styles.tabContent}>
+                        <Image source={usFlagIcon} style={styles.flagIcon} />
+                        <Text style={[
+                            styles.tabText,
+                            { color: selectedCurrency === 'USD' ? textColor : unselectedTextColor }
+                        ]}>USD</Text>
+                    </View>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -58,10 +65,13 @@ const CurrencySwitcher = ({ onCurrencyChange, backgroundColor = 'white', textCol
                     ]}
                     onPress={() => handleCurrencyChange('EUR')}
                 >
-                    <Text style={[
-                        styles.tabText,
-                        { color: selectedCurrency === 'EUR' ? textColor : unselectedTextColor }
-                    ]}>🇪🇺 EUR</Text>
+                    <View style={styles.tabContent}>
+                        <Image source={euFlagIcon} style={styles.flagIcon} />
+                        <Text style={[
+                            styles.tabText,
+                            { color: selectedCurrency === 'EUR' ? textColor : unselectedTextColor }
+                        ]}>EUR</Text>
+                    </View>
                 </TouchableOpacity>
             </BlurView>
         </View>
@@ -86,6 +96,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 25, // Apply border radius here if needed for selected state background
+    },
+    tabContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    flagIcon: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        marginRight: 8,
     },
     tabText: {
         color: '#8E8E93',

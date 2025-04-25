@@ -17,6 +17,7 @@ import { Link } from 'expo-router';
 import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 import * as Haptics from 'expo-haptics';
 import { SwipeableModal } from '@/components/ui/SwipeableModal';
+import { OverlappingImages } from '@/components/ui/OverlappingImages';
 
 const INFO = [
     {
@@ -56,7 +57,7 @@ function BankDetailsModal() {
     };
 
 
-    const renderInfo = (detail: InfoItem) => {
+    const renderInfo = (detail: InfoItem, isLast: boolean) => {
         return (
             <View key={detail.icon} style={styles.infoContainer}>
                 <View style={styles.infoValueContainer}>
@@ -75,7 +76,7 @@ function BankDetailsModal() {
                         >
                             {selectedCurrency === 'EUR' ? detail.textEUR : detail.textUSD}
                         </ThemedScreenText>
-                        <Divider type="solid" color={textColor + 10} thickness={1} />
+                        {!isLast && <Divider type="solid" color={textColor + 10} thickness={1} />}
                     </View>
                 </View>
             </View>
@@ -89,6 +90,15 @@ function BankDetailsModal() {
                 <StarburstBank primaryColor={error ? '#FF0048' : "#0080FF"} />
                 <View style={{ height: Spacing.md }} />
                 <CurrencySwitcher onCurrencyChange={setSelectedCurrency} backgroundColor={textColor} textColor={backgroundColor} />
+                <View style={styles.flagContainer}>
+                    <OverlappingImages
+                        leftImage={require('@/assets/images/us-flag-round.png')}
+                        rightImage={require('@/assets/images/eu-flag-round.png')}
+                        size={64}
+                        overlap={0.3}
+                        borderWidth={0}
+                    />
+                </View>
                 <View style={styles.contentContainer}>
                     <ThemedScreenText type="large" style={styles.headline}>
                         Create your
@@ -97,7 +107,7 @@ function BankDetailsModal() {
                         {selectedCurrency === 'USD' ? 'Virtual US Bank Account' : 'Virtual EU Bank Account'}
                     </ThemedScreenText>
                     <View style={styles.infoWrapper}>
-                        {INFO.map((detail) => renderInfo(detail))}
+                        {INFO.map((detail, index) => renderInfo(detail, index === INFO.length - 1))}
                     </View>
                 </View>
                 <ThemedScreenButton
@@ -117,6 +127,10 @@ export default withScreenTheme(BankDetailsModal, {
 });
 
 const styles = StyleSheet.create({
+    flagContainer: {
+        alignItems: 'center',
+        marginTop: Spacing.xxl
+    },
     contentContainer: {
         flex: 1,
         alignItems: 'center',
@@ -137,15 +151,8 @@ const styles = StyleSheet.create({
     subtitle: {
         marginTop: Spacing.sm
     },
-    chipsContainer: {
-        flexDirection: 'row',
-        gap: Spacing.xs,
-        marginTop: Spacing.md
-    },
     infoContainer: {
         width: '100%',
-        marginBottom: Spacing.md,
-        paddingBottom: Spacing.sm,
     },
     infoValueContainer: {
         flexDirection: 'row',
