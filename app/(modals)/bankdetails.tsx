@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, View, TouchableOpacity } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { KeyboardAvoidingView, Platform, StyleSheet, View, TouchableOpacity, Animated, PanResponder } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
+import { router, useGlobalSearchParams } from 'expo-router';
 
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen } from '@/components/ui/ThemedScreen';
@@ -70,14 +71,48 @@ interface BankDetail {
 }
 
 
-function BankDetailsScreen() {
+function BankDetailsModal() {
+    const params = useGlobalSearchParams();
+    const initialCurrency = params.currency as string || 'USD';
+
     const [error, setError] = useState<string | null>(null);
     const { backgroundColor, textColor } = useScreenTheme();
-    const [selectedCurrency, setSelectedCurrency] = useState('USD');
+    const [selectedCurrency, setSelectedCurrency] = useState(initialCurrency);
     const [copiedField, setCopiedField] = useState<string | null>(null);
 
     // Get the appropriate bank details based on selected currency
     const bankDetails = selectedCurrency === 'USD' ? usBankDetails : euBankDetails;
+
+    // Animation value for dismissal gesture
+    const pan = useRef(new Animated.ValueXY()).current;
+
+    // Create the pan responder
+    const panResponder = useRef(
+        PanResponder.create({
+            onMoveShouldSetPanResponder: (evt, gestureState) => {
+                // Only respond to vertical gestures from the top area
+                return Math.abs(gestureState.dy) > 10 && gestureState.dy > 0;
+            },
+            onPanResponderMove: (evt, gestureState) => {
+                // Follow the gesture
+                if (gestureState.dy > 0) { // Only allow downward movement
+                    pan.y.setValue(gestureState.dy);
+                }
+            },
+            onPanResponderRelease: (evt, gestureState) => {
+                // If swiped down with enough velocity or distance, dismiss
+                if (gestureState.dy > 100 || (gestureState.vy > 0.5 && gestureState.dy > 50)) {
+                    handleClose();
+                } else {
+                    // Otherwise bounce back
+                    Animated.spring(pan, {
+                        toValue: { x: 0, y: 0 },
+                        useNativeDriver: true,
+                    }).start();
+                }
+            },
+        })
+    ).current;
 
     // Handle copying a single field
     const handleCopy = async (label: string, value: string) => {
@@ -116,6 +151,11 @@ function BankDetailsScreen() {
         } catch (e) {
             setError('Failed to copy to clipboard');
         }
+    };
+
+    // Handle close modal
+    const handleClose = () => {
+        router.back();
     };
 
     const renderChipContent = (content: React.ReactNode) => {
@@ -189,43 +229,73 @@ function BankDetailsScreen() {
     }
 
     return (
-        <ThemedScreen>
-            <StarburstBank primaryColor={error ? '#FF0048' : "#0080FF"} />
-            <CurrencySwitcher onCurrencyChange={setSelectedCurrency} backgroundColor={textColor} textColor={backgroundColor} />
-            <View style={styles.contentContainer}>
-                <ThemedScreenText type="subtitle">
-                    {selectedCurrency === 'USD' ? 'Virtual US Bank Account' : 'Virtual EU Bank Account'}
+        <Animated.View
+            style={{
+                ...styles.modalContainer,
+                transform: [{ translateY: pan.y }],
+            }}
+            {...panResponder.panHandlers}
+        >
+            <ThemedScreen>
+                {/* Add a visual indicator for the modal pull-down behavior */}
+                <View style={styles.pullIndicator} />
+
+                <StarburstBank primaryColor={error ? '#FF0048' : "#0080FF"} />
+                <CurrencySwitcher onCurrencyChange={setSelectedCurrency} backgroundColor={textColor} textColor={backgroundColor} />
+                <View style={styles.contentContainer}>
+                    <ThemedScreenText type="subtitle">
+                        {selectedCurrency === 'USD' ? 'Virtual US Bank Account' : 'Virtual EU Bank Account'}
+                    </ThemedScreenText>
+                    <ThemedScreenText type="regular" style={[styles.subtitle, { color: textColor + 40 }]} >
+                        Accept {selectedCurrency === 'USD' ? 'ACH & Wire' : 'SEPA'} Payments
+                    </ThemedScreenText>
+                    {renderChips()}
+                    <DashedDivider color={textColor + 10} thickness={1} />
+                    {bankDetails.map((detail) => renderInfo(detail))}
+                </View>
+                <ThemedScreenText type="tiny" style={[styles.footerText, { color: textColor + 40 }]}>
+                    For assistance regarding issues with transfers and deposits, reach out to <Link href="mailto:support@bridge.xyz">support@bridge.xyz</Link>
                 </ThemedScreenText>
-                <ThemedScreenText type="regular" style={[styles.subtitle, { color: textColor + 40 }]} >
-                    Accept {selectedCurrency === 'USD' ? 'ACH & Wire' : 'SEPA'} Payments
-                </ThemedScreenText>
-                {renderChips()}
-                <DashedDivider color={textColor + 10} thickness={1} />
-                {bankDetails.map((detail) => renderInfo(detail))}
-            </View>
-            <ThemedScreenText type="tiny" style={[styles.footerText, { color: textColor + 40 }]}>
-                For assistance regarding issues with transfers and deposits, reach out to <Link href="mailto:support@bridge.xyz">support@bridge.xyz</Link>
-            </ThemedScreenText>
-            <ThemedScreenButton
-                onPress={handleCopyAll}
-                title={copiedField === 'all' ? 'Copied!' : 'Copy all details'}
-                variant={copiedField === 'all' ? 'outline' : 'primary'}
-            />
-        </ThemedScreen>
+                <ThemedScreenButton
+                    onPress={handleCopyAll}
+                    title={copiedField === 'all' ? 'Copied!' : 'Copy all details'}
+                    variant={copiedField === 'all' ? 'outline' : 'primary'}
+                />
+            </ThemedScreen>
+        </Animated.View>
     );
 }
 
-export default withScreenTheme(BankDetailsScreen, {
+export default withScreenTheme(BankDetailsModal, {
     backgroundColor: '#000000',
     textColor: '#FFFFFF',
     primaryColor: '#FFFFFF'
 });
 
 const styles = StyleSheet.create({
+    modalContainer: {
+        flex: 1,
+    },
+    pullIndicator: {
+        width: 40,
+        height: 5,
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+        borderRadius: 3,
+        alignSelf: 'center',
+        marginTop: 10,
+        marginBottom: 15,
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 15,
+        right: 15,
+        zIndex: 10,
+        padding: 5,
+    },
     contentContainer: {
         flex: 1,
         alignItems: 'center',
-        marginTop: Spacing.lg * 2,
+        marginTop: Spacing.md, // Reduced top margin to account for pull indicator
         marginHorizontal: Spacing.md
     },
     subtitle: {
@@ -261,4 +331,4 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: Spacing.xl
     }
-});
+}); 

@@ -1,26 +1,47 @@
 import { useFonts } from 'expo-font';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
 // import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
-import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@react-navigation/native';
 import { lightTheme, darkTheme } from '@/constants/Theme';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ScreenThemeProvider } from '@/contexts/ScreenThemeContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-// SplashScreen.preventAutoHideAsync();
+export const unstable_settings = {
+    // Ensure that reloading on modals doesn't unmount the parent screen
+    initialRouteName: '(tabs)',
+};
 
 function RootLayoutNav() {
     return (
-        <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="(receive)" />
+        <Stack>
+            <Stack.Screen
+                name="(auth)"
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="(tabs)"
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="(receive)"
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="(modals)"
+                options={{
+                    headerShown: false,
+                    presentation: 'modal',
+                    animation: 'slide_from_bottom',
+                    gestureEnabled: true,
+                    gestureDirection: 'vertical',
+                    animationTypeForReplace: 'push',
+                }}
+            />
         </Stack>
     );
 }
