@@ -72,11 +72,10 @@ interface BankDetail {
 
 function BankDetailsModal() {
     const params = useGlobalSearchParams();
-    const initialCurrency = params.currency as string || 'USD';
 
     const [error, setError] = useState<string | null>(null);
     const { backgroundColor, textColor } = useScreenTheme();
-    const [selectedCurrency, setSelectedCurrency] = useState(initialCurrency);
+    const [selectedCurrency, setSelectedCurrency] = useState('USD');
     const [copiedField, setCopiedField] = useState<string | null>(null);
 
     // Get the appropriate bank details based on selected currency

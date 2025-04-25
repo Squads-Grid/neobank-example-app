@@ -41,7 +41,7 @@ export default function SendLayout() {
                 headerShadowVisible: false,
                 headerBackTitle: 'Back',
                 headerTintColor: textColor,
-                headerBackVisible: true,
+                headerBackVisible: false,
                 headerLeft: () => renderBackButton(),
             }}
         >

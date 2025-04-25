@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         width: '100%',
         marginTop: Spacing.lg,
-        marginBottom: Spacing.md,
+        marginBottom: Spacing.xxl,
     },
     inputWithIcon: {
         flexDirection: 'row',

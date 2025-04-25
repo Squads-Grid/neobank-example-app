@@ -60,8 +60,10 @@ export default function ConfirmScreen() {
             <View style={styles.container}>
                 <View style={styles.content}>
 
-                    <ThemedScreenText type="regular">Amount</ThemedScreenText>
-                    <ThemedScreenText type="jumbo" >{formatAmount(amount)}</ThemedScreenText>
+                    <View style={{ gap: Spacing.sm }}>
+                        <ThemedScreenText type="regular">Amount</ThemedScreenText>
+                        <ThemedScreenText type="jumbo" >{formatAmount(amount)}</ThemedScreenText>
+                    </View>
                     {renderInfo('arrow.forward', 'To', recipient)}
                     {renderInfo('person', 'Name', name)}
                     {renderInfo('network', 'Network fee', '0.0004 SOL')}
