@@ -15,7 +15,7 @@ import { Link } from 'expo-router';
 import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 
 
-const bankDetails = [
+const usBankDetails = [
     {
         label: 'Bank routing number',
         value: '101019644'
@@ -36,8 +36,30 @@ const bankDetails = [
         label: 'Bank address',
         value: '123 Main St, Anytown, USA'
     },
+];
 
-]
+const euBankDetails = [
+    {
+        label: 'IBAN',
+        value: 'DE89 3704 0044 0532 0130 00'
+    },
+    {
+        label: 'BIC/SWIFT',
+        value: 'DEUTDEDBXXX'
+    },
+    {
+        label: 'Bank name',
+        value: 'Deutsche Bank'
+    },
+    {
+        label: 'Bank beneficiary name',
+        value: 'DENI ERSHTUKAEV'
+    },
+    {
+        label: 'Bank address',
+        value: 'Unter den Linden 13-15, 10117 Berlin, Germany'
+    },
+];
 
 interface BankDetail {
     label: string;
@@ -50,6 +72,9 @@ function BankDetailsScreen() {
     const [error, setError] = useState<string | null>(null);
     const { backgroundColor, textColor } = useScreenTheme();
     const [selectedCurrency, setSelectedCurrency] = useState('USD');
+
+    // Get the appropriate bank details based on selected currency
+    const bankDetails = selectedCurrency === 'USD' ? usBankDetails : euBankDetails;
 
     const renderChipContent = (content: React.ReactNode) => {
         return (
@@ -97,8 +122,18 @@ function BankDetailsScreen() {
             <View key={detail.label} style={styles.infoContainer}>
                 <ThemedScreenText type="regular" style={{ color: textColor + 40 }}>{detail.label}</ThemedScreenText>
                 <View style={styles.infoValueContainer}>
-                    <ThemedScreenText type="regular">{detail.value}</ThemedScreenText>
-                    <IconSymbol name={detail.icon ?? 'doc.on.doc'} size={20} color={textColor + 40} />
+                    <ThemedScreenText
+                        type="regular"
+                        style={styles.infoValue}
+                        numberOfLines={0}
+                    >
+                        {detail.value}
+                    </ThemedScreenText>
+                    <IconSymbol
+                        name={detail.icon ?? 'doc.on.doc'}
+                        size={20}
+                        color={textColor + 40}
+                    />
                 </View>
             </View>
         )
@@ -113,7 +148,7 @@ function BankDetailsScreen() {
                     {selectedCurrency === 'USD' ? 'Virtual US Bank Account' : 'Virtual EU Bank Account'}
                 </ThemedScreenText>
                 <ThemedScreenText type="regular" style={[styles.subtitle, { color: textColor + 40 }]} >
-                    Accept ACH & Wire Payments
+                    Accept {selectedCurrency === 'USD' ? 'ACH & Wire' : 'SEPA'} Payments
                 </ThemedScreenText>
                 {renderChips()}
                 <DashedDivider color={textColor + 10} thickness={1} />
@@ -156,8 +191,13 @@ const styles = StyleSheet.create({
     infoValueContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         marginTop: Spacing.xxs
+    },
+    infoValue: {
+        flex: 1,
+        marginRight: Spacing.md,
+        flexWrap: 'wrap'
     },
     footerText: {
         width: '80%',
