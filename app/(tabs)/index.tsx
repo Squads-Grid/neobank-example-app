@@ -71,13 +71,13 @@ export default function HomeScreen() {
     const handleReceiveFromBank = () => {
         closeReceiveModal();
 
-        // router.push({
-        //     pathname: '/amount',
-        //     params: {
-        //         type: 'bank',
-        //         title: 'Receive'
-        //     }
-        // });
+        router.push({
+            pathname: '/(receive)/bankdetails',
+            params: {
+                type: 'bank',
+                title: 'Receive'
+            }
+        });
     };
 
     // Define options for Send modal
