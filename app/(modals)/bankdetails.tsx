@@ -12,7 +12,7 @@ import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
 import { Chip } from '@/components/ui/Chip';
 import { IconSymbol, IconSymbolName } from '@/components/ui/IconSymbol';
-import { DashedDivider } from '@/components/ui/DashedDivider';
+import { Divider } from '@/components/ui/Divider';
 import { Link } from 'expo-router';
 import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 import * as Haptics from 'expo-haptics';
@@ -211,7 +211,7 @@ function BankDetailsModal() {
                         Accept {selectedCurrency === 'USD' ? 'ACH & Wire' : 'SEPA'} Payments
                     </ThemedScreenText>
                     {renderChips()}
-                    <DashedDivider color={textColor + 10} thickness={1} />
+                    <Divider type="dashed" color={textColor + 10} thickness={1} />
                     {bankDetails.map((detail) => renderInfo(detail))}
                 </View>
                 <ThemedScreenText type="tiny" style={[styles.footerText, { color: textColor + 40 }]}>

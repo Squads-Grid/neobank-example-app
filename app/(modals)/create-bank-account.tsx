@@ -12,7 +12,7 @@ import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
 import { Chip } from '@/components/ui/Chip';
 import { IconSymbol, IconSymbolName } from '@/components/ui/IconSymbol';
-import { DashedDivider } from '@/components/ui/DashedDivider';
+import { Divider } from '@/components/ui/Divider';
 import { Link } from 'expo-router';
 import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 import * as Haptics from 'expo-haptics';
@@ -67,13 +67,16 @@ function BankDetailsModal() {
                             color={textColor}
                         />
                     </View>
-                    <ThemedScreenText
-                        type="regular"
-                        style={[styles.infoValue, { color: textColor + 40 }]}
-                        numberOfLines={0}
-                    >
-                        {selectedCurrency === 'EUR' ? detail.textEUR : detail.textUSD}
-                    </ThemedScreenText>
+                    <View style={{ flex: 1 }}>
+                        <ThemedScreenText
+                            type="regular"
+                            style={[styles.infoValue, { color: textColor + 40 }]}
+                            numberOfLines={0}
+                        >
+                            {selectedCurrency === 'EUR' ? detail.textEUR : detail.textUSD}
+                        </ThemedScreenText>
+                        <Divider type="solid" color={textColor + 10} thickness={1} />
+                    </View>
                 </View>
             </View>
         )
@@ -87,8 +90,11 @@ function BankDetailsModal() {
                 <View style={{ height: Spacing.md }} />
                 <CurrencySwitcher onCurrencyChange={setSelectedCurrency} backgroundColor={textColor} textColor={backgroundColor} />
                 <View style={styles.contentContainer}>
-                    <ThemedScreenText type="subtitle">
-                        {selectedCurrency === 'USD' ? 'Create Virtual US Bank Account' : 'Create Virtual EU Bank Account'}
+                    <ThemedScreenText type="large" style={styles.headline}>
+                        Create your
+                    </ThemedScreenText>
+                    <ThemedScreenText type="large" style={styles.headline}>
+                        {selectedCurrency === 'USD' ? 'Virtual US Bank Account' : 'Virtual EU Bank Account'}
                     </ThemedScreenText>
                     <View style={styles.infoWrapper}>
                         {INFO.map((detail) => renderInfo(detail))}
@@ -117,13 +123,16 @@ const styles = StyleSheet.create({
         marginTop: Spacing.xl,
         marginHorizontal: Spacing.md
     },
+    headline: {
+        textAlign: 'center',
+    },
     iconContainer: {
         padding: 7,
         borderRadius: 10
     },
     infoWrapper: {
         width: '100%',
-        marginTop: Spacing.xl
+        marginTop: Spacing.xxl
     },
     subtitle: {
         marginTop: Spacing.sm
@@ -142,13 +151,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginTop: Spacing.xxs,
         gap: Spacing.md
     },
     infoValue: {
-        flex: 1,
-        marginRight: Spacing.md,
-        flexWrap: 'wrap'
+        marginBottom: Spacing.xxs,
+        paddingRight: Spacing.md
     },
     copyButton: {
         padding: Spacing.xxs,  // Add some padding for a larger touch target
