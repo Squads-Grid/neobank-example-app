@@ -97,6 +97,8 @@ function BankDetailsModal() {
                         size={64}
                         overlap={0.3}
                         borderWidth={0}
+                        leftOnTop={selectedCurrency === 'USD'}
+                        backdropOpacity={0.4}
                     />
                 </View>
                 <View style={styles.contentContainer}>

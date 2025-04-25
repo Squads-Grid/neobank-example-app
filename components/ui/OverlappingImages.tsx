@@ -8,6 +8,8 @@ interface OverlappingImagesProps {
     overlap?: number;
     borderWidth?: number;
     borderColor?: string;
+    leftOnTop?: boolean;
+    backdropOpacity?: number;
 }
 
 export function OverlappingImages({
@@ -16,9 +18,19 @@ export function OverlappingImages({
     size = 40,
     overlap = 0.3, // 30% overlap by default
     borderWidth = 0,
-    borderColor = 'white'
+    borderColor = 'white',
+    leftOnTop = true,
+    backdropOpacity = 1 // Default to full opacity
 }: OverlappingImagesProps) {
     const overlapValue = size * overlap;
+
+    // Set z-indexes based on which image should be on top
+    const leftZIndex = leftOnTop ? 2 : 1;
+    const rightZIndex = leftOnTop ? 1 : 2;
+
+    // Set opacity based on which image is in the back
+    const leftOpacity = leftOnTop ? 1 : backdropOpacity;
+    const rightOpacity = leftOnTop ? backdropOpacity : 1;
 
     return (
         <View style={[styles.container, { width: size * 2 - overlapValue }]}>
@@ -30,7 +42,8 @@ export function OverlappingImages({
                     borderRadius: size / 2,
                     borderWidth,
                     borderColor,
-                    zIndex: 2
+                    zIndex: leftZIndex,
+                    opacity: leftOpacity
                 }
             ]}>
                 <Image
@@ -49,7 +62,8 @@ export function OverlappingImages({
                     borderWidth,
                     borderColor,
                     marginLeft: -overlapValue,
-                    zIndex: 1
+                    zIndex: rightZIndex,
+                    opacity: rightOpacity
                 }
             ]}>
                 <Image
