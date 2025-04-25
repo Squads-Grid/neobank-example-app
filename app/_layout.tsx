@@ -9,6 +9,7 @@ import { ThemeProvider } from '@react-navigation/native';
 import { lightTheme, darkTheme } from '@/constants/Theme';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ScreenThemeProvider } from '@/contexts/ScreenThemeContext';
+import { StageProvider } from '@/contexts/StageContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export const unstable_settings = {
@@ -70,8 +71,10 @@ export default function RootLayout() {
         <AuthProvider>
             <ThemeProvider value={colorScheme === 'dark' ? darkTheme : lightTheme}>
                 <ScreenThemeProvider>
-                    <RootLayoutNav />
-                    <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+                    <StageProvider>
+                        <RootLayoutNav />
+                        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+                    </StageProvider>
                 </ScreenThemeProvider>
             </ThemeProvider>
         </AuthProvider>

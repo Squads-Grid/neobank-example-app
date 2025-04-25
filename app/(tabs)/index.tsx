@@ -14,6 +14,8 @@ import { ActionModal } from '@/components/ui/ActionModal';
 import { ModalOptionsList, ActionOption } from '@/components/ui/ModalOptionsList';
 import QRCode from 'react-native-qrcode-svg';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useStage } from '@/contexts/StageContext';
+import { Stage } from '@/components/settings/StageSelector';
 
 const placeholder = require('@/assets/images/no-txn.png');
 const bankIcon = require('@/assets/icons/bank.png');
@@ -21,16 +23,28 @@ const walletIcon = require('@/assets/icons/wallet.png');
 
 const SOLANA_ADDRESS = "5YNmS1R9nNSCDzb5a7mMJ1dwK9uHeAAF4CerVnZgX37B";
 
+// Map Stage from the context to BankStatus enum
+// This ensures backward compatibility with existing code
 enum BankStatus {
     NEW = 'new',
     KYC = 'kyc',
     FINISHED = 'finished'
 }
 
-// Define as a mutable variable with explicit type
-let bankStatus: BankStatus = BankStatus.KYC;
-
 export default function HomeScreen() {
+    // Stage context to check if user is KYC'ed for demo purposes
+    const { stage } = useStage();
+
+    // Convert Stage type to BankStatus enum
+    const getBankStatus = (stageValue: Stage): BankStatus => {
+        switch (stageValue) {
+            case 'new': return BankStatus.NEW;
+            case 'kyc': return BankStatus.KYC;
+            case 'finished': return BankStatus.FINISHED;
+            default: return BankStatus.NEW;
+        }
+    };
+
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
     const [isReceiveModalVisible, setIsReceiveModalVisible] = useState(false);
 
@@ -79,6 +93,9 @@ export default function HomeScreen() {
     const handleReceiveFromBank = () => {
         closeReceiveModal();
 
+        const bankStatus = getBankStatus(stage);
+
+        // Demo/Development feature: Using stage from context to determine app flow
         switch (bankStatus) {
             case BankStatus.NEW:
                 router.push('/(modals)/create-bank-account');
