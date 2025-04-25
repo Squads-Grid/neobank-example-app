@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View, TouchableOpacity } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen } from '@/components/ui/ThemedScreen';
@@ -13,6 +14,7 @@ import { IconSymbol, IconSymbolName } from '@/components/ui/IconSymbol';
 import { DashedDivider } from '@/components/ui/DashedDivider';
 import { Link } from 'expo-router';
 import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
+import * as Haptics from 'expo-haptics';
 
 
 const usBankDetails = [
@@ -72,9 +74,49 @@ function BankDetailsScreen() {
     const [error, setError] = useState<string | null>(null);
     const { backgroundColor, textColor } = useScreenTheme();
     const [selectedCurrency, setSelectedCurrency] = useState('USD');
+    const [copiedField, setCopiedField] = useState<string | null>(null);
 
     // Get the appropriate bank details based on selected currency
     const bankDetails = selectedCurrency === 'USD' ? usBankDetails : euBankDetails;
+
+    // Handle copying a single field
+    const handleCopy = async (label: string, value: string) => {
+        try {
+            await Clipboard.setStringAsync(value);
+            setCopiedField(label);
+
+            // Provide haptic feedback
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+            // Reset the copied indicator after 2 seconds
+            setTimeout(() => {
+                setCopiedField(null);
+            }, 2000);
+        } catch (e) {
+            setError('Failed to copy to clipboard');
+        }
+    };
+
+    // Handle copying all fields
+    const handleCopyAll = async () => {
+        try {
+            // Create a formatted string of all bank details
+            const allDetails = bankDetails.map(detail => `${detail.label}: ${detail.value}`).join('\n');
+
+            await Clipboard.setStringAsync(allDetails);
+            setCopiedField('all');
+
+            // Provide haptic feedback
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+            // Reset the copied indicator after 2 seconds
+            setTimeout(() => {
+                setCopiedField(null);
+            }, 2000);
+        } catch (e) {
+            setError('Failed to copy to clipboard');
+        }
+    };
 
     const renderChipContent = (content: React.ReactNode) => {
         return (
@@ -118,6 +160,8 @@ function BankDetailsScreen() {
     }
 
     const renderInfo = (detail: BankDetail) => {
+        const isCopied = copiedField === detail.label;
+
         return (
             <View key={detail.label} style={styles.infoContainer}>
                 <ThemedScreenText type="regular" style={{ color: textColor + 40 }}>{detail.label}</ThemedScreenText>
@@ -129,11 +173,16 @@ function BankDetailsScreen() {
                     >
                         {detail.value}
                     </ThemedScreenText>
-                    <IconSymbol
-                        name={detail.icon ?? 'doc.on.doc'}
-                        size={20}
-                        color={textColor + 40}
-                    />
+                    <TouchableOpacity
+                        onPress={() => handleCopy(detail.label, detail.value)}
+                        style={styles.copyButton}
+                    >
+                        <IconSymbol
+                            name={isCopied ? 'checkmark' : 'doc.on.doc'}
+                            size={20}
+                            color={textColor + 40}
+                        />
+                    </TouchableOpacity>
                 </View>
             </View>
         )
@@ -157,7 +206,11 @@ function BankDetailsScreen() {
             <ThemedScreenText type="tiny" style={[styles.footerText, { color: textColor + 40 }]}>
                 For assistance regarding issues with transfers and deposits, reach out to <Link href="mailto:support@bridge.xyz">support@bridge.xyz</Link>
             </ThemedScreenText>
-            <ThemedScreenButton onPress={() => { }} title="Copy all details" />
+            <ThemedScreenButton
+                onPress={handleCopyAll}
+                title={copiedField === 'all' ? 'Copied!' : 'Copy all details'}
+                variant={copiedField === 'all' ? 'outline' : 'primary'}
+            />
         </ThemedScreen>
     );
 }
@@ -198,6 +251,9 @@ const styles = StyleSheet.create({
         flex: 1,
         marginRight: Spacing.md,
         flexWrap: 'wrap'
+    },
+    copyButton: {
+        padding: Spacing.xxs,  // Add some padding for a larger touch target
     },
     footerText: {
         width: '80%',
