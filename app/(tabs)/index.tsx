@@ -28,7 +28,7 @@ enum BankStatus {
 }
 
 // Define as a mutable variable with explicit type
-let bankStatus: BankStatus = BankStatus.NEW;
+let bankStatus: BankStatus = BankStatus.KYC;
 
 export default function HomeScreen() {
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
@@ -79,20 +79,17 @@ export default function HomeScreen() {
     const handleReceiveFromBank = () => {
         closeReceiveModal();
 
-        // Use simpler if/else instead of switch for string enums
-        if (bankStatus === BankStatus.NEW) {
-            router.push('/(modals)/create-bank-account');
-        } else if (bankStatus === BankStatus.KYC || bankStatus === BankStatus.FINISHED) {
-            router.push('/(modals)/bankdetails?currency=EUR');
+        switch (bankStatus) {
+            case BankStatus.NEW:
+                router.push('/(modals)/create-bank-account');
+                break;
+            case BankStatus.KYC:
+                router.push('/(modals)/kyc');
+                break;
+            case BankStatus.FINISHED:
+                router.push('/(modals)/bankdetails?currency=EUR');
+                break;
         }
-
-        // router.push({
-        //     pathname: '/(receive)/bankdetails',
-        //     params: {
-        //         type: 'bank',
-        //         title: 'Receive'
-        //     }
-        // });
     };
 
     // Define options for Send modal

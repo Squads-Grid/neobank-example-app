@@ -43,7 +43,7 @@ interface InfoItem {
     textUSD: string;
 }
 
-function BankDetailsModal() {
+function CreateBankAccountModal() {
     const params = useGlobalSearchParams();
     const initialCurrency = params.currency as string || 'USD';
 
@@ -122,7 +122,7 @@ function BankDetailsModal() {
     );
 }
 
-export default withScreenTheme(BankDetailsModal, {
+export default withScreenTheme(CreateBankAccountModal, {
     backgroundColor: '#000000',
     textColor: '#FFFFFF',
     primaryColor: '#FFFFFF'
