@@ -2,7 +2,7 @@ import { ThemedScreenText } from '@/components/ui/atoms';
 import { ThemedScreenButton } from '@/components/ui/molecules';
 import { useAuth } from '@/contexts/AuthContext';
 import { ScreenLayout } from '@/components/ui/layout';
-import { StageSelector, Stage } from '@/components/settings/StageSelector';
+import { StageSelector, Stage } from '@/components/devtools/StageSelector';
 import { useStage } from '@/contexts/StageContext';
 import { View, StyleSheet } from 'react-native';
 import { Spacing } from '@/constants/Spacing';

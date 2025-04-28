@@ -14,7 +14,7 @@ import { ModalOptionsList } from '@/components/ui/molecules';
 import { ActionOption } from '@/components/ui/molecules/ModalOptionsList';
 import QRCode from 'react-native-qrcode-svg';
 import { useStage } from '@/contexts/StageContext';
-import { Stage } from '@/components/settings/StageSelector';
+import { Stage } from '@/components/devtools/StageSelector';
 
 const placeholder = require('@/assets/images/no-txn.png');
 const bankIcon = require('@/assets/icons/bank.png');

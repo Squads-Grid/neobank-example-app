@@ -1,8 +1,7 @@
 import { Stack } from 'expo-router';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { ThemedScreenText } from '@/components/ui/atoms';
-import { AppIcon } from '@/components/ui/atoms';
+import { ThemedScreenText, AppIcon } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
