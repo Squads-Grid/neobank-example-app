@@ -31,24 +31,3 @@ export default withScreenTheme(StartScreen, {
     primaryColor: '#FFFFFF'
 });
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    starburst: {
-        position: 'absolute',
-        top: -100,
-        right: -100,
-        width: 300,
-        height: 300,
-        opacity: 0.1,
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        gap: Spacing.sm,
-        alignItems: 'stretch',
-    },
-    button: {
-        flex: 1,
-    },
-});

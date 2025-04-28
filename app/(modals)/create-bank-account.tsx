@@ -143,9 +143,6 @@ const styles = StyleSheet.create({
         width: '100%',
         marginTop: Spacing.xxl
     },
-    subtitle: {
-        marginTop: Spacing.sm
-    },
     infoContainer: {
         width: '100%',
     },
@@ -159,13 +156,4 @@ const styles = StyleSheet.create({
         marginBottom: Spacing.xxs,
         paddingRight: Spacing.md
     },
-    copyButton: {
-        padding: Spacing.xxs,  // Add some padding for a larger touch target
-    },
-    footerText: {
-        width: '80%',
-        textAlign: 'center',
-        alignSelf: 'center',
-        marginBottom: Spacing.xl
-    }
 }); 

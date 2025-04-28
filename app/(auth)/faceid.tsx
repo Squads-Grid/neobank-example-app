@@ -52,11 +52,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    background: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-    },
     content: {
         flex: 1,
         alignItems: 'center',

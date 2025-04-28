@@ -13,10 +13,9 @@ import { ThemedButton } from '@/components/ui/molecules';
 
 function KYCModal() {
     const params = useGlobalSearchParams();
-    const initialCurrency = params.currency as string || 'USD';
 
     const [error, setError] = useState<string | null>(null);
-    const { backgroundColor, textColor } = useScreenTheme();
+    const { textColor } = useScreenTheme();
 
     // Handle close modal
     const handleClose = () => {
@@ -81,23 +80,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingHorizontal: Spacing.lg
     },
-    iconContainer: {
-        padding: 7,
-        borderRadius: 10
-    },
-
     subtitle: {
         marginTop: Spacing.sm,
         textAlign: 'center',
-    },
-    infoContainer: {
-        width: '100%',
-    },
-    infoValueContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        gap: Spacing.md
     },
     footerText: {
         width: '80%',

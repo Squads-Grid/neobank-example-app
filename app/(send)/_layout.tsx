@@ -24,8 +24,6 @@ export default function SendLayout() {
         return (
             <TouchableOpacity
                 onPress={() => router.back()}
-                style={styles.backButton}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
                 <Ionicons name="chevron-back" size={24} color={textColor} />
             </TouchableOpacity>
@@ -57,14 +55,6 @@ export default function SendLayout() {
                     headerTitle: () => getHeaderTitle('Confirm'),
                 }}
             />
-            {/*
-            <Stack.Screen
-                name="success"
-                options={{
-                    title: 'Success',
-                    headerBackVisible: false,
-                }}
-            /> */}
         </Stack>
     );
 }
@@ -76,8 +66,5 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         marginRight: Spacing.sm
-    },
-    backButton: {
-        padding: Spacing.xs,
     }
 });

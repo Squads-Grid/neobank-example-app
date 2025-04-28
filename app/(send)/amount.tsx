@@ -182,25 +182,9 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'center',
     },
-    inputsContainer: {
-        flex: 1,
-        width: '100%',
-        justifyContent: 'flex-start',
-        paddingTop: Spacing.xl,
-    },
     buttonContainer: {
         width: '100%',
         marginTop: Spacing.lg,
         marginBottom: Spacing.xxl,
-    },
-    inputWithIcon: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: '100%',
-    },
-    copyIcon: {
-        position: 'absolute',
-        right: Spacing.md,
-        padding: Spacing.xs,
-    },
+    }
 }); 

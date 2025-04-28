@@ -261,11 +261,6 @@ const styles = StyleSheet.create({
         height: 46,
         resizeMode: 'contain',
     },
-    placeholderText: {
-        marginTop: Spacing.lg,
-        textAlign: 'center',
-        opacity: 0.23,
-    },
     qrCodeContainer: {
         justifyContent: 'center',
         alignItems: 'center',
