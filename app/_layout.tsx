@@ -7,7 +7,7 @@ import 'react-native-reanimated';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@react-navigation/native';
 import { lightTheme, darkTheme } from '@/constants/Theme';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { LoadingSpinner } from '@/components/ui/atoms';
 import { ScreenThemeProvider } from '@/contexts/ScreenThemeContext';
 import { StageProvider } from '@/contexts/StageContext';
 import { useColorScheme } from '@/hooks/useColorScheme';

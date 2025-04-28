@@ -1,11 +1,10 @@
 import React from 'react';
 import { StyleSheet, View, SectionList } from 'react-native';
-import { ThemedScreenText } from './ThemedScreenText';
+import { ThemedScreenText } from '@/components/ui/atoms';
 import { TransactionItem } from './TransactionItem';
 import { Spacing } from '@/constants/Spacing';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Transaction, TransactionGroup } from '@/types/Transaction';
-import { Height, Size, Weight } from '@/constants/Typography';
 
 interface TransactionListProps {
     transactions: TransactionGroup[];

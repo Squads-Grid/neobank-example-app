@@ -1,15 +1,11 @@
 import React from 'react';
 import { Modal, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { ThemedScreenText } from './ThemedScreenText';
+import { ThemedScreenText } from '@/components/ui/atoms';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
-import { CircleButton } from './CircleButton';
-import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { StarburstModalBackground } from './StarburstModalBackground';
-import { Weight } from '@/constants/Typography';
-import { Size } from '@/constants/Typography';
+import { StarburstModalBackground } from '@/components/ui/layout';
 
 // Main component props
 interface ActionModalProps {

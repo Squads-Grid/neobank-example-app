@@ -1,13 +1,10 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 import { router } from 'expo-router';
 import { Spacing } from '@/constants/Spacing';
-import { ScreenHeaderText } from '@/components/ui/ScreenHeaderText';
+import { ScreenHeaderText, ButtonGroup } from '@/components/ui/molecules';
 import { withScreenTheme } from '@/components/withScreenTheme';
-import { ThemedScreen } from '@/components/ui/ThemedScreen';
-import { ButtonGroup } from '../../components/ui/ButtonGroup';
-import { Starburst } from '@/components/ui/Starburst';
+import { ThemedScreen, Starburst } from '@/components/ui/layout';
 
 export function StartScreen() {
 

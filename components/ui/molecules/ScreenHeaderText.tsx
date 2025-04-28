@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { ThemedScreenText } from './ThemedScreenText';
+import { ThemedScreenText } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 

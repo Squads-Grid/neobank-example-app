@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { ThemedScreenTextInput } from './ui/ThemedScreenTextInput';
-import { ThemedScreenButton } from './ui/ThemedScreenButton';
+import { ThemedScreenTextInput, ThemedScreenButton } from '@/components/ui/molecules';
 import { Spacing } from '@/constants/Spacing';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 

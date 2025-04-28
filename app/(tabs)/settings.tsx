@@ -1,7 +1,7 @@
-import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
-import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
+import { ThemedScreenText } from '@/components/ui/atoms';
+import { ThemedScreenButton } from '@/components/ui/molecules';
 import { useAuth } from '@/contexts/AuthContext';
-import { ScreenLayout } from '@/components/ui/ScreenLayout';
+import { ScreenLayout } from '@/components/ui/layout';
 import { StageSelector, Stage } from '@/components/settings/StageSelector';
 import { useStage } from '@/contexts/StageContext';
 import { View, StyleSheet } from 'react-native';

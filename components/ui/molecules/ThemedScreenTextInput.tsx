@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { TextInput, TextInputProps, StyleSheet, View, ViewStyle, StyleProp, TouchableOpacity } from 'react-native';
+import { TextInput, TextInputProps, StyleSheet, View, ViewStyle, StyleProp } from 'react-native';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { Spacing } from '@/constants/Spacing';
 import { CircleButton } from './CircleButton';

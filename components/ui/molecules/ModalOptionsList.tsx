@@ -1,9 +1,8 @@
 import { Spacing } from '@/constants/Spacing';
 import React from 'react';
 import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { ThemedScreenText } from './ThemedScreenText';
+import { ThemedScreenText } from '@/components/ui/atoms';
 import { CircleButton } from './CircleButton';
-import { Size, Height, Weight } from '@/constants/Typography';
 
 // Define interface for each option (like wallet or bank)
 export interface ActionOption {

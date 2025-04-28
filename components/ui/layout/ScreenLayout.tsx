@@ -1,5 +1,5 @@
-import { SafeAreaView, StyleSheet, ViewStyle } from 'react-native';
-import { ThemedView, ThemedViewProps } from '@/components/ui/ThemedView';
+import { SafeAreaView, StyleSheet } from 'react-native';
+import { ThemedView } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { ViewProps } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';

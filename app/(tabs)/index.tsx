@@ -1,19 +1,18 @@
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 
-import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
+import { ThemedScreenText, IconSymbol } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
-import { CircleButtonGroup } from '@/components/ui/CircleButtonGroup';
-import { TransactionList } from '@/components/ui/TransactionList';
-import { ThemedScreen } from '@/components/ui/ThemedScreen';
-import { Transaction, TransactionGroup } from '@/types/Transaction';
-import { Image } from 'react-native';
-import { ActionModal } from '@/components/ui/ActionModal';
-import { ModalOptionsList, ActionOption } from '@/components/ui/ModalOptionsList';
+import { CircleButtonGroup } from '@/components/ui/molecules';
+import { TransactionList } from '@/components/ui/organisms';
+import { ThemedScreen } from '@/components/ui/layout';
+import { TransactionGroup } from '@/types/Transaction';
+import { ActionModal } from '@/components/ui/organisms';
+import { ModalOptionsList } from '@/components/ui/molecules';
+import { ActionOption } from '@/components/ui/molecules/ModalOptionsList';
 import QRCode from 'react-native-qrcode-svg';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useStage } from '@/contexts/StageContext';
 import { Stage } from '@/components/settings/StageSelector';
 

@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { Animated, PanResponder, StyleSheet, View, ViewStyle } from 'react-native';
-import { Spacing } from '@/constants/Spacing';
 
 interface SwipeableModalProps {
     children: React.ReactNode;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { BlurView } from 'expo-blur';
-import tinycolor from 'tinycolor2'; // Import tinycolor
+import tinycolor from 'tinycolor2';
 
 interface CurrencySwitcherProps {
     onCurrencyChange: (currency: string) => void;
@@ -9,7 +9,7 @@ interface CurrencySwitcherProps {
     textColor?: string;
 }
 
-const CurrencySwitcher = ({ onCurrencyChange, backgroundColor = 'white', textColor = '#000' }: CurrencySwitcherProps) => {
+export function CurrencySwitcher({ onCurrencyChange, backgroundColor = 'white', textColor = '#000' }: CurrencySwitcherProps) {
     const [selectedCurrency, setSelectedCurrency] = useState('USD');
 
     // Define colors
@@ -115,5 +115,3 @@ const styles = StyleSheet.create({
         color: '#000',
     },
 });
-
-export default CurrencySwitcher;

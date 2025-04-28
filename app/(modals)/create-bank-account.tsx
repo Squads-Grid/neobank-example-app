@@ -1,23 +1,16 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import * as Clipboard from 'expo-clipboard';
+import { StyleSheet, View, } from 'react-native';
 import { router, useGlobalSearchParams } from 'expo-router';
 
 import { withScreenTheme } from '@/components/withScreenTheme';
-import { ThemedScreen } from '@/components/ui/ThemedScreen';
-import { StarburstBank } from '@/components/ui/StarburstBank';
+import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
 import { Spacing } from '@/constants/Spacing';
-import CurrencySwitcher from '@/components/ui/CurrencySwitcher';
+import { CurrencySwitcher, SwipeableModal } from '@/components/ui/organisms';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
-import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
-import { Chip } from '@/components/ui/Chip';
-import { IconSymbol, IconSymbolName } from '@/components/ui/IconSymbol';
-import { Divider } from '@/components/ui/Divider';
-import { Link } from 'expo-router';
-import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
-import * as Haptics from 'expo-haptics';
-import { SwipeableModal } from '@/components/ui/SwipeableModal';
-import { OverlappingImages } from '@/components/ui/OverlappingImages';
+import { ThemedScreenText, IconSymbol, Divider } from '@/components/ui/atoms';
+import { IconSymbolName } from '@/components/ui/atoms/IconSymbol';
+import { ThemedScreenButton } from '@/components/ui/molecules';
+import { OverlappingImages } from '@/components/ui/organisms';
 
 const INFO = [
     {

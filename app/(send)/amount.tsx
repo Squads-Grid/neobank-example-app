@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import { ThemedScreen } from '@/components/ui/ThemedScreen';
+import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { ThemedScreen } from '@/components/ui/layout';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
-import { Keypad } from '@/components/ui/Keypad';
+import { Keypad, ThemedScreenButton, ThemedScreenTextInput } from '@/components/ui/molecules';
 import { router, useLocalSearchParams } from 'expo-router';
-import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
-import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
-import { ThemedScreenTextInput } from '@/components/ui/ThemedScreenTextInput';
+import { ThemedScreenText } from '@/components/ui/atoms';
 import * as Clipboard from 'expo-clipboard';
 import { formatAmount } from '@/utils/helper';
-import { Size, Height, Weight } from '@/constants/Typography';
 
 
 

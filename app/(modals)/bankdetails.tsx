@@ -4,19 +4,15 @@ import * as Clipboard from 'expo-clipboard';
 import { router, useGlobalSearchParams } from 'expo-router';
 
 import { withScreenTheme } from '@/components/withScreenTheme';
-import { ThemedScreen } from '@/components/ui/ThemedScreen';
-import { StarburstBank } from '@/components/ui/StarburstBank';
+import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
 import { Spacing } from '@/constants/Spacing';
-import CurrencySwitcher from '@/components/ui/CurrencySwitcher';
+import { CurrencySwitcher, SwipeableModal } from '@/components/ui/organisms';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
-import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
-import { Chip } from '@/components/ui/Chip';
-import { IconSymbol, IconSymbolName } from '@/components/ui/IconSymbol';
-import { Divider } from '@/components/ui/Divider';
+import { ThemedScreenText, Chip, IconSymbol, Divider } from '@/components/ui/atoms';
+import { IconSymbolName } from '@/components/ui/atoms/IconSymbol';
 import { Link } from 'expo-router';
-import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
+import { ThemedScreenButton } from '@/components/ui/molecules';
 import * as Haptics from 'expo-haptics';
-import { SwipeableModal } from '@/components/ui/SwipeableModal';
 
 const US_BANK_DETAILS = [
     {

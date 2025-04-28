@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, Platform, ViewStyle } from 'react-native';
-import { ThemedView } from '@/components/ui/ThemedView';
-import { ScreenVerificationCodeInput } from '@/components/ui/ScreenVerificationCodeInput';
+import { ThemedView, LoadingSpinner, ThemedScreenText } from '@/components/ui/atoms';
+import { ThemedScreenTextInput } from '@/components/ui/molecules';
+import { ScreenVerificationCodeInput } from '@/components/ui/organisms';
 import { Spacing } from '@/constants/Spacing';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { ThemedScreenTextInput } from '@/components/ui/ThemedScreenTextInput';
-import { ThemedScreenText } from './ui/ThemedScreenText';
 import { Weight } from '@/constants/Typography';
 
 interface LoginFormProps {

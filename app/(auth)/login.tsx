@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoginForm } from '@/components/LoginForm';
-import { ScreenHeaderText } from '@/components/ui/ScreenHeaderText';
+import { ScreenHeaderText } from '@/components/ui/molecules';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
-
 import { withScreenTheme } from '@/components/withScreenTheme';
-import { ThemedScreen } from '@/components/ui/ThemedScreen';
-import { ThemedScreenActionText } from '@/components/ui/ThemedScreenActionText';
+import { ThemedScreen, StarburstBackground } from '@/components/ui/layout';
+import { ThemedScreenActionText } from '@/components/ui/atoms';
 import { useResendTimer } from '@/hooks/useResendTimer';
-import { StarburstBackground } from '@/components/ui/StarburstBackground';
 import { Spacing } from '@/constants/Spacing';
 
 // Mock verification code

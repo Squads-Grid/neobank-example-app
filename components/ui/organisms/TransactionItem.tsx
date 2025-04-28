@@ -1,10 +1,9 @@
 import React from 'react';
 import { StyleSheet, View, Pressable } from 'react-native';
-import { ThemedScreenText } from './ThemedScreenText';
+import { ThemedScreenText, AppIcon } from '@/components/ui/atoms';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
-import { AppIcon } from './AppIcon';
-import { Height, Size, Weight } from '@/constants/Typography';
+
 interface TransactionItemProps {
     type: string;
     date: string;

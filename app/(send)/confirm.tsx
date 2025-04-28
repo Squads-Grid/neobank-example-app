@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { ThemedScreen } from '@/components/ui/ThemedScreen';
-import { ThemedScreenText } from '@/components/ui/ThemedScreenText';
+import { ThemedScreen } from '@/components/ui/layout';
+import { ThemedScreenText, IconSymbol } from '@/components/ui/atoms';
+import { IconSymbolName } from '@/components/ui/atoms/IconSymbol';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Spacing } from '@/constants/Spacing';
 import { formatAmount } from '@/utils/helper';
-import { IconSymbol, IconSymbolName } from '@/components/ui/IconSymbol';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { ButtonGroup } from '@/components/ui/ButtonGroup';
+import { ButtonGroup } from '@/components/ui/molecules';
 import { Height, Size, Weight } from '@/constants/Typography';
 
 export default function ConfirmScreen() {
