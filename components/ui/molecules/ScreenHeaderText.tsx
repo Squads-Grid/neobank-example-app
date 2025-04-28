@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { ThemedScreenText } from '@/components/ui/atoms';
+import { ThemedText } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 
@@ -15,19 +15,19 @@ export function ScreenHeaderText({ title, subtitle, flex }: ScreenHeaderTextProp
 
     return (
         <View style={[styles.container, flex ? { flex } : {}]}>
-            <ThemedScreenText
+            <ThemedText
                 style={[styles.title, { color: textColor }]}
                 type="highlight"
             >
                 {title}
-            </ThemedScreenText>
+            </ThemedText>
             {subtitle && (
-                <ThemedScreenText
+                <ThemedText
                     style={{ color: textColor }}
                     type="default"
                 >
                     {subtitle}
-                </ThemedScreenText>
+                </ThemedText>
             )}
         </View>
     );

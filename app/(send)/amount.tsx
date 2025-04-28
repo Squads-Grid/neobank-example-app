@@ -3,9 +3,9 @@ import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { ThemedScreen } from '@/components/ui/layout';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
-import { Keypad, ThemedScreenButton, ThemedScreenTextInput } from '@/components/ui/molecules';
+import { Keypad, ThemedButton, ThemedTextInput } from '@/components/ui/molecules';
 import { router, useLocalSearchParams } from 'expo-router';
-import { ThemedScreenText } from '@/components/ui/atoms';
+import { ThemedText } from '@/components/ui/atoms';
 import * as Clipboard from 'expo-clipboard';
 import { formatAmount } from '@/utils/helper';
 
@@ -110,16 +110,16 @@ export default function AmountScreen() {
 
     const renderAmount = () => {
         return (
-            <ThemedScreenText type="highlight" style={{ color: textColor }}>
+            <ThemedText type="highlight" style={{ color: textColor }}>
                 {formatAmount(amount)}
-            </ThemedScreenText>
+            </ThemedText>
         )
     }
 
     const renderTextInputs = () => {
         return (
             <>
-                <ThemedScreenTextInput
+                <ThemedTextInput
                     value={recipient}
                     onChangeText={setRecipient}
                     placeholder="Wallet address"
@@ -128,7 +128,7 @@ export default function AmountScreen() {
                     withButtonBackground={false}
                 />
                 <View style={{ marginBottom: Spacing.sm }} />
-                <ThemedScreenTextInput
+                <ThemedTextInput
                     value={name}
                     onChangeText={setName}
                     placeholder="Give it a name"
@@ -144,14 +144,14 @@ export default function AmountScreen() {
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
                 style={styles.container}>
                 <View style={styles.amountContainer}>
-                    <ThemedScreenText type="defaultSemiBold" style={styles.label}>{steps[step - 1].label}</ThemedScreenText>
+                    <ThemedText type="defaultSemiBold" style={styles.label}>{steps[step - 1].label}</ThemedText>
 
                     {steps[step - 1].render()}
                 </View>
 
                 {step === 1 && renderKeypad()}
                 <View style={styles.buttonContainer}>
-                    <ThemedScreenButton
+                    <ThemedButton
                         title="Continue"
                         onPress={handleContinue}
                     />

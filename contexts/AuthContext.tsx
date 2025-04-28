@@ -122,7 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             // Navigate to success screen
-            router.replace('/(auth)/success');
+            router.push('/success');
         } catch (error) {
             console.error('Login error:', error);
             throw error;

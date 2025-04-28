@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, Platform, ViewStyle } from 'react-native';
-import { ThemedView, LoadingSpinner, ThemedScreenText } from '@/components/ui/atoms';
-import { ThemedScreenTextInput } from '@/components/ui/molecules';
+import { ThemedView, LoadingSpinner, ThemedText } from '@/components/ui/atoms';
+import { ThemedTextInput } from '@/components/ui/molecules';
 import { ScreenVerificationCodeInput } from '@/components/ui/organisms';
 import { Spacing } from '@/constants/Spacing';
 import { Weight } from '@/constants/Typography';
@@ -38,7 +38,7 @@ export function LoginForm({ onSubmit, isLoading = false, style, error }: LoginFo
                 <ThemedView lightColor="transparent" darkColor="transparent" style={styles.themedViewInner}>
                     {!showCodeInput ? (
                         <>
-                            <ThemedScreenTextInput
+                            <ThemedTextInput
                                 placeholder="Enter your e-mail"
                                 value={email}
                                 onChangeText={setEmail}
@@ -53,16 +53,16 @@ export function LoginForm({ onSubmit, isLoading = false, style, error }: LoginFo
                         </>
                     ) : (
                         <>
-                            <ThemedScreenText style={styles.text}>
+                            <ThemedText style={styles.text}>
                                 Enter the code from your e-mail
-                            </ThemedScreenText>
+                            </ThemedText>
                             <ScreenVerificationCodeInput onCodeComplete={handleCodeComplete} />
                             {error && (
-                                <ThemedScreenText
+                                <ThemedText
                                     style={styles.errorText}
                                 >
                                     {error}
-                                </ThemedScreenText>
+                                </ThemedText>
                             )}
                         </>
                     )}

@@ -1,8 +1,8 @@
 export { ScreenHeaderText } from './ScreenHeaderText';
 export { ModalOptionsList } from './ModalOptionsList';
-export { ThemedScreenButton } from './ThemedScreenButton';
+export { ThemedButton } from './ThemedButton';
 export { Keypad } from './Keypad';
 export { CircleButton } from './CircleButton';
-export { ThemedScreenTextInput } from './ThemedScreenTextInput';
+export { ThemedTextInput } from './ThemedTextInput';
 export { ButtonGroup } from './ButtonGroup';
 export { CircleButtonGroup } from './CircleButtonGroup'; 

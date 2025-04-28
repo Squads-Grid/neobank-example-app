@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
-import { ThemedScreenText, IconSymbol } from '@/components/ui/atoms';
+import { ThemedText, IconSymbol } from '@/components/ui/atoms';
 import { StarburstFull, ThemedScreen } from '@/components/ui/layout';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { Spacing } from '@/constants/Spacing';
@@ -28,7 +28,7 @@ export function SuccessScreen() {
                 activeOpacity={0.8}
             >
                 <IconSymbol name="checkmark.circle" size={80} color={primaryColor} style={{ marginBottom: Spacing.md }} />
-                <ThemedScreenText type="default" style={styles.subtitle}>All done!</ThemedScreenText>
+                <ThemedText type="default" style={styles.subtitle}>All done!</ThemedText>
             </TouchableOpacity>
         </ThemedScreen>
     );

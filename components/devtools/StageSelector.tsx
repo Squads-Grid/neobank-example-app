@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Switch, Text } from 'react-native';
-import { ThemedScreenText } from '@/components/ui/atoms';
+import { ThemedText } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 
@@ -36,17 +36,17 @@ export function StageSelector({ onStageChange, initialStage = 'new' }: StageSele
 
     return (
         <View style={styles.container}>
-            <ThemedScreenText type="defaultSemiBold" style={styles.title}>
+            <ThemedText type="defaultSemiBold" style={styles.title}>
                 Account Stage <Text style={styles.demoTag}>(DEMO ONLY)</Text>
-            </ThemedScreenText>
-            <ThemedScreenText type="tiny" style={styles.description}>
+            </ThemedText>
+            <ThemedText type="tiny" style={styles.description}>
                 For development and demonstration purposes only.
                 Controls the banking flow without needing to reset app state.
-            </ThemedScreenText>
+            </ThemedText>
 
             <View style={styles.optionsContainer}>
                 <View style={styles.option}>
-                    <ThemedScreenText>New</ThemedScreenText>
+                    <ThemedText>New</ThemedText>
                     <Switch
                         value={isSelected('new')}
                         onValueChange={() => handleStageChange('new')}
@@ -57,7 +57,7 @@ export function StageSelector({ onStageChange, initialStage = 'new' }: StageSele
                 </View>
 
                 <View style={styles.option}>
-                    <ThemedScreenText>KYC</ThemedScreenText>
+                    <ThemedText>KYC</ThemedText>
                     <Switch
                         value={isSelected('kyc')}
                         onValueChange={() => handleStageChange('kyc')}
@@ -68,7 +68,7 @@ export function StageSelector({ onStageChange, initialStage = 'new' }: StageSele
                 </View>
 
                 <View style={styles.option}>
-                    <ThemedScreenText>Finished</ThemedScreenText>
+                    <ThemedText>Finished</ThemedText>
                     <Switch
                         value={isSelected('finished')}
                         onValueChange={() => handleStageChange('finished')}

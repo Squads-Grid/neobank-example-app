@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { ThemedScreenText } from '@/components/ui/atoms';
+import { ThemedText } from '@/components/ui/atoms';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -49,7 +49,7 @@ export function ActionModal({
                         </View>
                     )}
                     <View style={styles.header}>
-                        <ThemedScreenText type="subtitle" style={{ color: useStarburstModal ? 'white' : textColor }}>{title}</ThemedScreenText>
+                        <ThemedText type="subtitle" style={{ color: useStarburstModal ? 'white' : textColor }}>{title}</ThemedText>
                         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                             <Text style={[styles.closeText, { color: useStarburstModal ? 'white' : textColor }]}>×</Text>
                         </TouchableOpacity>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, SectionList } from 'react-native';
-import { ThemedScreenText } from '@/components/ui/atoms';
+import { ThemedText } from '@/components/ui/atoms';
 import { TransactionItem } from './TransactionItem';
 import { Spacing } from '@/constants/Spacing';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -17,9 +17,9 @@ export function TransactionList({ transactions }: TransactionListProps) {
 
     const renderSectionHeader = ({ section }: { section: TransactionGroup }) => (
         <View style={[styles.sectionHeaderContainer, { backgroundColor: sectionHeaderBg }]}>
-            <ThemedScreenText type="defaultSemiBold" style={styles.groupTitle}>
+            <ThemedText type="defaultSemiBold" style={styles.groupTitle}>
                 {section.title}
-            </ThemedScreenText>
+            </ThemedText>
         </View>
     );
 
@@ -48,9 +48,9 @@ export function TransactionList({ transactions }: TransactionListProps) {
             stickySectionHeadersEnabled={true}
             contentContainerStyle={styles.contentContainer}
             ListEmptyComponent={() => (
-                <ThemedScreenText style={styles.emptyText}>
+                <ThemedText style={styles.emptyText}>
                     No transactions yet
-                </ThemedScreenText>
+                </ThemedText>
             )}
         />
     );

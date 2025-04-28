@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ThemedScreen } from '@/components/ui/layout';
-import { ThemedScreenText, IconSymbol, LoadingSpinner } from '@/components/ui/atoms';
+import { ThemedText, IconSymbol, LoadingSpinner } from '@/components/ui/atoms';
 import { IconSymbolName } from '@/components/ui/atoms/IconSymbol';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Spacing } from '@/constants/Spacing';
@@ -50,10 +50,10 @@ export default function ConfirmScreen() {
             <View>
                 <View style={styles.labelContainer}>
                     <IconSymbol name={icon} size={16} color={iconColor} />
-                    <ThemedScreenText type="regular" style={{ color: iconColor }}>{label}</ThemedScreenText>
+                    <ThemedText type="regular" style={{ color: iconColor }}>{label}</ThemedText>
 
                 </View>
-                <ThemedScreenText type="default" style={styles.infoText}>{value}</ThemedScreenText>
+                <ThemedText type="default" style={styles.infoText}>{value}</ThemedText>
             </View>
         )
     }
@@ -67,8 +67,8 @@ export default function ConfirmScreen() {
                     <View style={styles.content}>
 
                         <View style={{ gap: Spacing.sm }}>
-                            <ThemedScreenText type="regular">Amount</ThemedScreenText>
-                            <ThemedScreenText type="jumbo" >{formatAmount(amount)}</ThemedScreenText>
+                            <ThemedText type="regular">Amount</ThemedText>
+                            <ThemedText type="jumbo" >{formatAmount(amount)}</ThemedText>
                         </View>
                         {renderInfo('arrow.forward', 'To', recipient)}
                         {renderInfo('person', 'Name', name)}

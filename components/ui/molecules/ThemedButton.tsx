@@ -5,7 +5,7 @@ import { Spacing } from '@/constants/Spacing';
 import tinycolor from 'tinycolor2';
 import { Size, Weight } from '@/constants/Typography';
 
-interface ThemedScreenButtonProps {
+interface ThemedButtonProps {
     onPress: () => void;
     title: string;
     variant?: 'primary' | 'secondary' | 'outline';
@@ -14,14 +14,14 @@ interface ThemedScreenButtonProps {
     disabled?: boolean;
 }
 
-export function ThemedScreenButton({
+export function ThemedButton({
     onPress,
     title,
     variant = 'primary',
     style,
     textStyle,
     disabled = false,
-}: ThemedScreenButtonProps) {
+}: ThemedButtonProps) {
     const { primaryColor, backgroundColor, textColor } = useScreenTheme();
     const primaryColorInstance = tinycolor(primaryColor);
 

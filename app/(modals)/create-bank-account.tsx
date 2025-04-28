@@ -7,9 +7,9 @@ import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
 import { Spacing } from '@/constants/Spacing';
 import { CurrencySwitcher, SwipeableModal } from '@/components/ui/organisms';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
-import { ThemedScreenText, IconSymbol, Divider } from '@/components/ui/atoms';
+import { ThemedText, IconSymbol, Divider } from '@/components/ui/atoms';
 import { IconSymbolName } from '@/components/ui/atoms/IconSymbol';
-import { ThemedScreenButton } from '@/components/ui/molecules';
+import { ThemedButton } from '@/components/ui/molecules';
 import { OverlappingImages } from '@/components/ui/organisms';
 
 const INFO = [
@@ -62,13 +62,13 @@ function CreateBankAccountModal() {
                         />
                     </View>
                     <View style={{ flex: 1 }}>
-                        <ThemedScreenText
+                        <ThemedText
                             type="regular"
                             style={[styles.infoValue, { color: textColor + 40 }]}
                             numberOfLines={0}
                         >
                             {selectedCurrency === 'EUR' ? detail.textEUR : detail.textUSD}
-                        </ThemedScreenText>
+                        </ThemedText>
                         {!isLast && <Divider type="solid" color={textColor + 10} thickness={1} />}
                     </View>
                 </View>
@@ -95,17 +95,17 @@ function CreateBankAccountModal() {
                     />
                 </View>
                 <View style={styles.contentContainer}>
-                    <ThemedScreenText type="large" style={styles.headline}>
+                    <ThemedText type="large" style={styles.headline}>
                         Create your
-                    </ThemedScreenText>
-                    <ThemedScreenText type="large" style={styles.headline}>
+                    </ThemedText>
+                    <ThemedText type="large" style={styles.headline}>
                         {selectedCurrency === 'USD' ? 'Virtual US Bank Account' : 'Virtual EU Bank Account'}
-                    </ThemedScreenText>
+                    </ThemedText>
                     <View style={styles.infoWrapper}>
                         {INFO.map((detail, index) => renderInfo(detail, index === INFO.length - 1))}
                     </View>
                 </View>
-                <ThemedScreenButton
+                <ThemedButton
                     onPress={() => { }}
                     title={selectedCurrency === 'USD' ? 'Create Virtual US Account' : 'Create Virtual EU Account'}
                 />

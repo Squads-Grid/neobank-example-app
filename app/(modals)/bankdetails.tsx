@@ -8,10 +8,10 @@ import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
 import { Spacing } from '@/constants/Spacing';
 import { CurrencySwitcher, SwipeableModal } from '@/components/ui/organisms';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
-import { ThemedScreenText, Chip, IconSymbol, Divider } from '@/components/ui/atoms';
+import { ThemedText, Chip, IconSymbol, Divider } from '@/components/ui/atoms';
 import { IconSymbolName } from '@/components/ui/atoms/IconSymbol';
 import { Link } from 'expo-router';
-import { ThemedScreenButton } from '@/components/ui/molecules';
+import { ThemedButton } from '@/components/ui/molecules';
 import * as Haptics from 'expo-haptics';
 
 const US_BANK_DETAILS = [
@@ -136,26 +136,26 @@ function BankDetailsModal() {
             <View style={styles.chipsContainer}>
                 {renderChipContent(
                     <>
-                        <ThemedScreenText type="regular" style={{ color: textColor + 40 }}>
+                        <ThemedText type="regular" style={{ color: textColor + 40 }}>
                             Fees{' '}
-                        </ThemedScreenText>
-                        <ThemedScreenText type="regular">
+                        </ThemedText>
+                        <ThemedText type="regular">
                             0.1%
-                        </ThemedScreenText>
+                        </ThemedText>
                     </>
                 )}
                 {renderChipContent(
                     <>
-                        <ThemedScreenText type="regular">
+                        <ThemedText type="regular">
                             Limits{' '}
-                        </ThemedScreenText>
+                        </ThemedText>
                         <IconSymbol name="arrow.up.right" size={10} color={textColor} />
                     </>
                 )}
                 {renderChipContent(
-                    <ThemedScreenText type="regular" style={{ color: textColor + 40 }}>
+                    <ThemedText type="regular" style={{ color: textColor + 40 }}>
                         Min. transfer is {selectedCurrency === 'USD' ? '$2' : '€2'}
-                    </ThemedScreenText>
+                    </ThemedText>
 
                 )}
             </View>
@@ -167,15 +167,15 @@ function BankDetailsModal() {
 
         return (
             <View key={detail.label} style={styles.infoContainer}>
-                <ThemedScreenText type="regular" style={{ color: textColor + 40 }}>{detail.label}</ThemedScreenText>
+                <ThemedText type="regular" style={{ color: textColor + 40 }}>{detail.label}</ThemedText>
                 <View style={styles.infoValueContainer}>
-                    <ThemedScreenText
+                    <ThemedText
                         type="regular"
                         style={styles.infoValue}
                         numberOfLines={0}
                     >
                         {detail.value}
-                    </ThemedScreenText>
+                    </ThemedText>
                     <TouchableOpacity
                         onPress={() => handleCopy(detail.label, detail.value)}
                         style={styles.copyButton}
@@ -199,20 +199,20 @@ function BankDetailsModal() {
                 <View style={{ height: Spacing.md }} />
                 <CurrencySwitcher onCurrencyChange={setSelectedCurrency} backgroundColor={textColor} textColor={backgroundColor} />
                 <View style={styles.contentContainer}>
-                    <ThemedScreenText type="subtitle">
+                    <ThemedText type="subtitle">
                         {selectedCurrency === 'USD' ? 'Virtual US Bank Account' : 'Virtual EU Bank Account'}
-                    </ThemedScreenText>
-                    <ThemedScreenText type="regular" style={[styles.subtitle, { color: textColor + 40 }]} >
+                    </ThemedText>
+                    <ThemedText type="regular" style={[styles.subtitle, { color: textColor + 40 }]} >
                         Accept {selectedCurrency === 'USD' ? 'ACH & Wire' : 'SEPA'} Payments
-                    </ThemedScreenText>
+                    </ThemedText>
                     {renderChips()}
                     <Divider type="dashed" color={textColor + 10} thickness={1} />
                     {bankDetails.map((detail) => renderInfo(detail))}
                 </View>
-                <ThemedScreenText type="tiny" style={[styles.footerText, { color: textColor + 40 }]}>
+                <ThemedText type="tiny" style={[styles.footerText, { color: textColor + 40 }]}>
                     For assistance regarding issues with transfers and deposits, reach out to <Link href="mailto:support@bridge.xyz">support@bridge.xyz</Link>
-                </ThemedScreenText>
-                <ThemedScreenButton
+                </ThemedText>
+                <ThemedButton
                     onPress={handleCopyAll}
                     title={copiedField === 'all' ? 'Copied!' : 'Copy all details'}
                     variant={copiedField === 'all' ? 'outline' : 'primary'}

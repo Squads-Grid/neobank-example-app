@@ -1,21 +1,20 @@
 import { Stack } from 'expo-router';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { ThemedScreenText, AppIcon } from '@/components/ui/atoms';
+import { ThemedText, AppIcon } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
 export default function SendLayout() {
     const textColor = useThemeColor({}, 'text');
-    const primaryColor = useThemeColor({}, 'primary');
 
     const getHeaderTitle = (title: string) => {
         return (
             <View style={styles.headerStyle}>
-                <ThemedScreenText type="defaultSemiBold" style={styles.headerTitle}>
+                <ThemedText type="defaultSemiBold" style={styles.headerTitle}>
                     {title}
-                </ThemedScreenText>
+                </ThemedText>
                 <AppIcon name="sent" size={24} />
             </View>
         )

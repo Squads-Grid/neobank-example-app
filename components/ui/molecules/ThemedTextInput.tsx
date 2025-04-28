@@ -4,7 +4,7 @@ import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { Spacing } from '@/constants/Spacing';
 import { CircleButton } from './CircleButton';
 import { Size } from '@/constants/Typography';
-interface ThemedScreenTextInputProps extends Omit<TextInputProps, 'style'> {
+interface ThemedTextInputProps extends Omit<TextInputProps, 'style'> {
     onButtonPress?: () => void;
     buttonIcon?: keyof typeof import('@expo/vector-icons').Ionicons.glyphMap;
     buttonDisabled?: boolean;
@@ -15,7 +15,7 @@ interface ThemedScreenTextInputProps extends Omit<TextInputProps, 'style'> {
     error?: boolean;
 }
 
-export const ThemedScreenTextInput = forwardRef<TextInput, ThemedScreenTextInputProps>(
+export const ThemedTextInput = forwardRef<TextInput, ThemedTextInputProps>(
     (
         {
             style,

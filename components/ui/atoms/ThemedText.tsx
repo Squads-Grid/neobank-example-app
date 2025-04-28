@@ -3,16 +3,16 @@ import { Text, TextProps, StyleSheet } from 'react-native';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { Height, Size, Weight } from '@/constants/Typography';
 
-export type ThemedScreenTextProps = TextProps & {
+export type ThemedTextProps = TextProps & {
     type?: 'default' | 'highlight' | 'defaultSemiBold' | 'subtitle' | 'link' | 'jumbo' | 'regular' | 'regularSemiBold' | 'tiny' | 'large';
 };
 
-export function ThemedScreenText({
+export function ThemedText({
     children,
     style,
     type = 'default',
     ...props
-}: ThemedScreenTextProps) {
+}: ThemedTextProps) {
     const { textColor } = useScreenTheme();
 
     return (

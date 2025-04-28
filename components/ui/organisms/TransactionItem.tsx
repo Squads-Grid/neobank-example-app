@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Pressable } from 'react-native';
-import { ThemedScreenText, AppIcon } from '@/components/ui/atoms';
+import { ThemedText, AppIcon } from '@/components/ui/atoms';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
 
@@ -31,15 +31,15 @@ export function TransactionItem({ type, date, amount, isLast, onPress, walletAdd
         >
             <AppIcon name={iconName} size={34} />
             <View style={styles.details}>
-                <ThemedScreenText type="regular">{type}</ThemedScreenText>
+                <ThemedText type="regular">{type}</ThemedText>
                 <View style={styles.transactionDetails}>
-                    <ThemedScreenText type="tiny" >
+                    <ThemedText type="tiny" >
                         {formattedAddress}
-                    </ThemedScreenText>
-                    <ThemedScreenText type="tiny" style={styles.date}> • {date}</ThemedScreenText>
+                    </ThemedText>
+                    <ThemedText type="tiny" style={styles.date}> • {date}</ThemedText>
                 </View>
             </View>
-            <ThemedScreenText
+            <ThemedText
                 type="defaultSemiBold"
                 style={[
                     styles.amount,
@@ -47,7 +47,7 @@ export function TransactionItem({ type, date, amount, isLast, onPress, walletAdd
                 ]}
             >
                 {amount < 0 ? '' : '+'}${Math.abs(amount).toFixed(2)}
-            </ThemedScreenText>
+            </ThemedText>
         </Pressable>
     );
 }

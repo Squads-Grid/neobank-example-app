@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { ThemedScreenButton } from './ThemedScreenButton';
+import { ThemedButton } from './ThemedButton';
 
 interface ButtonGroupProps {
     leftTitle: string;
@@ -24,13 +24,13 @@ export function ButtonGroup({
 
     return (
         <View style={[styles.buttonContainer, style]}>
-            <ThemedScreenButton
+            <ThemedButton
                 title={leftTitle}
                 onPress={leftOnPress}
                 variant={leftVariant}
                 style={styles.button}
             />
-            <ThemedScreenButton
+            <ThemedButton
                 title={rightTitle}
                 onPress={rightOnPress}
                 variant={rightVariant}

@@ -47,6 +47,10 @@ function RootLayoutNav() {
                     animationTypeForReplace: 'push',
                 }}
             />
+            <Stack.Screen
+                name="success"
+                options={{ headerShown: false }}
+            />
         </Stack>
     );
 }

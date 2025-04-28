@@ -7,9 +7,9 @@ import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
 import { Spacing } from '@/constants/Spacing';
 import { SwipeableModal, OverlappingImages } from '@/components/ui/organisms';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
-import { ThemedScreenText } from '@/components/ui/atoms';
+import { ThemedText } from '@/components/ui/atoms';
 import { Link } from 'expo-router';
-import { ThemedScreenButton } from '@/components/ui/molecules';
+import { ThemedButton } from '@/components/ui/molecules';
 
 function KYCModal() {
     const params = useGlobalSearchParams();
@@ -38,17 +38,17 @@ function KYCModal() {
                             borderWidth={0}
                         />
                     </View>
-                    <ThemedScreenText type="large" style={styles.headline}>
+                    <ThemedText type="large" style={styles.headline}>
                         Continue with Bridge for identity verification
-                    </ThemedScreenText>
-                    <ThemedScreenText type="regular" style={[styles.subtitle, { color: textColor + 40 }]}>
+                    </ThemedText>
+                    <ThemedText type="regular" style={[styles.subtitle, { color: textColor + 40 }]}>
                         Complete verification with Bridge.xyz and your account details will automatically appear in your Bright App.
-                    </ThemedScreenText>
+                    </ThemedText>
                 </View>
-                <ThemedScreenText type="tiny" style={[styles.footerText, { color: textColor + 40 }]}>
+                <ThemedText type="tiny" style={[styles.footerText, { color: textColor + 40 }]}>
                     By pressing continue, you agree to the <Link href="https://bridge.xyz/terms-of-service">Terms and conditions</Link>.
-                </ThemedScreenText>
-                <ThemedScreenButton
+                </ThemedText>
+                <ThemedButton
                     onPress={() => { }}
                     title="Continue"
                 />

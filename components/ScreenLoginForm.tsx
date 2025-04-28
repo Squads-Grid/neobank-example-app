@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { ThemedScreenTextInput, ThemedScreenButton } from '@/components/ui/molecules';
+import { ThemedTextInput, ThemedButton } from '@/components/ui/molecules';
 import { Spacing } from '@/constants/Spacing';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 
@@ -29,7 +29,7 @@ export function ScreenLoginForm({ onSubmit, isLoading = false }: ScreenLoginForm
 
     return (
         <View style={styles.container}>
-            <ThemedScreenTextInput
+            <ThemedTextInput
                 placeholder="Enter your email"
                 value={email}
                 onChangeText={setEmail}
@@ -38,7 +38,7 @@ export function ScreenLoginForm({ onSubmit, isLoading = false }: ScreenLoginForm
                 autoComplete="email"
                 error={!!error}
             />
-            <ThemedScreenButton
+            <ThemedButton
                 onPress={handleSubmit}
                 disabled={isLoading}
                 style={styles.button}

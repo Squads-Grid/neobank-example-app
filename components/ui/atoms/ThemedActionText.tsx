@@ -2,7 +2,8 @@ import React from 'react';
 import { Text, TextProps, StyleSheet, TouchableOpacity } from 'react-native';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { Size, Weight } from '@/constants/Typography';
-interface ThemedScreenActionTextProps extends Omit<TextProps, 'style'> {
+
+interface ThemedActionTextProps extends Omit<TextProps, 'style'> {
     onPress?: () => void;
     disabled?: boolean;
     countdown?: number;
@@ -11,7 +12,7 @@ interface ThemedScreenActionTextProps extends Omit<TextProps, 'style'> {
     style?: TextProps['style'];
 }
 
-export function ThemedScreenActionText({
+export function ThemedActionText({
     onPress,
     disabled = false,
     countdown,
@@ -19,7 +20,7 @@ export function ThemedScreenActionText({
     activeText = 'Resend code',
     style,
     ...props
-}: ThemedScreenActionTextProps) {
+}: ThemedActionTextProps) {
     const { textColor } = useScreenTheme();
 
     const getDisplayText = () => {

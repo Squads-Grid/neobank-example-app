@@ -1,7 +1,7 @@
 import { Spacing } from '@/constants/Spacing';
 import React from 'react';
 import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { ThemedScreenText } from '@/components/ui/atoms';
+import { ThemedText } from '@/components/ui/atoms';
 import { CircleButton } from './CircleButton';
 
 // Define interface for each option (like wallet or bank)
@@ -30,8 +30,8 @@ export function ModalOptionsList({ options }: ModalOptionsListProps) {
                 >
                     <Image source={option.icon} style={styles.icon} />
                     <View style={styles.optionTextContainer}>
-                        <ThemedScreenText type="regularSemiBold">{option.title}</ThemedScreenText>
-                        <ThemedScreenText type="tiny" style={styles.subText}>{option.description}</ThemedScreenText>
+                        <ThemedText type="regularSemiBold">{option.title}</ThemedText>
+                        <ThemedText type="tiny" style={styles.subText}>{option.description}</ThemedText>
                     </View>
                     <View style={styles.arrowContainer}>
                         <CircleButton

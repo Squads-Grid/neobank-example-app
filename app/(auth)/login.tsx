@@ -5,7 +5,7 @@ import { ScreenHeaderText } from '@/components/ui/molecules';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen, StarburstBackground } from '@/components/ui/layout';
-import { ThemedScreenActionText } from '@/components/ui/atoms';
+import { ThemedActionText } from '@/components/ui/atoms';
 import { useResendTimer } from '@/hooks/useResendTimer';
 import { Spacing } from '@/constants/Spacing';
 
@@ -98,7 +98,7 @@ function LoginScreen() {
 
                     {showCodeInput && !isLoading && (
                         <View style={styles.actionContainer}>
-                            <ThemedScreenActionText
+                            <ThemedActionText
                                 onPress={handleResend}
                                 disabled={isDisabled}
                                 countdown={countdown}

@@ -1,5 +1,5 @@
-import { ThemedScreenText } from '@/components/ui/atoms';
-import { ThemedScreenButton } from '@/components/ui/molecules';
+import { ThemedText } from '@/components/ui/atoms';
+import { ThemedButton } from '@/components/ui/molecules';
 import { useAuth } from '@/contexts/AuthContext';
 import { ScreenLayout } from '@/components/ui/layout';
 import { StageSelector, Stage } from '@/components/devtools/StageSelector';
@@ -21,26 +21,26 @@ export default function SettingsScreen() {
     return (
         <ScreenLayout>
             <View style={styles.header}>
-                <ThemedScreenText type="highlight">Settings</ThemedScreenText>
-                <ThemedScreenText type="regular" style={styles.subtitle}>
+                <ThemedText type="highlight">Settings</ThemedText>
+                <ThemedText type="regular" style={styles.subtitle}>
                     Customize your app settings and development options
-                </ThemedScreenText>
+                </ThemedText>
             </View>
 
             <View style={styles.section}>
-                <ThemedScreenText type="defaultSemiBold" style={styles.sectionTitle}>
+                <ThemedText type="defaultSemiBold" style={styles.sectionTitle}>
                     Developer Options
-                </ThemedScreenText>
+                </ThemedText>
                 <View style={styles.devModeContainer}>
-                    <ThemedScreenText type="tiny" style={styles.devModeText}>
+                    <ThemedText type="tiny" style={styles.devModeText}>
                         These settings affect demo flow only and would not be present in production
-                    </ThemedScreenText>
+                    </ThemedText>
                 </View>
                 <StageSelector onStageChange={handleStageChange} initialStage={stage} />
             </View>
 
             <View style={styles.footer}>
-                <ThemedScreenButton
+                <ThemedButton
                     title="Logout"
                     onPress={logout}
                     variant="outline"

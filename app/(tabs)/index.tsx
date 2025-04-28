@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 
-import { ThemedScreenText, IconSymbol } from '@/components/ui/atoms';
+import { ThemedText, IconSymbol } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { CircleButtonGroup } from '@/components/ui/molecules';
 import { TransactionList } from '@/components/ui/organisms';
@@ -182,8 +182,8 @@ export default function HomeScreen() {
 
     return (
         <ThemedScreen>
-            <ThemedScreenText style={styles.headline}>Home · Balance</ThemedScreenText>
-            <ThemedScreenText type="highlight" style={styles.balanceTextStyle}>$3,456.94</ThemedScreenText>
+            <ThemedText style={styles.headline}>Home · Balance</ThemedText>
+            <ThemedText type="highlight" style={styles.balanceTextStyle}>$3,456.94</ThemedText>
             <CircleButtonGroup buttons={actions} />
             <View style={{ height: Spacing.xl }} />
             {transactionData.length > 0 ? <TransactionList transactions={transactionData} /> : (
@@ -192,7 +192,7 @@ export default function HomeScreen() {
                         source={placeholder}
                         style={styles.placeholderImage}
                     />
-                    <ThemedScreenText type="regular">No transactions yet</ThemedScreenText>
+                    <ThemedText type="regular">No transactions yet</ThemedText>
                 </View>
             )}
 
@@ -223,16 +223,16 @@ export default function HomeScreen() {
                 useStarburstModal={true}
             >
                 <View style={styles.qrCodeContainer}>
-                    <ThemedScreenText type="large" style={[styles.qrCodeHeadline, { color: 'white' }]}>Bright</ThemedScreenText>
+                    <ThemedText type="large" style={[styles.qrCodeHeadline, { color: 'white' }]}>Bright</ThemedText>
                     {renderQRCode()}
-                    <ThemedScreenText type="default" style={styles.qrCodeAddress}>{SOLANA_ADDRESS}</ThemedScreenText>
+                    <ThemedText type="default" style={styles.qrCodeAddress}>{SOLANA_ADDRESS}</ThemedText>
                     <View style={styles.qrCodeSupportContainer}>
                         <IconSymbol name="info.circle" size={16} color="white" />
-                        <ThemedScreenText type="tiny" style={styles.qrCodeSupportText}>We don't support NFTs.</ThemedScreenText>
+                        <ThemedText type="tiny" style={styles.qrCodeSupportText}>We don't support NFTs.</ThemedText>
                     </View>
                     <View style={styles.qrCodeCopyContainer}>
                         <IconSymbol name="doc.on.doc" size={16} color="white" />
-                        <ThemedScreenText type="regularSemiBold" style={styles.qrCodeCopyText}>Copy</ThemedScreenText>
+                        <ThemedText type="regularSemiBold" style={styles.qrCodeCopyText}>Copy</ThemedText>
                     </View>
                 </View>
             </ActionModal>
