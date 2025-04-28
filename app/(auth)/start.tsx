@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { ThemedScreenButton } from '@/components/ui/ThemedScreenButton';
 import { router } from 'expo-router';
 import { Spacing } from '@/constants/Spacing';
@@ -7,19 +7,14 @@ import { ScreenHeaderText } from '@/components/ui/ScreenHeaderText';
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen } from '@/components/ui/ThemedScreen';
 import { ButtonGroup } from '../../components/ui/ButtonGroup';
-
-const starburstImage = require('@/assets/images/starburst.png');
+import { Starburst } from '@/components/ui/Starburst';
 
 export function StartScreen() {
 
     return (
         <ThemedScreen style={{ justifyContent: 'space-between' }}>
-            {/* Background Image */}
-            <Image
-                source={starburstImage}
-                style={styles.backgroundImage}
-                resizeMode="contain"
-            />
+            {/* Background Starburst */}
+            <Starburst />
             <ScreenHeaderText title="Bright" subtitle="Your finances, upgraded" />
             <View>
                 <ButtonGroup
@@ -50,13 +45,6 @@ const styles = StyleSheet.create({
         width: 300,
         height: 300,
         opacity: 0.1,
-    },
-    backgroundImage: {
-        position: 'absolute',
-        left: '-18%',
-        top: '-25%',
-        width: '150%',
-        height: '150%',
     },
     buttonContainer: {
         flexDirection: 'row',
