@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ThemedScreen } from '@/components/ui/layout';
-import { ThemedScreenText, IconSymbol } from '@/components/ui/atoms';
+import { ThemedScreenText, IconSymbol, LoadingSpinner } from '@/components/ui/atoms';
 import { IconSymbolName } from '@/components/ui/atoms/IconSymbol';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Spacing } from '@/constants/Spacing';
@@ -12,6 +12,7 @@ import { Height, Size, Weight } from '@/constants/Typography';
 
 export default function ConfirmScreen() {
     const textColor = useThemeColor({}, 'text');
+    const [isLoading, setIsLoading] = useState(false);
 
     const { amount, recipient, name, type, title } = useLocalSearchParams<{
         amount: string;
@@ -22,18 +23,20 @@ export default function ConfirmScreen() {
     }>();
 
     const handleConfirm = () => {
-        // Handle confirmation logic
-        console.log('Confirmed:', { amount, recipient, name, type, title });
+        // Set loading state
+        setIsLoading(true);
 
-        // Navigate to success screen
-        router.push({
-            pathname: '/success',
-            params: { amount, type, title }
-        });
+        // Simulate API call with a timeout
+        setTimeout(() => {
+            // Navigate to success screen
+            router.push({
+                pathname: '/success',
+                params: { amount, type, title }
+            });
+        }, 2000); // 2 seconds delay
     };
 
     const handleCancel = () => {
-
         // Navigate to home
         router.push({
             pathname: '/(tabs)',
@@ -57,28 +60,31 @@ export default function ConfirmScreen() {
 
     return (
         <ThemedScreen useSafeArea={true} safeAreaEdges={['bottom', 'left', 'right']}>
-            <View style={styles.container}>
-                <View style={styles.content}>
+            {isLoading ? (
+                <LoadingSpinner />
+            ) : (
+                <View style={styles.container}>
+                    <View style={styles.content}>
 
-                    <View style={{ gap: Spacing.sm }}>
-                        <ThemedScreenText type="regular">Amount</ThemedScreenText>
-                        <ThemedScreenText type="jumbo" >{formatAmount(amount)}</ThemedScreenText>
+                        <View style={{ gap: Spacing.sm }}>
+                            <ThemedScreenText type="regular">Amount</ThemedScreenText>
+                            <ThemedScreenText type="jumbo" >{formatAmount(amount)}</ThemedScreenText>
+                        </View>
+                        {renderInfo('arrow.forward', 'To', recipient)}
+                        {renderInfo('person', 'Name', name)}
+                        {renderInfo('network', 'Network fee', '0.0004 SOL')}
                     </View>
-                    {renderInfo('arrow.forward', 'To', recipient)}
-                    {renderInfo('person', 'Name', name)}
-                    {renderInfo('network', 'Network fee', '0.0004 SOL')}
+
+                    <ButtonGroup
+                        leftTitle='Cancel'
+                        leftVariant='secondary'
+                        rightTitle='Confirm'
+                        rightVariant='primary'
+                        leftOnPress={handleCancel}
+                        rightOnPress={handleConfirm}
+                    />
                 </View>
-
-                <ButtonGroup
-                    leftTitle='Cancel'
-                    leftVariant='secondary'
-                    rightTitle='Confirm'
-                    rightVariant='primary'
-                    leftOnPress={handleCancel}
-                    rightOnPress={handleConfirm}
-                />
-
-            </View>
+            )}
         </ThemedScreen>
     );
 }
