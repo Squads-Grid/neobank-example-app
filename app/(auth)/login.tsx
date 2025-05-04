@@ -8,6 +8,8 @@ import { ThemedScreen, StarburstBackground } from '@/components/ui/layout';
 import { ThemedActionText } from '@/components/ui/atoms';
 import { useResendTimer } from '@/hooks/useResendTimer';
 import { Spacing } from '@/constants/Spacing';
+import { AuthenticationResponse } from '@/types/Authentication';
+import { generateKeyPairP256 } from '@/utils/helper';
 
 // Mock verification code
 const MOCK_VERIFICATION_CODE = '123123';
@@ -17,7 +19,8 @@ function LoginScreen() {
     const [email, setEmail] = useState('');
     const [showCodeInput, setShowCodeInput] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { signIn } = useAuth();
+    const [otpId, setOtpId] = useState<string | null>(null);
+    const { authenticate, verifyCode } = useAuth();
 
     const sendVerificationCode = async () => {
         try {
@@ -41,10 +44,20 @@ function LoginScreen() {
         onResend: sendVerificationCode
     });
 
-    const verifyCode = async (code: string): Promise<boolean> => {
+    const verify = async (code: string): Promise<boolean> => {
+        const keyPair = await generateKeyPairP256();
+
+        if (!otpId) {
+            throw new Error('No otpId found');
+        }
+
         // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        return code === MOCK_VERIFICATION_CODE;
+        const result = await verifyCode(
+            code,
+            otpId
+        );
+        console.log("🚀 ~ verify ~ result:", result)
+        return result;
     };
 
     const handleSubmit = async (submittedEmail: string, code?: string) => {
@@ -52,17 +65,20 @@ function LoginScreen() {
             setIsLoading(true);
             setError(null);
             setEmail(submittedEmail);
-
-            if (code) {
-                const isValid = await verifyCode(code);
+            console.log("🚀 ~ handleSubmit ~ submittedEmail:", submittedEmail)
+            if (code && otpId) {
+                const isValid = await verify(code);
                 if (!isValid) {
                     setError('Invalid code');
                     return;
                 }
-                await signIn(submittedEmail, code);
+
             } else {
+
                 setShowCodeInput(true);
-                await sendVerificationCode();
+                const result = await authenticate(submittedEmail);
+                console.log("🚀 ~ handleSubmit ~ result:", result)
+                setOtpId(result);
             }
         } catch (error) {
             console.error('Login error:', error);

@@ -1,6 +1,8 @@
+import '@/polyfills';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 // import * as SplashScreen from 'expo-splash-screen';
+
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
@@ -12,12 +14,14 @@ import { ScreenThemeProvider } from '@/contexts/ScreenThemeContext';
 import { StageProvider } from '@/contexts/StageContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+
 export const unstable_settings = {
     // Ensure that reloading on modals doesn't unmount the parent screen
     initialRouteName: '(tabs)',
 };
 
 function RootLayoutNav() {
+    console.log("🚧 crypto.getRandomValues exists?", typeof crypto?.getRandomValues);
     return (
         <Stack>
             <Stack.Screen
@@ -32,10 +36,10 @@ function RootLayoutNav() {
                 name="(send)"
                 options={{ headerShown: false }}
             />
-            <Stack.Screen
+            {/* <Stack.Screen
                 name="(receive)"
                 options={{ headerShown: false }}
-            />
+            /> */}
             <Stack.Screen
                 name="(modals)"
                 options={{

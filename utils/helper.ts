@@ -58,3 +58,9 @@ export const generateId = (length: number = 8): string => {
     }
     return result;
 };
+
+export const generateKeyPairP256 = async (): Promise<{ publicKey: string; privateKey: string, publicKeyUncompressed: string }> => {
+    const { generateP256KeyPair } = await import("@turnkey/crypto");
+    const keyPair = generateP256KeyPair();
+    return keyPair;
+};

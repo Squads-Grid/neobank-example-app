@@ -1,34 +1,36 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { storage } from '@/utils/secure-storage';
 import { router } from 'expo-router';
-
+import { AuthenticationResponse, OTPData } from '@/types/Authentication';
+import { Keypair } from '@/types/Crypto';
+import { generateKeyPairP256 } from '@/utils/helper';
 interface AuthContextType {
     isAuthenticated: boolean | null;
     user: User | null;
-    signIn: (email: string, code: string) => Promise<void>;
+    keypair: Keypair | null;
+    credentialsBundle: string | null;
+    authenticate: (email: string) => Promise<string>;
+    verifyCode: (code: string, otpId: string) => Promise<boolean>;
     logout: () => Promise<void>;
     isLoading: boolean;
     initialAuthCheck: boolean;
 }
 
 interface User {
-    id: string;
+    suborgId: string;
     email: string;
 }
 
-interface LoginResponse {
-    accessToken: string;
-    refreshToken: string;
-    user: User;
-}
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const BASE_URL = "http://192.168.188.27:8081/api"
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [initialAuthCheck, setInitialAuthCheck] = useState(false);
+    const [keypair, setKeypair] = useState<Keypair | null>(null);
+    const [credentialsBundle, setCredentialsBundle] = useState<string | null>(null);
 
     useEffect(() => {
         checkAuth();
@@ -36,11 +38,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const checkAuth = async () => {
         try {
-            const { accessToken } = await storage.getTokens();
-            if (!accessToken) {
-                router.replace('/(auth)/start');
-            }
-            setIsAuthenticated(!!accessToken);
+            // TODO: check if credentialsBundle is valid
+            setIsAuthenticated(!!credentialsBundle);
         } catch (error) {
             console.error('Auth check failed:', error);
             setIsAuthenticated(false);
@@ -51,14 +50,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const verifyCode = async (code: string): Promise<boolean> => {
-        // TODO: Implement actual verification logic with your backend
-        // For now, we'll just simulate a successful verification
-        if (code === '123456') {
-            setIsAuthenticated(true);
+    const verifyCode = async (code: string, otpId: string): Promise<boolean> => {
+        try {
+
+            const keyPair = await generateKeyPairP256();
+
+            const otpData = {
+                otp_code: code,
+                otp_id: otpId,
+                public_key: keyPair.publicKeyUncompressed,
+                expiration: 900, // 15 minutes
+                sub_organization_id: user?.suborgId
+            }
+            console.log("🚀 ~ callLogin ~ BASE_URL:", BASE_URL)
+            const response = await fetch(`${BASE_URL}/verify-otp`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(otpData)
+            });
+
+            const result = await response.json();
+            console.log("🚀 ~ verifyCode ~ result:", result)
+            setCredentialsBundle(result.data.credential_bundle);
+            setKeypair(result.data.keypair);
+            setIsAuthenticated(!!result.data.credential_bundle);
+
+            // Navigate to success page
+            router.replace('/success');
             return true;
+        } catch (error) {
+            console.error('Login error:', error);
+            throw error;
         }
-        return false;
     };
 
     const logout = async () => {
@@ -69,6 +94,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Clear auth state
             setUser(null);
             setIsAuthenticated(false);
+            setCredentialsBundle(null);
+            setKeypair(null);
 
             // Replace the entire stack with the start screen
             router.replace('/(auth)/start');
@@ -78,65 +105,68 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const callLogin = async (email: string, code: string): Promise<LoginResponse> => {
+    const authenticate = async (email: string): Promise<string> => {
+        console.log("🚀 ~ callLogin ~ email::::::::::::::::: ", email)
         try {
-            // const response = await fetch('YOUR_API_URL/auth/login', {
-            //   method: 'POST',
-            //   headers: {
-            //     'Content-Type': 'application/json',
-            //   },
-            //   body: JSON.stringify({ email, code }),
-            // });
+            console.log("🚀 ~ callLogin ~ BASE_URL:", BASE_URL)
+            const response = await fetch(`${BASE_URL}/auth`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    app_name: "Bright",
+                    app_icon_url: "https://images.pexels.com/photos/57416/cat-sweet-kitty-animals-57416.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+                    expiration_seconds: 3600
+                })
+            });
 
-            // Mock api call
-            const response = await new Promise<LoginResponse>((resolve) => setTimeout(() => {
-                resolve({
-                    accessToken: 'mock_access_token',
-                    refreshToken: 'mock_refresh_token',
-                    user: { id: '1', email: 'test@example.com' },
-                });
-            }, 1000));
+            const result = await response.json();
+            const data = result.data;
+            setUser({ suborgId: data.sub_organization_id, email });
 
-            return response;
+            return data.otp_id;
         } catch (error) {
             console.error('Login error:', error);
             throw error;
         }
     };
 
-    const signIn = async (email: string, code: string): Promise<void> => {
-        try {
-            setIsLoading(true);
+    // const signIn = async (email: string, code: string): Promise<void> => {
+    //     console.log("🚀 ~ signIn ~ email:", email)
+    //     try {
+    //         setIsLoading(true);
 
-            const response = await callLogin(email, code);
-            const { accessToken, refreshToken, user } = response;
+    //         const response = await callLogin(email, code);
+    //         // const { accessToken, refreshToken, user } = response;
 
-            // Store tokens
-            await storage.saveTokens(accessToken, refreshToken);
+    //         // // Store tokens
+    //         // await storage.saveTokens(accessToken, refreshToken);
 
-            // Update state
-            setIsAuthenticated(true);
-            setUser(user);
+    //         // Update state
+    //         setIsAuthenticated(true);
+    //         setUser(user);
 
-            // Add a small delay for visual feedback
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Navigate to success screen
-            router.push('/success');
-        } catch (error) {
-            console.error('Login error:', error);
-            throw error;
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    //         // Navigate to success screen
+    //         router.push('/success');
+    //     } catch (error) {
+    //         console.error('Login error:', error);
+    //         throw error;
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
 
     return (
         <AuthContext.Provider
             value={{
                 isAuthenticated,
                 user,
-                signIn,
+                keypair,
+                credentialsBundle,
+                authenticate,
+                verifyCode,
                 logout,
                 isLoading,
                 initialAuthCheck,
