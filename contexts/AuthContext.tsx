@@ -13,8 +13,6 @@ interface AuthContextType {
     authenticate: (email: string) => Promise<string>;
     verifyCode: (code: string, otpId: string) => Promise<boolean>;
     logout: () => Promise<void>;
-    isLoading: boolean;
-    initialAuthCheck: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,8 +22,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(false);
     const [email, setEmail] = useState<string | null>(null);
     const [suborgId, setSuborgId] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [initialAuthCheck, setInitialAuthCheck] = useState(false);
     const [keypair, setKeypair] = useState<Keypair | null>(null);
     const [credentialsBundle, setCredentialsBundle] = useState<string | null>(null);
 
@@ -37,7 +33,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const verifyCode = async (code: string, otpId: string): Promise<boolean> => {
         try {
-
             const keyPair = await generateKeyPairP256();
 
             const otpData = {
@@ -47,7 +42,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 expiration: 900, // 15 minutes
                 sub_organization_id: suborgId
             }
-            console.log("🚀 ~ callLogin ~ BASE_URL:", BASE_URL)
             const response = await fetch(`${BASE_URL}/verify-otp`, {
                 method: "POST",
                 headers: {
@@ -91,9 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const authenticate = async (email: string): Promise<string> => {
-        console.log("🚀 ~ callLogin ~ email::::::::::::::::: ", email)
         try {
-            console.log("🚀 ~ callLogin ~ BASE_URL:", BASE_URL)
             const response = await fetch(`${BASE_URL}/auth`, {
                 method: "POST",
                 headers: {
@@ -132,8 +124,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 authenticate,
                 verifyCode,
                 logout,
-                isLoading,
-                initialAuthCheck,
             }}
         >
             {children}
