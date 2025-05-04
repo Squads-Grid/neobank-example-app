@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { storage } from '@/utils/secure-storage';
 import { router } from 'expo-router';
-import { AuthenticationResponse, OTPData } from '@/types/Authentication';
 import { Keypair } from '@/types/Crypto';
 import { generateKeyPairP256 } from '@/utils/helper';
 interface AuthContextType {
     isAuthenticated: boolean | null;
-    user: User | null;
+    email: string | null;
+    suborgId: string | null;
+    setEmail: React.Dispatch<React.SetStateAction<string | null>>;
+    setSuborgId: React.Dispatch<React.SetStateAction<string | null>>;
     keypair: Keypair | null;
     credentialsBundle: string | null;
     authenticate: (email: string) => Promise<string>;
@@ -16,39 +17,23 @@ interface AuthContextType {
     initialAuthCheck: boolean;
 }
 
-interface User {
-    suborgId: string;
-    email: string;
-}
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-const BASE_URL = "http://192.168.188.27:8081/api"
+const BASE_URL = `${process.env.EXPO_PUBLIC_BASE_URL}${process.env.EXPO_PUBLIC_API_ENDPOINT}` //"http://192.168.188.27:8081/api"
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-    const [user, setUser] = useState<User | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(false);
+    const [email, setEmail] = useState<string | null>(null);
+    const [suborgId, setSuborgId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [initialAuthCheck, setInitialAuthCheck] = useState(false);
     const [keypair, setKeypair] = useState<Keypair | null>(null);
     const [credentialsBundle, setCredentialsBundle] = useState<string | null>(null);
 
     useEffect(() => {
-        checkAuth();
-    }, []);
-
-    const checkAuth = async () => {
-        try {
-            // TODO: check if credentialsBundle is valid
-            setIsAuthenticated(!!credentialsBundle);
-        } catch (error) {
-            console.error('Auth check failed:', error);
-            setIsAuthenticated(false);
+        if (isAuthenticated === false) {
             router.replace('/(auth)/start');
-        } finally {
-            setIsLoading(false);
-            setInitialAuthCheck(true);
         }
-    };
+    }, [isAuthenticated]);
 
     const verifyCode = async (code: string, otpId: string): Promise<boolean> => {
         try {
@@ -60,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 otp_id: otpId,
                 public_key: keyPair.publicKeyUncompressed,
                 expiration: 900, // 15 minutes
-                sub_organization_id: user?.suborgId
+                sub_organization_id: suborgId
             }
             console.log("🚀 ~ callLogin ~ BASE_URL:", BASE_URL)
             const response = await fetch(`${BASE_URL}/verify-otp`, {
@@ -88,14 +73,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const logout = async () => {
         try {
-            // Clear tokens from storage
-            await storage.clearTokens();
 
             // Clear auth state
-            setUser(null);
+            setEmail(null);
+            setSuborgId(null);
             setIsAuthenticated(false);
             setCredentialsBundle(null);
             setKeypair(null);
+            console.log("🚀 ~ logout ~ credentialsBundle:", credentialsBundle)
 
             // Replace the entire stack with the start screen
             router.replace('/(auth)/start');
@@ -124,7 +109,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             const result = await response.json();
             const data = result.data;
-            setUser({ suborgId: data.sub_organization_id, email });
+            setSuborgId(data.sub_organization_id);
+            setEmail(email);
 
             return data.otp_id;
         } catch (error) {
@@ -133,36 +119,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    // const signIn = async (email: string, code: string): Promise<void> => {
-    //     console.log("🚀 ~ signIn ~ email:", email)
-    //     try {
-    //         setIsLoading(true);
-
-    //         const response = await callLogin(email, code);
-    //         // const { accessToken, refreshToken, user } = response;
-
-    //         // // Store tokens
-    //         // await storage.saveTokens(accessToken, refreshToken);
-
-    //         // Update state
-    //         setIsAuthenticated(true);
-    //         setUser(user);
-
-    //         // Navigate to success screen
-    //         router.push('/success');
-    //     } catch (error) {
-    //         console.error('Login error:', error);
-    //         throw error;
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-    // };
-
     return (
         <AuthContext.Provider
             value={{
                 isAuthenticated,
-                user,
+                email,
+                setEmail,
+                suborgId,
+                setSuborgId,
                 keypair,
                 credentialsBundle,
                 authenticate,

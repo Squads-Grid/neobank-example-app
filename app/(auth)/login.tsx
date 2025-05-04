@@ -8,44 +8,36 @@ import { ThemedScreen, StarburstBackground } from '@/components/ui/layout';
 import { ThemedActionText } from '@/components/ui/atoms';
 import { useResendTimer } from '@/hooks/useResendTimer';
 import { Spacing } from '@/constants/Spacing';
-import { AuthenticationResponse } from '@/types/Authentication';
-import { generateKeyPairP256 } from '@/utils/helper';
-
-// Mock verification code
-const MOCK_VERIFICATION_CODE = '123123';
+import { router } from 'expo-router';
 
 function LoginScreen() {
     const [isLoading, setIsLoading] = useState(false);
-    const [email, setEmail] = useState('');
     const [showCodeInput, setShowCodeInput] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [otpId, setOtpId] = useState<string | null>(null);
-    const { authenticate, verifyCode } = useAuth();
+    const { authenticate, verifyCode, email, setEmail } = useAuth();
 
-    const sendVerificationCode = async () => {
-        try {
-            setIsLoading(true);
-            setError(null);
-            // Here you would typically send the verification code to the user's email
-            console.log('Sending verification code to:', email);
-            // Simulate verification delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            console.log('Mock verification code:', MOCK_VERIFICATION_CODE);
-        } catch (error) {
-            console.error('Error sending code:', error);
-            throw error;
-        } finally {
-            setIsLoading(false);
-        }
+    const triggerAuthentication = async (emailToUse: string) => {
+
+        setShowCodeInput(true);
+        const result = await authenticate(emailToUse);
+        setOtpId(result);
     };
 
-    const { countdown, isDisabled, handleResend } = useResendTimer({
+    const handleResend = async () => {
+        if (!email) {
+            router.push('/(auth)/login');
+            return;
+        }
+        await triggerAuthentication(email);
+    };
+
+    const { countdown, isDisabled, handleResend: resend } = useResendTimer({
         initialSeconds: 30,
-        onResend: sendVerificationCode
+        onResend: handleResend
     });
 
     const verify = async (code: string): Promise<boolean> => {
-        const keyPair = await generateKeyPairP256();
 
         if (!otpId) {
             throw new Error('No otpId found');
@@ -65,7 +57,6 @@ function LoginScreen() {
             setIsLoading(true);
             setError(null);
             setEmail(submittedEmail);
-            console.log("🚀 ~ handleSubmit ~ submittedEmail:", submittedEmail)
             if (code && otpId) {
                 const isValid = await verify(code);
                 if (!isValid) {
@@ -74,14 +65,9 @@ function LoginScreen() {
                 }
 
             } else {
-
-                setShowCodeInput(true);
-                const result = await authenticate(submittedEmail);
-                console.log("🚀 ~ handleSubmit ~ result:", result)
-                setOtpId(result);
+                await triggerAuthentication(submittedEmail);
             }
         } catch (error) {
-            console.error('Login error:', error);
             setError('An error occurred. Please try again.');
         } finally {
             setIsLoading(false);
@@ -115,7 +101,7 @@ function LoginScreen() {
                     {showCodeInput && !isLoading && (
                         <View style={styles.actionContainer}>
                             <ThemedActionText
-                                onPress={handleResend}
+                                onPress={resend}
                                 disabled={isDisabled}
                                 countdown={countdown}
                                 activeText="Resend code"
