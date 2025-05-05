@@ -4,10 +4,8 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
 
-        console.log('🚀 Creating smart account - request to grid api');
-        console.log("🚀 ~ POST ~ body:", body)
-        const response = await gridClient.createSmartAccount(body);
-        console.log("🚀 ~ POST ~ response:", response)
+        const customerId = process.env.GRID_CUSTOMER_ID;
+        const response = await gridClient.createSmartAccount({ ...body, grid_customer_id: customerId });
         return new Response(JSON.stringify(response), {
             status: 200,
             headers: { "Content-Type": "application/json" },

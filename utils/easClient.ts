@@ -85,12 +85,10 @@ export class EasClient {
 
     // Creates a smart account.
     async createSmartAccount(request: CreateSmartAccountRequest): Promise<CreateSmartAccountResponse> {
-        console.log('🚀 Creating smart account');
-        const customerId = '4066360f-89db-4f67-8aff-811f2dc48141'; // TODO: Replace with env -> process.env.GRID_CUSTOMER_ID;
-        console.log("🚀 ~ EasClient ~ createSmartAccount ~ customerId:", customerId)
+
         return this.request<CreateSmartAccountResponse>('/create-smart-account', {
             method: 'POST',
-            body: JSON.stringify({ ...request, grid_customer_id: customerId }),
+            body: JSON.stringify(request),
         });
     }
 }
