@@ -1,6 +1,6 @@
 // import { APP_CONFIG } from "@/constants/Config";
 
-import { AuthenticationRequest } from "@/types/Authentication";
+import { AuthenticationRequest } from "@/types/Auth";
 
 export async function POST(request: Request) {
     console.log("🚀 ~ POST ~ trying to authenticate user");
