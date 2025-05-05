@@ -3,11 +3,9 @@
 import { AuthenticationRequest } from "@/types/Auth";
 
 export async function POST(request: Request) {
-    console.log("🚀 ~ POST ~ trying to authenticate user");
 
     try {
         const body = await request.json() as AuthenticationRequest;
-        console.log("🚀 ~ POST ~ body:", body);
 
         const apiEnpoint = process.env.GRID_ENDPOINT;
         const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;

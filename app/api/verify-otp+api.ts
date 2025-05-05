@@ -1,11 +1,9 @@
-import { OTPData } from "@/types/Authentication";
+import { OTPData } from "@/types/Auth";
 
 export async function POST(request: Request) {
-    console.log("🚀 ~ POST ~ trying to verify otp");
 
     try {
         const body = await request.json() as OTPData;
-        console.log("🚀 ~ POST ~ body:", body);
 
         const apiEnpoint = process.env.GRID_ENDPOINT;
         const baseUrl = process.env.EXPO_PUBLIC_BASE_URL;
@@ -23,7 +21,6 @@ export async function POST(request: Request) {
         if (!apiKey) {
             throw new Error("GRID_API_KEY is not set");
         }
-        console.log("🚀 ~ POST ~ url:", `${baseUrl}${apiEnpoint}/verify-otp`)
         const response = await fetch(`${baseUrl}${apiEnpoint}/verify-otp`, {
             method: "POST",
             headers: {
