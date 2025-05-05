@@ -1,29 +1,17 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { router } from 'expo-router';
-import { Keypair } from '@/types/Crypto';
-import { generateKeyPairP256 } from '@/utils/helper';
-interface AuthContextType {
-    isAuthenticated: boolean | null;
-    email: string | null;
-    suborgId: string | null;
-    setEmail: React.Dispatch<React.SetStateAction<string | null>>;
-    setSuborgId: React.Dispatch<React.SetStateAction<string | null>>;
-    keypair: Keypair | null;
-    credentialsBundle: string | null;
-    authenticate: (email: string) => Promise<string>;
-    verifyCode: (code: string, otpId: string) => Promise<boolean>;
-    logout: () => Promise<void>;
-}
+import { AuthContextType } from '@/types/Auth';
+import { authenticateUser, verifyOtpCode } from '@/utils/auth';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-const BASE_URL = `${process.env.EXPO_PUBLIC_BASE_URL}${process.env.EXPO_PUBLIC_API_ENDPOINT}` //"http://192.168.188.27:8081/api"
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(false);
     const [email, setEmail] = useState<string | null>(null);
     const [suborgId, setSuborgId] = useState<string | null>(null);
-    const [keypair, setKeypair] = useState<Keypair | null>(null);
+    const [keypair, setKeypair] = useState<AuthContextType['keypair']>(null);
     const [credentialsBundle, setCredentialsBundle] = useState<string | null>(null);
+    const [authError, setAuthError] = useState<string | null>(null);
 
     useEffect(() => {
         if (isAuthenticated === false) {
@@ -33,80 +21,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const verifyCode = async (code: string, otpId: string): Promise<boolean> => {
         try {
-            const keyPair = await generateKeyPairP256();
-
-            const otpData = {
-                otp_code: code,
-                otp_id: otpId,
-                public_key: keyPair.publicKeyUncompressed,
-                expiration: 900, // 15 minutes
-                sub_organization_id: suborgId
+            if (!suborgId) {
+                throw new Error('Suborganization ID is required');
             }
-            const response = await fetch(`${BASE_URL}/verify-otp`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(otpData)
-            });
 
-            const result = await response.json();
-            console.log("🚀 ~ verifyCode ~ result:", result)
-            setCredentialsBundle(result.data.credential_bundle);
-            setKeypair(result.data.keypair);
-            setIsAuthenticated(!!result.data.credential_bundle);
+            const { credentialBundle, keypair } = await verifyOtpCode(code, otpId, suborgId);
 
-            // Navigate to success page
+            setCredentialsBundle(credentialBundle);
+            setKeypair(keypair);
+            setIsAuthenticated(true);
+            setAuthError(null);
+
             router.replace('/success');
             return true;
         } catch (error) {
-            console.error('Login error:', error);
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            setAuthError(errorMessage);
             throw error;
         }
     };
 
     const logout = async () => {
         try {
-
-            // Clear auth state
+            // Clear all auth state
             setEmail(null);
             setSuborgId(null);
             setIsAuthenticated(false);
             setCredentialsBundle(null);
             setKeypair(null);
-            console.log("🚀 ~ logout ~ credentialsBundle:", credentialsBundle)
+            setAuthError(null);
 
             // Replace the entire stack with the start screen
             router.replace('/(auth)/start');
         } catch (error) {
-            console.error('Logout error:', error);
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            setAuthError(errorMessage);
             throw error;
         }
     };
 
     const authenticate = async (email: string): Promise<string> => {
         try {
-            const response = await fetch(`${BASE_URL}/auth`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    email: email,
-                    app_name: "Bright",
-                    app_icon_url: "https://images.pexels.com/photos/57416/cat-sweet-kitty-animals-57416.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-                    expiration_seconds: 3600
-                })
-            });
+            const { otpId, suborgId: newSuborgId } = await authenticateUser(email);
 
-            const result = await response.json();
-            const data = result.data;
-            setSuborgId(data.sub_organization_id);
+            setSuborgId(newSuborgId);
             setEmail(email);
+            setAuthError(null);
 
-            return data.otp_id;
+            return otpId;
         } catch (error) {
-            console.error('Login error:', error);
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            setAuthError(errorMessage);
             throw error;
         }
     };
@@ -121,6 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setSuborgId,
                 keypair,
                 credentialsBundle,
+                authError,
                 authenticate,
                 verifyCode,
                 logout,

@@ -1,5 +1,17 @@
 # Neobank Example App 🏦
 
+A modern banking application built with React Native and Expo.
+
+## Environment Variables
+
+The following environment variables are required for the application to function:
+
+```bash
+EXPO_PUBLIC_BASE_URL=https://api.example.com  # Base URL for the API
+EXPO_PUBLIC_API_ENDPOINT=/v1                  # API endpoint path
+```
+
+Create a `.env` file in the root directory with these variables. For local development, you can copy `.env.example` (if available) and modify the values as needed.
 
 ## Get started
 
@@ -9,7 +21,9 @@
    npm install
    ```
 
-2. Start the app
+2. Set up environment variables (see above)
+
+3. Start the app
 
    ```bash
     npx expo start
