@@ -1,4 +1,4 @@
-import { Platform, StyleSheet, View, Image } from 'react-native';
+import { Platform, StyleSheet, View, Image, ScrollView, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { router } from 'expo-router';
@@ -43,6 +43,7 @@ export default function HomeScreen() {
     const [smartAccountAddress, setSmartAccountAddress] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
     const { wallet, suborgInfo } = useAuth();
+    const [refreshing, setRefreshing] = useState(false);
 
     // Convert Stage type to BankStatus enum
     const getBankStatus = (stageValue: Stage): BankStatus => {
@@ -232,64 +233,87 @@ export default function HomeScreen() {
         );
     }
 
+    const onRefresh = React.useCallback(async () => {
+        setRefreshing(true);
+        console.log('Refreshing...');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        console.log('Refresh complete!');
+        setRefreshing(false);
+    }, []);
+
     return (
         <ThemedScreen>
-            <ThemedText style={styles.headline}>Home · Balance</ThemedText>
-            <ThemedText type="highlight" style={styles.balanceTextStyle}>
-                {isLoading ? '...' : `$${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-            </ThemedText>
-            <CircleButtonGroup buttons={actions} />
-            <View style={{ height: Spacing.xl }} />
-            {transactionData.length > 0 ? <TransactionList transactions={transactionData} /> : (
-                <View style={styles.emptyContainer}>
-                    <Image
-                        source={placeholder}
-                        style={styles.placeholderImage}
-                    />
-                    <ThemedText type="regular">No transactions yet</ThemedText>
-                </View>
-            )}
-
-            {/* Send Money Modal */}
-            <ActionModal
-                visible={isSendModalVisible}
-                onClose={closeSendModal}
-                title="Send"
-            >
-                <ModalOptionsList options={sendOptions} />
-            </ActionModal>
-
-            {/* Send Money Modal */}
-            <ActionModal
-                visible={isReceiveModalVisible}
-                onClose={() => {
-                    closeReceiveModal()
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{
+                    flexGrow: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center'
                 }}
-                title="Receive"
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
             >
-                <ModalOptionsList options={receiveOptions} />
-            </ActionModal>
+                <ThemedText style={styles.headline}>Home · Balance</ThemedText>
+                <ThemedText type="highlight" style={styles.balanceTextStyle}>
+                    {isLoading ? '...' : `$${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                </ThemedText>
+                <CircleButtonGroup buttons={actions} />
+                <View style={{ height: Spacing.xl }} />
+                {transactionData.length > 0 ? <TransactionList transactions={transactionData} /> : (
+                    <View style={styles.emptyContainer}>
+                        <Image
+                            source={placeholder}
+                            style={styles.placeholderImage}
+                        />
+                        <ThemedText type="regular">No transactions yet</ThemedText>
+                    </View>
+                )}
 
-            {/* QR Code Modal */}
-            <ActionModal
-                visible={isQRCodeModalVisible}
-                onClose={closeQRCodeModal}
-                useStarburstModal={true}
-            >
-                <View style={styles.qrCodeContainer}>
-                    <ThemedText type="large" style={[styles.qrCodeHeadline, { color: 'white' }]}>Bright</ThemedText>
-                    {renderQRCode()}
-                    <ThemedText type="default" style={styles.qrCodeAddress}>{SOLANA_ADDRESS}</ThemedText>
-                    <View style={styles.qrCodeSupportContainer}>
-                        <IconSymbol name="info.circle" size={16} color="white" />
-                        <ThemedText type="tiny" style={styles.qrCodeSupportText}>We don't support NFTs.</ThemedText>
+                {/* Send Money Modal */}
+                <ActionModal
+                    visible={isSendModalVisible}
+                    onClose={closeSendModal}
+                    title="Send"
+                >
+                    <ModalOptionsList options={sendOptions} />
+                </ActionModal>
+
+                {/* Send Money Modal */}
+                <ActionModal
+                    visible={isReceiveModalVisible}
+                    onClose={() => {
+                        closeReceiveModal()
+                    }}
+                    title="Receive"
+                >
+                    <ModalOptionsList options={receiveOptions} />
+                </ActionModal>
+
+                {/* QR Code Modal */}
+                <ActionModal
+                    visible={isQRCodeModalVisible}
+                    onClose={closeQRCodeModal}
+                    useStarburstModal={true}
+                >
+                    <View style={styles.qrCodeContainer}>
+                        <ThemedText type="large" style={[styles.qrCodeHeadline, { color: 'white' }]}>Bright</ThemedText>
+                        {renderQRCode()}
+                        <ThemedText type="default" style={styles.qrCodeAddress}>{SOLANA_ADDRESS}</ThemedText>
+                        <View style={styles.qrCodeSupportContainer}>
+                            <IconSymbol name="info.circle" size={16} color="white" />
+                            <ThemedText type="tiny" style={styles.qrCodeSupportText}>We don't support NFTs.</ThemedText>
+                        </View>
+                        <View style={styles.qrCodeCopyContainer}>
+                            <IconSymbol name="doc.on.doc" size={16} color="white" />
+                            <ThemedText type="regularSemiBold" style={styles.qrCodeCopyText}>Copy</ThemedText>
+                        </View>
                     </View>
-                    <View style={styles.qrCodeCopyContainer}>
-                        <IconSymbol name="doc.on.doc" size={16} color="white" />
-                        <ThemedText type="regularSemiBold" style={styles.qrCodeCopyText}>Copy</ThemedText>
-                    </View>
-                </View>
-            </ActionModal>
+                </ActionModal>
+            </ScrollView>
         </ThemedScreen>
     );
 }
