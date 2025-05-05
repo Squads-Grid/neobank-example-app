@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Stage } from '@/components/settings/StageSelector';
+import { Stage } from '@/components/devtools/StageSelector';
 
 interface StageContextType {
     stage: Stage;

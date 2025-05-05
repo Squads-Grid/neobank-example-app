@@ -1,8 +1,14 @@
 export interface AuthenticationResponse {
     data: {
-        sub_organization_id: string;
         otp_id: string;
+        suborg_info: SuborgInfo;
     };
+}
+
+export interface SuborgInfo {
+    sub_organization_id: string;
+    wallet_id: string;
+    public_key: string;
 }
 
 export interface OTPData {
@@ -29,15 +35,15 @@ export interface Keypair {
 export interface AuthContextType {
     isAuthenticated: boolean | null;
     email: string | null;
-    suborgId: string | null;
+    suborgInfo: SuborgInfo | null;
     setEmail: React.Dispatch<React.SetStateAction<string | null>>;
-    setSuborgId: React.Dispatch<React.SetStateAction<string | null>>;
     keypair: Keypair | null;
     credentialsBundle: string | null;
     authError: string | null;
     authenticate: (email: string) => Promise<string>;
     verifyCode: (code: string, otpId: string) => Promise<boolean>;
     logout: () => Promise<void>;
+    wallet: string | null;
 }
 
 export interface AuthResponse {

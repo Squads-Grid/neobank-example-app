@@ -1,6 +1,7 @@
 import { AuthenticationRequest, AuthenticationResponse, Keypair, OTPData, VerifyOtpResponse } from '@/types/Auth';
+import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
 
-class ApiError extends Error {
+class EasError extends Error {
     constructor(
         message: string,
         public status: number,
@@ -11,7 +12,7 @@ class ApiError extends Error {
     }
 }
 
-export class ApiClient {
+export class EasClient {
     private baseUrl: string;
     private defaultHeaders: HeadersInit;
 
@@ -47,7 +48,7 @@ export class ApiClient {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new ApiError(
+                throw new EasError(
                     errorData.message || response.statusText,
                     response.status,
                     errorData
@@ -56,17 +57,17 @@ export class ApiClient {
 
             return response.json();
         } catch (error) {
-            if (error instanceof ApiError) {
+            if (error instanceof EasError) {
                 throw error;
             }
-            throw new ApiError(
+            throw new EasError(
                 error instanceof Error ? error.message : 'An unknown error occurred',
                 0
             );
         }
     }
 
-    // Auth endpoints
+    // Creates an account if it doesn't already exist and triggers otp. If the account already exists, it just triggers otp.
     async authenticate(request: AuthenticationRequest): Promise<AuthenticationResponse> {
         return this.request<AuthenticationResponse>('/auth', {
             method: 'POST',
@@ -74,6 +75,7 @@ export class ApiClient {
         });
     }
 
+    // Verifies the otp code and returns the credential bundle.
     async verifyOtp(data: OTPData): Promise<VerifyOtpResponse> {
         return this.request<VerifyOtpResponse>('/verify-otp', {
             method: 'POST',
@@ -81,12 +83,17 @@ export class ApiClient {
         });
     }
 
-    // Add more API methods here as needed
-    // Example:
-    // async getUserProfile(): Promise<UserProfile> {
-    //     return this.request<UserProfile>('/user/profile');
-    // }
+    // Creates a smart account.
+    async createSmartAccount(request: CreateSmartAccountRequest): Promise<CreateSmartAccountResponse> {
+        console.log('🚀 Creating smart account');
+        const customerId = '4066360f-89db-4f67-8aff-811f2dc48141'; // TODO: Replace with env -> process.env.GRID_CUSTOMER_ID;
+        console.log("🚀 ~ EasClient ~ createSmartAccount ~ customerId:", customerId)
+        return this.request<CreateSmartAccountResponse>('/create-smart-account', {
+            method: 'POST',
+            body: JSON.stringify({ ...request, grid_customer_id: customerId }),
+        });
+    }
 }
 
 // Create a singleton instance
-export const apiClient = new ApiClient(); 
+export const easClient = new EasClient(); 

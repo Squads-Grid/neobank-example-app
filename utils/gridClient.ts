@@ -1,4 +1,5 @@
 import { AuthenticationRequest, AuthenticationResponse, Keypair, OTPData, VerifyOtpResponse } from '@/types/Auth';
+import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
 
 class GridApiError extends Error {
     constructor(
@@ -19,11 +20,14 @@ export class GridClient {
         this.validateEnv();
 
         this.baseUrl = `${process.env.EXPO_PUBLIC_BASE_URL}${process.env.GRID_ENDPOINT}`;
+
+        console.log("🚀 ~ GridClient ~ constructor ~ baseUrl:", this.baseUrl)
         this.defaultHeaders = {
             "Content-Type": "application/json",
-            "x-grid-environment": `${process.env.GRID_ENVIRONMENT}` || "sandbox",
+            "x-grid-environment": `${process.env.GRID_ENV ?? "sandbox"}`,
             "Authorization": `Bearer ${process.env.GRID_API_KEY}`,
         };
+        console.log("🚀 ~ GridClient ~ constructor ~ defaultHeaders:", this.defaultHeaders)
     }
 
     private validateEnv() {
@@ -81,6 +85,14 @@ export class GridClient {
         return this.request<VerifyOtpResponse>('/verify-otp', {
             method: 'POST',
             body: JSON.stringify(data),
+        });
+    }
+
+    // Creates a smart account.
+    async createSmartAccount(request: CreateSmartAccountRequest): Promise<CreateSmartAccountResponse> {
+        return this.request<CreateSmartAccountResponse>('', {
+            method: 'POST',
+            body: JSON.stringify(request),
         });
     }
 }

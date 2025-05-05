@@ -1,17 +1,18 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { router } from 'expo-router';
-import { AuthContextType } from '@/types/Auth';
+import { AuthContextType, SuborgInfo } from '@/types/Auth';
 import { authenticateUser, verifyOtpCode } from '@/utils/auth';
-
+import * as SecureStore from 'expo-secure-store';
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(false);
     const [email, setEmail] = useState<string | null>(null);
-    const [suborgId, setSuborgId] = useState<string | null>(null);
     const [keypair, setKeypair] = useState<AuthContextType['keypair']>(null);
     const [credentialsBundle, setCredentialsBundle] = useState<string | null>(null);
     const [authError, setAuthError] = useState<string | null>(null);
+    const [wallet, setWallet] = useState<string | null>(null);
+    const [suborgInfo, setSuborgInfo] = useState<SuborgInfo | null>(null);
 
     useEffect(() => {
         if (isAuthenticated === false) {
@@ -21,11 +22,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const verifyCode = async (code: string, otpId: string): Promise<boolean> => {
         try {
-            if (!suborgId) {
+            if (!suborgInfo) {
                 throw new Error('Suborganization ID is required');
             }
 
-            const { credentialBundle, keypair } = await verifyOtpCode(code, otpId, suborgId);
+            const { credentialBundle, keypair } = await verifyOtpCode(code, otpId, suborgInfo.sub_organization_id);
 
             setCredentialsBundle(credentialBundle);
             setKeypair(keypair);
@@ -45,11 +46,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             // Clear all auth state
             setEmail(null);
-            setSuborgId(null);
+            setSuborgInfo(null);
             setIsAuthenticated(false);
             setCredentialsBundle(null);
             setKeypair(null);
             setAuthError(null);
+
+            // TODO: Replace saving gridUserId
+            // Clear the gridUserId from the secure store
+            await SecureStore.deleteItemAsync('gridUserId');
 
             // Replace the entire stack with the start screen
             router.replace('/(auth)/start');
@@ -62,12 +67,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const authenticate = async (email: string): Promise<string> => {
         try {
-            const { otpId, suborgId: newSuborgId } = await authenticateUser(email);
+            const { otpId, suborgInfo } = await authenticateUser(email);
 
-            setSuborgId(newSuborgId);
+            setSuborgInfo(suborgInfo);
             setEmail(email);
             setAuthError(null);
-
+            setWallet(suborgInfo.public_key);
             return otpId;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
@@ -82,14 +87,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 isAuthenticated,
                 email,
                 setEmail,
-                suborgId,
-                setSuborgId,
+                suborgInfo,
                 keypair,
                 credentialsBundle,
                 authError,
                 authenticate,
                 verifyCode,
                 logout,
+                wallet,
             }}
         >
             {children}

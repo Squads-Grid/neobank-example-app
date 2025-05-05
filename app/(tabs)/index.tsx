@@ -1,6 +1,6 @@
 import { Platform, StyleSheet, View, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 
 import { ThemedText, IconSymbol } from '@/components/ui/atoms';
@@ -15,10 +15,17 @@ import { ActionOption } from '@/components/ui/molecules/ModalOptionsList';
 import QRCode from 'react-native-qrcode-svg';
 import { useStage } from '@/contexts/StageContext';
 import { Stage } from '@/components/devtools/StageSelector';
+import { useBalance } from '@/contexts/BalanceContext';
+import { easClient } from '@/utils/easClient';
+import { CreateSmartAccountRequest, Policies, WalletAccount, Permission } from '@/types/SmartAccounts';
+import { useAuth } from '@/contexts/AuthContext';
+import * as SecureStore from 'expo-secure-store';
 
 const placeholder = require('@/assets/images/no-txn.png');
 const bankIcon = require('@/assets/icons/bank.png');
 const walletIcon = require('@/assets/icons/wallet.png');
+
+// TODO: Refactor!!!!
 
 const SOLANA_ADDRESS = "5YNmS1R9nNSCDzb5a7mMJ1dwK9uHeAAF4CerVnZgX37B";
 
@@ -31,8 +38,11 @@ enum BankStatus {
 }
 
 export default function HomeScreen() {
-    // Stage context to check if user is KYC'ed for demo purposes
     const { stage } = useStage();
+    const { balance, isLoading, error } = useBalance();
+    const [smartAccountAddress, setSmartAccountAddress] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
+    const { wallet, suborgInfo } = useAuth();
 
     // Convert Stage type to BankStatus enum
     const getBankStatus = (stageValue: Stage): BankStatus => {
@@ -43,6 +53,48 @@ export default function HomeScreen() {
             default: return BankStatus.NEW;
         }
     };
+
+    useEffect(() => {
+        const getUserId = async () => {
+            // TODO: Replace saving gridUserId
+            const gridUserId = await SecureStore.getItemAsync('gridUserId');
+            setUserId(gridUserId);
+
+            if (!gridUserId && wallet && suborgInfo) {
+                console.log('🚀 Couldn\'t find gridUserId,thus creating smart account');
+                const request = {
+                    policies: {
+                        signers: [{
+                            address: wallet,
+                            permissions: ['CAN_INITIATE', 'CAN_VOTE', 'CAN_EXECUTE'] as Permission[]
+                        }],
+                        admin_address: null,
+                        threshold: 1,
+                        grid_user_id: null,
+                    },
+                    memo: '',
+                    grid_user_id: null,
+                    turnkey_wallet_account: {
+                        wallet_id: suborgInfo.wallet_id,
+                        wallet_address: wallet
+                    }
+                };
+
+                (async () => {
+                    const response = await easClient.createSmartAccount(request);
+                    console.log(response);
+                    const data = response.data;
+                    await SecureStore.setItemAsync('gridUserId', data.grid_user_id);
+                    setSmartAccountAddress(data.smart_account_address);
+                })();
+            } else {
+                console.log('🚀 Found gridUserId,thus not creating smart account');
+            }
+        }
+        getUserId();
+
+
+    }, [wallet]);
 
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
     const [isReceiveModalVisible, setIsReceiveModalVisible] = useState(false);
@@ -183,7 +235,9 @@ export default function HomeScreen() {
     return (
         <ThemedScreen>
             <ThemedText style={styles.headline}>Home · Balance</ThemedText>
-            <ThemedText type="highlight" style={styles.balanceTextStyle}>$3,456.94</ThemedText>
+            <ThemedText type="highlight" style={styles.balanceTextStyle}>
+                {isLoading ? '...' : `$${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            </ThemedText>
             <CircleButtonGroup buttons={actions} />
             <View style={{ height: Spacing.xl }} />
             {transactionData.length > 0 ? <TransactionList transactions={transactionData} /> : (
@@ -295,77 +349,5 @@ const styles = StyleSheet.create({
 });
 
 const transactionData: TransactionGroup[] = [
-    {
-        title: 'Today',
-        data: [
-            {
-                id: '1',
-                type: 'Money Added',
-                date: 'April 4',
-                amount: +100.00,
-                walletAddress: '5YNmS1R9nNSCDzb5a7mMJ1dwK9uHeAAF4CerVnZgX37B'
-            },
-            {
-                id: '2',
-                type: 'Transfer',
-                date: 'April 4',
-                amount: -100.00,
-                walletAddress: 'GsbwXfJUJimiJWeSmFhRnWxvuPcFNQS8gQxLxNpzBxr9'
-            },
-            {
-                id: '3',
-                type: 'Payment',
-                date: 'April 4',
-                amount: -100.00,
-                walletAddress: 'DEhAasscXF4kEGxFgJ3bq4PpVGp5wyUxMRvn6TzGVHaw'
-            },
-        ]
-    },
-    {
-        title: 'Yesterday',
-        data: [
-            {
-                id: '4',
-                type: 'Money Added',
-                date: 'April 3',
-                amount: +100.00,
-                walletAddress: '5YNmS1R9nNSCDzb5a7mMJ1dwK9uHeAAF4CerVnZgX37B'
-            },
-            {
-                id: '5',
-                type: 'Received',
-                date: 'April 3',
-                amount: +100.00,
-                walletAddress: 'HAWy8kV3bD4gHn6gV3KBQvNJB8fJoU7Va2cmT4U4storm'
-            },
-            {
-                id: '6',
-                type: 'Transfer',
-                date: 'April 3',
-                amount: -100.00,
-                walletAddress: '9aE476sH92Vz7DMPyq5WLPkrKWivxeuTKEFKd2sZZcde'
-            },
-            {
-                id: '7',
-                type: 'Coffee',
-                date: 'April 3',
-                amount: -100.00,
-                walletAddress: 'EWmowPNdC9VHMRPM37usiKsNwXnhXNTLL2v4BQvnjeV5'
-            },
-            {
-                id: '8',
-                type: 'Rent',
-                date: 'April 3',
-                amount: +100.00,
-                walletAddress: 'So11111111111111111111111111111111111111112'
-            },
-            {
-                id: '9',
-                type: 'Groceries',
-                date: 'April 3',
-                amount: -100.00,
-                walletAddress: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
-            },
-        ]
-    }
+
 ];

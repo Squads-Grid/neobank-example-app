@@ -48,7 +48,6 @@ function LoginScreen() {
             code,
             otpId
         );
-        console.log("🚀 ~ verify ~ result:", result)
         return result;
     };
 

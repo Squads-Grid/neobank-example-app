@@ -12,6 +12,7 @@ import { lightTheme, darkTheme } from '@/constants/Theme';
 import { LoadingSpinner } from '@/components/ui/atoms';
 import { ScreenThemeProvider } from '@/contexts/ScreenThemeContext';
 import { StageProvider } from '@/contexts/StageContext';
+import { BalanceProvider } from '@/contexts/BalanceContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 
@@ -84,8 +85,10 @@ export default function RootLayout() {
             <ThemeProvider value={colorScheme === 'dark' ? darkTheme : lightTheme}>
                 <ScreenThemeProvider>
                     <StageProvider>
-                        <RootLayoutNav />
-                        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+                        <BalanceProvider>
+                            <RootLayoutNav />
+                            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+                        </BalanceProvider>
                     </StageProvider>
                 </ScreenThemeProvider>
             </ThemeProvider>

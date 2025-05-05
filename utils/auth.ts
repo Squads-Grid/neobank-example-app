@@ -1,8 +1,6 @@
-import { Keypair, AuthenticationRequest, OTPData } from '@/types/Auth';
-import { apiClient } from '@/utils/client';
+import { Keypair, AuthenticationRequest, OTPData, SuborgInfo } from '@/types/Auth';
+import { easClient } from '@/utils/easClient';
 import { generateKeyPairP256 } from '@/utils/helper';
-
-const BASE_URL = `${process.env.EXPO_PUBLIC_BASE_URL}${process.env.EXPO_PUBLIC_API_ENDPOINT}`;
 
 export const validateEnv = () => {
     if (!process.env.EXPO_PUBLIC_BASE_URL || !process.env.EXPO_PUBLIC_API_ENDPOINT) {
@@ -11,8 +9,6 @@ export const validateEnv = () => {
 };
 
 export const generateKeyPairForAuth = async (): Promise<Keypair> => {
-    // Implementation of key pair generation
-    // This is a placeholder - implement your actual key generation logic
     const keypair = await generateKeyPairP256();
     return {
         publicKey: keypair.publicKey,
@@ -21,7 +17,7 @@ export const generateKeyPairForAuth = async (): Promise<Keypair> => {
     };
 };
 
-export const authenticateUser = async (email: string): Promise<{ otpId: string; suborgId: string }> => {
+export const authenticateUser = async (email: string): Promise<{ otpId: string; suborgInfo: SuborgInfo }> => {
     const request: AuthenticationRequest = {
         email,
         app_name: "Bright",
@@ -29,10 +25,11 @@ export const authenticateUser = async (email: string): Promise<{ otpId: string; 
         expiration: 3600
     };
 
-    const response = await apiClient.authenticate(request);
+    const response = await easClient.authenticate(request);
+    console.log("🚀 ~ authenticateUser ~ response:", response.data)
     return {
         otpId: response.data.otp_id,
-        suborgId: response.data.sub_organization_id
+        suborgInfo: response.data.suborg_info
     };
 };
 
@@ -47,7 +44,7 @@ export const verifyOtpCode = async (code: string, otpId: string, suborgId: strin
         sub_organization_id: suborgId
     };
 
-    const response = await apiClient.verifyOtp(otpData);
+    const response = await easClient.verifyOtp(otpData);
     return {
         credentialBundle: response.data.credential_bundle,
         keypair: response.data.keypair
