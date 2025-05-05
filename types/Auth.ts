@@ -1,14 +1,15 @@
 export interface AuthenticationResponse {
     data: {
         otp_id: string;
-        suborg_info: SuborgInfo;
+        account_info: AccountInfo;
     };
 }
 
-export interface SuborgInfo {
-    sub_organization_id: string;
-    wallet_id: string;
+export interface AccountInfo {
+    user_id: string;
+    wallet_id: string; // Id of the wallet that has permissions for smart account
     public_key: string;
+    smart_account_address: string;
 }
 
 export interface OTPData {
@@ -35,8 +36,9 @@ export interface Keypair {
 export interface AuthContextType {
     isAuthenticated: boolean | null;
     email: string | null;
-    suborgInfo: SuborgInfo | null;
+    accountInfo: AccountInfo | null;
     setEmail: React.Dispatch<React.SetStateAction<string | null>>;
+    setAccountInfo: React.Dispatch<React.SetStateAction<AccountInfo | null>>;
     keypair: Keypair | null;
     credentialsBundle: string | null;
     authError: string | null;

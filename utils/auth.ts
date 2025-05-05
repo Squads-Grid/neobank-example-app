@@ -1,4 +1,4 @@
-import { Keypair, AuthenticationRequest, OTPData, SuborgInfo } from '@/types/Auth';
+import { Keypair, AuthenticationRequest, OTPData, AccountInfo } from '@/types/Auth';
 import { easClient } from '@/utils/easClient';
 import { generateKeyPairP256 } from '@/utils/helper';
 
@@ -17,7 +17,7 @@ export const generateKeyPairForAuth = async (): Promise<Keypair> => {
     };
 };
 
-export const authenticateUser = async (email: string): Promise<{ otpId: string; suborgInfo: SuborgInfo }> => {
+export const authenticateUser = async (email: string): Promise<{ otpId: string; accountInfo: AccountInfo }> => {
     const request: AuthenticationRequest = {
         email,
         app_name: "Bright",
@@ -29,7 +29,7 @@ export const authenticateUser = async (email: string): Promise<{ otpId: string; 
     console.log("🚀 ~ authenticateUser ~ response:", response.data)
     return {
         otpId: response.data.otp_id,
-        suborgInfo: response.data.suborg_info
+        accountInfo: response.data.account_info
     };
 };
 

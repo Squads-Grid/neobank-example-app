@@ -17,9 +17,8 @@ export function CircleButtonGroup({ buttons }: CircleButtonGroupProps) {
     return (
         <View style={styles.container}>
             {buttons.map((button, index) => (
-                <View style={styles.itemContainer}>
+                <View key={index} style={styles.itemContainer}>
                     <CircleButton
-                        key={index}
                         icon={button.icon}
                         label={button.label}
                         onPress={button.onPress}

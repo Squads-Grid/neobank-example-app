@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { router } from 'expo-router';
-import { AuthContextType, SuborgInfo } from '@/types/Auth';
+import { AuthContextType, AccountInfo } from '@/types/Auth';
 import { authenticateUser, verifyOtpCode } from '@/utils/auth';
 import * as SecureStore from 'expo-secure-store';
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -12,7 +12,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [credentialsBundle, setCredentialsBundle] = useState<string | null>(null);
     const [authError, setAuthError] = useState<string | null>(null);
     const [wallet, setWallet] = useState<string | null>(null);
-    const [suborgInfo, setSuborgInfo] = useState<SuborgInfo | null>(null);
+    const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
 
     useEffect(() => {
         if (isAuthenticated === false) {
@@ -22,11 +22,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const verifyCode = async (code: string, otpId: string): Promise<boolean> => {
         try {
-            if (!suborgInfo) {
-                throw new Error('Suborganization ID is required');
+            console.log("🚀 ~ verifyCode ~ accountInfo:", accountInfo)
+            if (!accountInfo) {
+                console.log("🚀 ~ verifyCode ~ accountInfo is null")
+                return false;
             }
 
-            const { credentialBundle, keypair } = await verifyOtpCode(code, otpId, suborgInfo.sub_organization_id);
+            const { credentialBundle, keypair } = await verifyOtpCode(code, otpId, accountInfo.user_id);
 
             setCredentialsBundle(credentialBundle);
             setKeypair(keypair);
@@ -38,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             setAuthError(errorMessage);
-            throw error;
+            return false;
         }
     };
 
@@ -46,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             // Clear all auth state
             setEmail(null);
-            setSuborgInfo(null);
+            setAccountInfo(null);
             setIsAuthenticated(false);
             setCredentialsBundle(null);
             setKeypair(null);
@@ -67,14 +69,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const authenticate = async (email: string): Promise<string> => {
         try {
-            const { otpId, suborgInfo } = await authenticateUser(email);
+            console.log("🚀 ~ authenticate ~ email:", email)
+            const { otpId, accountInfo } = await authenticateUser(email);
+            console.log("🚀 ~ authenticate ~ otpId:", otpId)
+            console.log("🚀 ~ authenticate ~ accountInfo:", accountInfo)
 
-            setSuborgInfo(suborgInfo);
+            setAccountInfo(accountInfo);
             setEmail(email);
             setAuthError(null);
-            setWallet(suborgInfo.public_key);
+            setWallet(accountInfo.public_key);
             return otpId;
         } catch (error) {
+            console.log("🚀 ~ authenticate ~ error:", error)
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             setAuthError(errorMessage);
             throw error;
@@ -87,7 +93,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 isAuthenticated,
                 email,
                 setEmail,
-                suborgInfo,
+                accountInfo,
+                setAccountInfo,
                 keypair,
                 credentialsBundle,
                 authError,

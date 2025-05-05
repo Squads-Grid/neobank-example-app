@@ -38,9 +38,7 @@ enum BankStatus {
 
 export default function HomeScreen() {
     const { stage } = useStage();
-    const [smartAccountAddress, setSmartAccountAddress] = useState<string | null>(null);
-    const [userId, setUserId] = useState<string | null>(null);
-    const { wallet, suborgInfo } = useAuth();
+    const { wallet, accountInfo, setAccountInfo } = useAuth();
     const [refreshing, setRefreshing] = useState(false);
     const balance = 1000;
 
@@ -56,11 +54,12 @@ export default function HomeScreen() {
 
     useEffect(() => {
         const getUserId = async () => {
-            // TODO: Replace saving gridUserId
-            const gridUserId = await SecureStore.getItemAsync('gridUserId');
-            setUserId(gridUserId);
+            // Prevent running if not logged in
+            if (!accountInfo || !wallet) {
+                return;
+            }
 
-            if (!gridUserId && wallet && suborgInfo) {
+            if (!accountInfo.smart_account_address) {
                 console.log('🚀 Couldn\'t find gridUserId,thus creating smart account');
                 const request = {
                     policies: {
@@ -75,7 +74,7 @@ export default function HomeScreen() {
                     memo: '',
                     grid_user_id: null,
                     turnkey_wallet_account: {
-                        wallet_id: suborgInfo.wallet_id,
+                        wallet_id: accountInfo.wallet_id,
                         wallet_address: wallet
                     }
                 };
@@ -84,17 +83,19 @@ export default function HomeScreen() {
                     const response = await easClient.createSmartAccount(request);
                     console.log(response);
                     const data = response.data;
-                    await SecureStore.setItemAsync('gridUserId', data.grid_user_id);
-                    setSmartAccountAddress(data.smart_account_address);
+                    console.log("🚀 ~ data:", data)
+                    setAccountInfo({
+                        ...accountInfo,
+                        smart_account_address: data.smart_account_address
+                    });
                 })();
             } else {
                 console.log('🚀 Found gridUserId,thus not creating smart account');
+                console.log('🚀 Smart account address:', accountInfo?.smart_account_address);
             }
         }
         getUserId();
-
-
-    }, [wallet]);
+    }, [wallet, accountInfo, setAccountInfo]);
 
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
     const [isReceiveModalVisible, setIsReceiveModalVisible] = useState(false);
