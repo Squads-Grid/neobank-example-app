@@ -22,9 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const verifyCode = async (code: string, otpId: string): Promise<boolean> => {
         try {
-            console.log("🚀 ~ verifyCode ~ accountInfo:", accountInfo)
             if (!accountInfo) {
-                console.log("🚀 ~ verifyCode ~ accountInfo is null")
                 return false;
             }
 
@@ -69,10 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const authenticate = async (email: string): Promise<string> => {
         try {
-            console.log("🚀 ~ authenticate ~ email:", email)
             const { otpId, accountInfo } = await authenticateUser(email);
-            console.log("🚀 ~ authenticate ~ otpId:", otpId)
-            console.log("🚀 ~ authenticate ~ accountInfo:", accountInfo)
 
             setAccountInfo(accountInfo);
             setEmail(email);
@@ -80,7 +75,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setWallet(accountInfo.public_key);
             return otpId;
         } catch (error) {
-            console.log("🚀 ~ authenticate ~ error:", error)
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             setAuthError(errorMessage);
             throw error;

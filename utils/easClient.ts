@@ -93,12 +93,12 @@ export class EasClient {
     }
 
     // Gets the balance of a smart account.
-    // async getBalance(request: GetBalanceRequest): Promise<GetBalanceResponse> {
-    //     return this.request<GetBalanceResponse>('/get-balance', {
-    //         method: 'POST',
-    //         body: JSON.stringify(request),
-    //     });
-    // }
+    async getBalance(request: { smartAccountAddress: string }): Promise<any> {
+        return this.request<[]>('/balance', {
+            method: 'POST',
+            body: JSON.stringify(request),
+        });
+    }
 }
 
 // Create a singleton instance

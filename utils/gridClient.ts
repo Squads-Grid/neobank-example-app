@@ -21,13 +21,11 @@ export class GridClient {
 
         this.baseUrl = `${process.env.EXPO_PUBLIC_BASE_URL}${process.env.GRID_ENDPOINT}`;
 
-        console.log("🚀 ~ GridClient ~ constructor ~ baseUrl:", this.baseUrl)
         this.defaultHeaders = {
             "Content-Type": "application/json",
             "x-grid-environment": `${process.env.GRID_ENV ?? "sandbox"}`,
             "Authorization": `Bearer ${process.env.GRID_API_KEY}`,
         };
-        console.log("🚀 ~ GridClient ~ constructor ~ defaultHeaders:", this.defaultHeaders)
     }
 
     private validateEnv() {

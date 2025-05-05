@@ -19,10 +19,8 @@ function LoginScreen() {
 
     const triggerAuthentication = async (emailToUse: string) => {
 
-        console.log("🚀 ~ triggerAuthentication ~ emailToUse:", emailToUse)
         setShowCodeInput(true);
         const result = await authenticate(emailToUse);
-        console.log("🚀 ~ triggerAuthentication ~ result:", result)
         setOtpId(result);
     };
 
@@ -41,7 +39,6 @@ function LoginScreen() {
 
     const verify = async (code: string): Promise<boolean> => {
 
-        console.log("🚀 ~ verify ~ otpId:", otpId)
         if (!otpId) {
             throw new Error('No otpId found');
         }
@@ -51,7 +48,6 @@ function LoginScreen() {
             code,
             otpId
         );
-        console.log("🚀 ~ verify ~ result:", result)
         return result;
     };
 

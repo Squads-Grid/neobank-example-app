@@ -21,7 +21,6 @@ export const unstable_settings = {
 };
 
 function RootLayoutNav() {
-    console.log("🚧 crypto.getRandomValues exists?", typeof crypto?.getRandomValues);
     return (
         <Stack>
             <Stack.Screen

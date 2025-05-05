@@ -12,7 +12,6 @@ if (__DEV__ && process.env.EXPO_PUBLIC_TRACE_HTTP) {
         const result = await fetch(input, init);
         const after = Date.now();
 
-        console.log(`[${init?.method ?? "GET"}] ${input} took ${after - before}ms`);
         return result;
     };
 }

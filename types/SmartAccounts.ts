@@ -15,7 +15,8 @@ export interface CreateSmartAccountRequest {
     policies: Policies;
     memo: string;
     grid_user_id: string | null;
-    turnkey_wallet_account: WalletAccount | null;
+    wallet_account: WalletAccount | null;
+    user_id: string;
 }
 
 export interface SmartAccountData {
@@ -37,4 +38,18 @@ export interface CreateSmartAccountResponse {
 export interface WalletAccount {
     wallet_id: string;
     wallet_address: string;
+}
+
+export interface TokenBalance {
+    amount: number;
+    amount_decimal: string;
+    decimals: number;
+    logo_url: string | null;
+    name: string | null;
+    symbol: string | null;
+    token_address: string;
+}
+
+export interface BalanceResponse {
+    balances: TokenBalance[];
 }

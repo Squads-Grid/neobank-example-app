@@ -18,15 +18,13 @@ import { Stage } from '@/components/devtools/StageSelector';
 import { easClient } from '@/utils/easClient';
 import { CreateSmartAccountRequest, Policies, WalletAccount, Permission } from '@/types/SmartAccounts';
 import { useAuth } from '@/contexts/AuthContext';
-import * as SecureStore from 'expo-secure-store';
+import { TokenBalance } from '@/types/SmartAccounts';
 
 const placeholder = require('@/assets/images/no-txn.png');
 const bankIcon = require('@/assets/icons/bank.png');
 const walletIcon = require('@/assets/icons/wallet.png');
 
 // TODO: Refactor!!!!
-
-const SOLANA_ADDRESS = "5YNmS1R9nNSCDzb5a7mMJ1dwK9uHeAAF4CerVnZgX37B";
 
 // Map Stage from the context to BankStatus enum
 // This ensures backward compatibility with existing code
@@ -40,7 +38,7 @@ export default function HomeScreen() {
     const { stage } = useStage();
     const { wallet, accountInfo, setAccountInfo } = useAuth();
     const [refreshing, setRefreshing] = useState(false);
-    const balance = 1000;
+    const [balance, setBalance] = useState(0);
 
     // Convert Stage type to BankStatus enum
     const getBankStatus = (stageValue: Stage): BankStatus => {
@@ -52,6 +50,17 @@ export default function HomeScreen() {
         }
     };
 
+    const updateBalance = (balances: TokenBalance[]) => {
+        if (balances.length === 0) {
+            setBalance(0);
+        } else {
+            const usdcBalance = balances.find((balance: any) => balance.token_address === '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
+            if (usdcBalance) {
+                setBalance(parseFloat(parseFloat(usdcBalance.amount_decimal).toFixed(2)));
+            }
+        }
+    }
+
     useEffect(() => {
         const getUserId = async () => {
             // Prevent running if not logged in
@@ -60,7 +69,7 @@ export default function HomeScreen() {
             }
 
             if (!accountInfo.smart_account_address) {
-                console.log('🚀 Couldn\'t find gridUserId,thus creating smart account');
+
                 const request = {
                     policies: {
                         signers: [{
@@ -73,25 +82,24 @@ export default function HomeScreen() {
                     },
                     memo: '',
                     grid_user_id: null,
-                    turnkey_wallet_account: {
+                    wallet_account: {
                         wallet_id: accountInfo.wallet_id,
                         wallet_address: wallet
-                    }
+                    },
+                    user_id: accountInfo.user_id
                 };
 
                 (async () => {
                     const response = await easClient.createSmartAccount(request);
-                    console.log(response);
                     const data = response.data;
-                    console.log("🚀 ~ data:", data)
                     setAccountInfo({
                         ...accountInfo,
                         smart_account_address: data.smart_account_address
                     });
                 })();
             } else {
-                console.log('🚀 Found gridUserId,thus not creating smart account');
-                console.log('🚀 Smart account address:', accountInfo?.smart_account_address);
+                const result = await easClient.getBalance({ smartAccountAddress: accountInfo.smart_account_address });
+                updateBalance(result.balances);
             }
         }
         getUserId();
@@ -224,7 +232,7 @@ export default function HomeScreen() {
     const renderQRCode = () => {
         return (
             <QRCode
-                value={SOLANA_ADDRESS}
+                value={accountInfo?.smart_account_address}
                 size={250}
                 color="white"
                 backgroundColor="#000033"
@@ -235,11 +243,13 @@ export default function HomeScreen() {
 
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
-        console.log('Refreshing...');
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        console.log('Refresh complete!');
+        if (accountInfo?.smart_account_address) {
+            const result = await easClient.getBalance({ smartAccountAddress: accountInfo.smart_account_address });
+            updateBalance(result.balances);
+        }
+
         setRefreshing(false);
-    }, []);
+    }, [accountInfo]);
 
     return (
         <ThemedScreen>
@@ -302,7 +312,7 @@ export default function HomeScreen() {
                     <View style={styles.qrCodeContainer}>
                         <ThemedText type="large" style={[styles.qrCodeHeadline, { color: 'white' }]}>Bright</ThemedText>
                         {renderQRCode()}
-                        <ThemedText type="default" style={styles.qrCodeAddress}>{SOLANA_ADDRESS}</ThemedText>
+                        <ThemedText type="default" style={styles.qrCodeAddress}>{accountInfo?.smart_account_address}</ThemedText>
                         <View style={styles.qrCodeSupportContainer}>
                             <IconSymbol name="info.circle" size={16} color="white" />
                             <ThemedText type="tiny" style={styles.qrCodeSupportText}>We don't support NFTs.</ThemedText>
