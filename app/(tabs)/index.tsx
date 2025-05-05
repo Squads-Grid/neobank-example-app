@@ -15,7 +15,6 @@ import { ActionOption } from '@/components/ui/molecules/ModalOptionsList';
 import QRCode from 'react-native-qrcode-svg';
 import { useStage } from '@/contexts/StageContext';
 import { Stage } from '@/components/devtools/StageSelector';
-import { useBalance } from '@/contexts/BalanceContext';
 import { easClient } from '@/utils/easClient';
 import { CreateSmartAccountRequest, Policies, WalletAccount, Permission } from '@/types/SmartAccounts';
 import { useAuth } from '@/contexts/AuthContext';
@@ -39,11 +38,11 @@ enum BankStatus {
 
 export default function HomeScreen() {
     const { stage } = useStage();
-    const { balance, isLoading, error } = useBalance();
     const [smartAccountAddress, setSmartAccountAddress] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
     const { wallet, suborgInfo } = useAuth();
     const [refreshing, setRefreshing] = useState(false);
+    const balance = 1000;
 
     // Convert Stage type to BankStatus enum
     const getBankStatus = (stageValue: Stage): BankStatus => {
@@ -259,7 +258,7 @@ export default function HomeScreen() {
             >
                 <ThemedText style={styles.headline}>Home · Balance</ThemedText>
                 <ThemedText type="highlight" style={styles.balanceTextStyle}>
-                    {isLoading ? '...' : `$${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                    {`$${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                 </ThemedText>
                 <CircleButtonGroup buttons={actions} />
                 <View style={{ height: Spacing.xl }} />
