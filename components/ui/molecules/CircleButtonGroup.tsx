@@ -17,12 +17,14 @@ export function CircleButtonGroup({ buttons }: CircleButtonGroupProps) {
     return (
         <View style={styles.container}>
             {buttons.map((button, index) => (
-                <CircleButton
-                    key={index}
-                    icon={button.icon}
-                    label={button.label}
-                    onPress={button.onPress}
-                />
+                <View style={styles.itemContainer}>
+                    <CircleButton
+                        key={index}
+                        icon={button.icon}
+                        label={button.label}
+                        onPress={button.onPress}
+                    />
+                </View>
             ))}
         </View>
     );
@@ -34,5 +36,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         alignItems: 'center',
         paddingVertical: Spacing.sm,
+    },
+    itemContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 75,
     },
 }); 

@@ -200,12 +200,12 @@ export default function HomeScreen() {
     const actions: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void }[] = [
         {
             icon: 'add-outline',
-            label: 'Add Money',
+            label: 'Add',
             onPress: openReceiveModal,
         },
         {
             icon: 'arrow-forward-outline',
-            label: 'Send Money',
+            label: 'Send',
             onPress: openSendModal,
         },
         {

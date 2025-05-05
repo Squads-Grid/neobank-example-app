@@ -61,6 +61,7 @@ export function CircleButton({
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
+        textAlign: 'center',
     },
     button: {
         borderRadius: 999,
