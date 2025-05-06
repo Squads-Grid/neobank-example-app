@@ -9,6 +9,7 @@ import { formatAmount } from '@/utils/helper';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ButtonGroup } from '@/components/ui/molecules';
 import { Height, Size, Weight } from '@/constants/Typography';
+import { signTransactionWithTurnkey } from '@/utils/turnkey';
 
 export default function ConfirmScreen() {
     const textColor = useThemeColor({}, 'text');
@@ -22,18 +23,33 @@ export default function ConfirmScreen() {
         title: string;
     }>();
 
-    const handleConfirm = () => {
-        // Set loading state
+    const handleConfirm = async () => {
         setIsLoading(true);
+        try {
+            // TODO: Replace these with actual values from state/context
+            const encodedTransaction = ""; // base64-encoded Solana transaction
+            const stamper = null as any; // provide actual TurnkeySuborgStamper
+            const userOrganizationId = ""; // suborg ID
+            const userPublicKey = ""; // Solana public key
 
-        // Simulate API call with a timeout
-        setTimeout(() => {
-            // Navigate to success screen
+            const signedTx = await signTransactionWithTurnkey({
+                encodedTx: encodedTransaction,
+                stamper,
+                userOrganizationId,
+                userPublicKey,
+            });
+
+            // TODO: Broadcast `signedTx` to the Solana network
+            console.log(signedTx);
+
             router.push({
                 pathname: '/success',
-                params: { amount, type, title }
+                params: { amount, type, title },
             });
-        }, 2000); // 2 seconds delay
+        } catch (err) {
+            console.error("Failed to sign transaction:", err);
+            setIsLoading(false);
+        }
     };
 
     const handleCancel = () => {
@@ -112,4 +128,4 @@ const styles = StyleSheet.create({
         fontWeight: Weight.semiBoldWeight,
         lineHeight: Size.mediumLarge * Height.lineHeightMedium,
     },
-}); 
+});

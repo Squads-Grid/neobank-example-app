@@ -21,12 +21,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [isAuthenticated]);
 
     const verifyCode = async (code: string, otpId: string): Promise<boolean> => {
+        console.log("🚀 ~ verifyCode ~ code:", code)
         try {
             if (!accountInfo) {
                 return false;
             }
 
             const { credentialBundle, keypair } = await verifyOtpCode(code, otpId, accountInfo.user_id);
+            console.log("🚀 ~ verifyCode ~ credentialBundle:", credentialBundle)
 
             setCredentialsBundle(credentialBundle);
             setKeypair(keypair);

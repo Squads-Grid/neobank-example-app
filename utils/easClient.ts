@@ -77,6 +77,7 @@ export class EasClient {
 
     // Verifies the otp code and returns the credential bundle.
     async verifyOtp(data: OTPData): Promise<VerifyOtpResponse> {
+        console.log("🚀 ~ EasClient ~ verifyOtp ~ verifyOtp:")
         return this.request<VerifyOtpResponse>('/verify-otp', {
             method: 'POST',
             body: JSON.stringify(data),
@@ -85,7 +86,7 @@ export class EasClient {
 
     // Creates a smart account.
     async createSmartAccount(request: CreateSmartAccountRequest): Promise<CreateSmartAccountResponse> {
-
+        console.log("🚀 ~ EasClient ~ createSmartAccount ~ createSmartAccount:")
         return this.request<CreateSmartAccountResponse>('/create-smart-account', {
             method: 'POST',
             body: JSON.stringify(request),

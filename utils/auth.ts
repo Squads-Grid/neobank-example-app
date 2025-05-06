@@ -33,7 +33,9 @@ export const authenticateUser = async (email: string): Promise<{ otpId: string; 
 };
 
 export const verifyOtpCode = async (code: string, otpId: string, suborgId: string): Promise<{ credentialBundle: string; keypair: Keypair }> => {
+    console.log("🚀 ~ verifyOtpCode ~ code:", code)
     const keyPair = await generateKeyPairP256();
+    console.log("🚀 ~ verifyOtpCode ~ keyPair:", keyPair)
 
     const otpData: OTPData = {
         otp_code: code,
@@ -42,6 +44,7 @@ export const verifyOtpCode = async (code: string, otpId: string, suborgId: strin
         expiration: 900, // 15 minutes
         sub_organization_id: suborgId
     };
+    console.log("🚀 ~ verifyOtpCode ~ otpData:", otpData)
 
     const response = await easClient.verifyOtp(otpData);
     return {

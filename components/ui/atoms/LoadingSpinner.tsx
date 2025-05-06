@@ -1,5 +1,5 @@
 import { ActivityIndicator, StyleSheet } from 'react-native';
-import { ThemedView } from '@/components/ui/atoms';
+import { ThemedView } from './ThemedView';
 
 export function LoadingSpinner() {
     return (

@@ -88,6 +88,7 @@ export class GridClient {
 
     // Creates a smart account.
     async createSmartAccount(request: CreateSmartAccountRequest): Promise<CreateSmartAccountResponse> {
+        console.log("🚀 ~ GridClient ~ createSmartAccount ~ createSmartAccount:")
         return this.request<CreateSmartAccountResponse>('', {
             method: 'POST',
             body: JSON.stringify(request),

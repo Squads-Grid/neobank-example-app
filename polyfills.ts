@@ -2,6 +2,47 @@ import "react-native-get-random-values";
 import { TextDecoder, TextEncoder } from "text-encoding";
 import "@ethersproject/shims";
 
+export function setupCryptoPolyfill() {
+    if (typeof global.crypto === "undefined") {
+        global.crypto = {
+            getRandomValues: (buffer: Uint8Array) => {
+                const bytes = new Uint8Array(buffer.length);
+                for (let i = 0; i < buffer.length; i++) {
+                    bytes[i] = Math.floor(Math.random() * 256);
+                }
+                buffer.set(bytes);
+                return buffer;
+            },
+            subtle: {} as any,
+            randomUUID: () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            })
+        } as Crypto;
+    }
+}
+
+// Explicitly setup crypto
+if (typeof global.crypto === "undefined") {
+    global.crypto = {
+        getRandomValues: (buffer: Uint8Array) => {
+            const bytes = new Uint8Array(buffer.length);
+            for (let i = 0; i < buffer.length; i++) {
+                bytes[i] = Math.floor(Math.random() * 256);
+            }
+            buffer.set(bytes);
+            return buffer;
+        },
+        subtle: {} as any,
+        randomUUID: () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        })
+    } as Crypto;
+}
+
 // https://docs.expo.dev/versions/latest/sdk/gesture-handler/
 import "react-native-gesture-handler";
 

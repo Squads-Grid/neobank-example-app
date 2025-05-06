@@ -63,12 +63,15 @@ export default function HomeScreen() {
 
     useEffect(() => {
         const getUserId = async () => {
+            console.log("🚀 ~ getUserId ~ accountInfo:", accountInfo)
             // Prevent running if not logged in
             if (!accountInfo || !wallet) {
+
                 return;
             }
 
             if (!accountInfo.smart_account_address) {
+                console.log("🚀 ~ getUserId ~ creating smart account")
 
                 const request = {
                     policies: {
@@ -92,12 +95,14 @@ export default function HomeScreen() {
                 (async () => {
                     const response = await easClient.createSmartAccount(request);
                     const data = response.data;
+                    console.log("🚀 ~ data:", data)
                     setAccountInfo({
                         ...accountInfo,
                         smart_account_address: data.smart_account_address
                     });
                 })();
             } else {
+                console.log("🚀 ~ getUserId ~ getting balance")
                 const result = await easClient.getBalance({ smartAccountAddress: accountInfo.smart_account_address });
                 updateBalance(result.balances);
             }

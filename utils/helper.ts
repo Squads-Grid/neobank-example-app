@@ -1,3 +1,5 @@
+import { setupCryptoPolyfill } from '@/polyfills';
+
 /**
  * Format a string amount as a currency string
  * @param amount - The amount to format
@@ -60,7 +62,20 @@ export const generateId = (length: number = 8): string => {
 };
 
 export const generateKeyPairP256 = async (): Promise<{ publicKey: string; privateKey: string, publicKeyUncompressed: string }> => {
+    console.log("🚀 ~ generateKeyPairP256 ~ starting");
+    setupCryptoPolyfill();
     const { generateP256KeyPair } = await import("@turnkey/crypto");
-    const keyPair = generateP256KeyPair();
-    return keyPair;
+    console.log("🚀 ~ generateKeyPairP256 ~ imported");
+    try {
+        const keyPair = generateP256KeyPair();
+        console.log("🚀 ~ generateKeyPairP256 ~ generated:", {
+            privateKeyLength: keyPair.privateKey.length,
+            publicKeyLength: keyPair.publicKey.length,
+            publicKeyUncompressedLength: keyPair.publicKeyUncompressed.length
+        });
+        return keyPair;
+    } catch (e) {
+        console.log("🚀 ~ generateKeyPairP256 ~ error:", e);
+        throw e;
+    }
 };

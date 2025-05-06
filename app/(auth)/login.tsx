@@ -38,6 +38,7 @@ function LoginScreen() {
     });
 
     const verify = async (code: string): Promise<boolean> => {
+        console.log("🚀 ~ verify ~ code:", code)
 
         if (!otpId) {
             throw new Error('No otpId found');
