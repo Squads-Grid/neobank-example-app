@@ -46,6 +46,7 @@ export interface AuthContextType {
     verifyCode: (code: string, otpId: string) => Promise<boolean>;
     logout: () => Promise<void>;
     wallet: string | null;
+    isLoading: boolean;
 }
 
 export interface AuthResponse {

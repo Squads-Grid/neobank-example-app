@@ -10,10 +10,15 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { ButtonGroup } from '@/components/ui/molecules';
 import { Height, Size, Weight } from '@/constants/Typography';
 import { signTransactionWithTurnkey } from '@/utils/turnkey';
+import { useAuth } from '@/contexts/AuthContext';
+import { TurnkeySuborgStamper } from '@/utils/turnkey';
+import { VersionedTransaction, TransactionMessage, PublicKey, Connection } from '@solana/web3.js';
+import { getAssociatedTokenAddress, createAssociatedTokenAccountIdempotentInstruction, createTransferInstruction } from '@solana/spl-token';
 
 export default function ConfirmScreen() {
     const textColor = useThemeColor({}, 'text');
     const [isLoading, setIsLoading] = useState(false);
+    const { accountInfo, credentialsBundle, keypair, email, logout } = useAuth();
 
     const { amount, recipient, name, type, title } = useLocalSearchParams<{
         amount: string;
@@ -26,17 +31,73 @@ export default function ConfirmScreen() {
     const handleConfirm = async () => {
         setIsLoading(true);
         try {
-            // TODO: Replace these with actual values from state/context
-            const encodedTransaction = ""; // base64-encoded Solana transaction
-            const stamper = null as any; // provide actual TurnkeySuborgStamper
-            const userOrganizationId = ""; // suborg ID
-            const userPublicKey = ""; // Solana public key
+            console.log("🚀 ~ handleConfirm ~ accountInfo:", accountInfo);
+            console.log("🚀 ~ handleConfirm ~ credentialsBundle:", credentialsBundle);
+            console.log("🚀 ~ handleConfirm ~ keypair:", keypair);
+            if (!accountInfo || !credentialsBundle || !keypair) {
+                console.log("Missing auth data:", { accountInfo, credentialsBundle, keypair });
+                logout();
+                router.push({
+                    pathname: '/(auth)/login',
+                });
+                return;
+            }
+
+            const connection = new Connection("https://api.devnet.solana.com");
+            const recentBlockhash = await connection.getLatestBlockhash();
+
+            // Create USDC transfer instructions
+            const fromPublicKey = new PublicKey(accountInfo.smart_account_address);
+            const toPublicKey = new PublicKey(recipient);
+            const usdcMint = new PublicKey('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
+            const fromTokenAccount = await getAssociatedTokenAddress(usdcMint, fromPublicKey);
+            const toTokenAccount = await getAssociatedTokenAddress(usdcMint, toPublicKey);
+
+            const instructions = [
+                createAssociatedTokenAccountIdempotentInstruction(
+                    fromPublicKey,
+                    toTokenAccount,
+                    toPublicKey,
+                    usdcMint
+                ),
+                createTransferInstruction(
+                    fromTokenAccount,
+                    toTokenAccount,
+                    fromPublicKey,
+                    Number(amount) * 10 ** 6
+                )
+            ];
+
+            // Create and compile the transaction message
+            const messageV0 = new TransactionMessage({
+                payerKey: fromPublicKey,
+                recentBlockhash: recentBlockhash.blockhash,
+                instructions
+            }).compileToV0Message();
+
+            const transaction = new VersionedTransaction(messageV0);
+            const encodedTransaction = Buffer.from(transaction.serialize()).toString('base64');
+
+            if (!email) {
+                logout();
+                router.push({
+                    pathname: '/(auth)/login',
+                });
+                return;
+            }
+
+            // Create the stamper
+            const stamper = new TurnkeySuborgStamper(keypair.privateKey, {
+                subOrganizationId: accountInfo.user_id,
+                email: email,
+                publicKey: keypair.publicKey
+            });
 
             const signedTx = await signTransactionWithTurnkey({
                 encodedTx: encodedTransaction,
                 stamper,
-                userOrganizationId,
-                userPublicKey,
+                userOrganizationId: accountInfo.user_id,
+                userPublicKey: keypair.publicKey,
             });
 
             // TODO: Broadcast `signedTx` to the Solana network
