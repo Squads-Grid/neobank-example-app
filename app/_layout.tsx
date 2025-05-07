@@ -2,6 +2,7 @@ import '@/polyfills';
 import React from 'react';
 import { Stack } from 'expo-router';
 import Toast from 'react-native-toast-message';
+import { View, Text } from 'react-native';
 
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
@@ -45,10 +46,38 @@ function RootLayoutNav() {
                     options={{ headerShown: false }}
                 />
             </Stack>
-            <Toast />
         </>
     );
 }
+
+const toastConfig = {
+    error: (props: { text1?: string }) => (
+        <View style={{
+            backgroundColor: '#000000',
+            opacity: 0.4,
+            padding: 16,
+            borderRadius: 8,
+            marginHorizontal: 16,
+            marginTop: 40,
+            shadowColor: "#000",
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+        }}>
+            <Text style={{
+                color: '#FFFFFF',
+                fontSize: 14,
+                fontWeight: '600',
+            }}>
+                {props.text1 || 'An error occurred'}
+            </Text>
+        </View>
+    )
+};
 
 export default function RootLayout() {
     const colorScheme = useColorScheme();
@@ -60,6 +89,7 @@ export default function RootLayout() {
                     <StageProvider>
                         <RootLayoutNav />
                         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+                        <Toast config={toastConfig} />
                     </StageProvider>
                 </ScreenThemeProvider>
             </ThemeProvider>

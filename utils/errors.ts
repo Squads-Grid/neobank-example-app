@@ -5,7 +5,7 @@ export enum ErrorCode {
     AUTH_FAILED = 'AUTH_FAILED',
     INVALID_OTP = 'INVALID_OTP',
     OTP_EXPIRED = 'OTP_EXPIRED',
-    TOO_MANY_ATTEMPTS = 'TOO_MANY_ATTEMPTS',
+    OTP_RATE_LIMIT = 'OTP_RATE_LIMIT',
     SESSION_EXPIRED = 'SESSION_EXPIRED',
 
     // Transaction errors
@@ -23,7 +23,7 @@ export const ErrorMessages: Record<ErrorCode, string> = {
     [ErrorCode.AUTH_FAILED]: 'Authentication failed. Please try again.',
     [ErrorCode.INVALID_OTP]: 'Invalid OTP. Please try again.',
     [ErrorCode.OTP_EXPIRED]: 'OTP expired. Please request a new one.',
-    [ErrorCode.TOO_MANY_ATTEMPTS]: 'Too many attempts. Please try again later.',
+    [ErrorCode.OTP_RATE_LIMIT]: 'Too many attempts. Please try again later.',
     [ErrorCode.SESSION_EXPIRED]: 'Session expired. Please log in again.',
 
     // Transaction errors
@@ -50,9 +50,8 @@ export class AppError extends Error {
         if (this.shouldDisplay) {
             Toast.show({
                 type: 'error',
-                text1: 'Error',
-                text2: ErrorMessages[this.code],
-                position: 'bottom',
+                text1: ErrorMessages[this.code],
+                position: 'top',
                 visibilityTime: 4000,
             });
         }
@@ -63,12 +62,9 @@ export class AppError extends Error {
     }
 }
 
-export function handleError(error: unknown): AppError {
-    if (error instanceof AppError) {
-        return error;
-    }
+export function handleError(error: ErrorCode, shouldLog: boolean, shouldDisplay: boolean): AppError {
 
-    const appError = new AppError(ErrorCode.UNKNOWN_ERROR, true, true);
+    const appError = new AppError(error, shouldLog, shouldDisplay);
 
     // Show toast automatically
     appError.showToast();

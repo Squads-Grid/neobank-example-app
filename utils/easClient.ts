@@ -50,21 +50,23 @@ export class EasClient {
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
 
+                const code = errorData.details[0].code as ErrorCode;
                 const errorCodesToDisplay = [
-                    ErrorCode.INSUFFICIENT_FUNDS,
-                    ErrorCode.SESSION_EXPIRED,
+                    ErrorCode.OTP_RATE_LIMIT,
                 ];
 
-                if (errorCodesToDisplay.includes(errorData.code as ErrorCode)) {
-                    throw new AppError(errorData.code as ErrorCode, true, true);
+                if (errorCodesToDisplay.includes(code as ErrorCode)) {
+                    handleError(code, true, true);
+                } else {
+                    handleError(code, true, false);
                 }
-                throw new AppError(errorData.code as ErrorCode, true, false);
+                throw new EasError('Request failed', response.status, errorData);
             }
 
             return response.json();
         } catch (error) {
-            // Use our error handler
-            throw handleError(error);
+            handleError(ErrorCode.UNKNOWN_ERROR, true, false);
+            throw error;
         }
     }
 

@@ -14,6 +14,7 @@ export class GridClient {
         this.baseUrl = `${url}${endpoint}`;
         this.defaultHeaders = {
             'Content-Type': 'application/json',
+            'x-grid-environment': 'sandbox',
             'Authorization': `Bearer ${process.env.GRID_API_KEY}`,
         };
     }
