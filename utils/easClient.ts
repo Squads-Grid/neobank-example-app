@@ -1,5 +1,6 @@
 import { AuthenticationRequest, AuthenticationResponse, Keypair, OTPData, VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
+import { PrepareTransactionParams } from '@/types/Transaction';
 
 class EasError extends Error {
     constructor(
@@ -77,7 +78,6 @@ export class EasClient {
 
     // Verifies the otp code and returns the credential bundle.
     async verifyOtp(data: OTPData): Promise<VerifyOtpResponse> {
-        console.log("🚀 ~ EasClient ~ verifyOtp ~ verifyOtp:")
         return this.request<VerifyOtpResponse>('/verify-otp', {
             method: 'POST',
             body: JSON.stringify(data),
@@ -86,7 +86,6 @@ export class EasClient {
 
     // Creates a smart account.
     async createSmartAccount(request: CreateSmartAccountRequest): Promise<CreateSmartAccountResponse> {
-        console.log("🚀 ~ EasClient ~ createSmartAccount ~ createSmartAccount:")
         return this.request<CreateSmartAccountResponse>('/create-smart-account', {
             method: 'POST',
             body: JSON.stringify(request),
@@ -96,6 +95,14 @@ export class EasClient {
     // Gets the balance of a smart account.
     async getBalance(request: { smartAccountAddress: string }): Promise<any> {
         return this.request<[]>('/balance', {
+            method: 'POST',
+            body: JSON.stringify(request),
+        });
+    }
+
+    // Prepares a transaction.
+    async prepareTransaction(request: PrepareTransactionParams): Promise<any> {
+        return this.request<[]>('/prepare-transaction', {
             method: 'POST',
             body: JSON.stringify(request),
         });

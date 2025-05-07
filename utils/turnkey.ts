@@ -15,29 +15,27 @@ export async function signTransactionWithTurnkey({
     userOrganizationId,
     userPublicKey,
 }: {
-    encodedTx: string; // base64-encoded tx
+    encodedTx: string; // base64-encoded tx message
     stamper: TurnkeySuborgStamper;
     userOrganizationId: string;
     userPublicKey: string;
 }) {
     try {
-        console.log("🚀 ~ signTransactionWithTurnkey ~ encodedTx length:", encodedTx.length);
-        // 1. Decode base64 -> VersionedTransaction
-        const rawBytes = Buffer.from(encodedTx, "base64");
-        console.log("🚀 ~ signTransactionWithTurnkey ~ rawBytes length:", rawBytes.length);
-        const transaction = VersionedTransaction.deserialize(new Uint8Array(rawBytes));
-        console.log("🚀 ~ signTransactionWithTurnkey ~ transaction deserialized");
 
-        // 2. Serialize the message and convert to hex
-        const messageBytes = transaction.message.serialize();
-        console.log("🚀 ~ signTransactionWithTurnkey ~ messageBytes length:", messageBytes.length);
-        const hexPayload = uint8ArrayToHexString(new Uint8Array(messageBytes));
-        console.log("🚀 ~ signTransactionWithTurnkey ~ hexPayload length:", hexPayload.length);
+        const tx = VersionedTransaction.deserialize(
+            new Uint8Array(Buffer.from(encodedTx, "base64"))
+        );
 
-        // 3. Setup Turnkey client
-        const client = new TurnkeyClient({ baseUrl: "https://api.turnkey.com" }, stamper);
+        const messageBytes = tx.message.serialize();
+        const hexPayload = uint8ArrayToHexString(messageBytes);
 
-        // 4. Poll for signRawPayload result
+        console.log("🚀 ~ userPublicKey:", userPublicKey)
+
+        const client = new TurnkeyClient(
+            { baseUrl: "https://api.turnkey.com" },
+            stamper
+        );
+
         const poller = createActivityPoller({
             client,
             requestFn: client.signRawPayload,
@@ -60,12 +58,16 @@ export async function signTransactionWithTurnkey({
             throw new Error(`Signing failed, activity ID: ${activity.id}`);
         }
 
-        const sigBytes = uint8ArrayFromHexString(result.r + result.s);
-        transaction.addSignature(new PublicKey(userPublicKey), sigBytes);
+        const signature = uint8ArrayFromHexString(result.r + result.s);
 
-        // 6. Serialize and return base64
-        const signedTx = Buffer.from(transaction.serialize()).toString("base64");
-        return signedTx;
+        tx.addSignature(
+            new PublicKey(userPublicKey),
+            signature
+        );
+
+        return Buffer.from(tx.serialize()).toString(
+            "base64"
+        )
     } catch (error) {
         console.error("Error in signTransactionWithTurnkey:", error);
         throw error;
@@ -104,7 +106,7 @@ export class TurnkeySuborgStamper {
         const stamp = {
             publicKey,
             scheme: "SIGNATURE_SCHEME_TK_API_P256",
-            signature: signature,
+            signature,
         };
 
         return {
@@ -112,4 +114,5 @@ export class TurnkeySuborgStamper {
             stampHeaderValue: stringToBase64urlString(JSON.stringify(stamp)),
         };
     }
+
 }

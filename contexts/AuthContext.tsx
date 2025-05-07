@@ -29,7 +29,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const loadAuthState = async () => {
             try {
-                console.log("🚀 ~ Loading auth state from SecureStore...");
                 const [
                     storedEmail,
                     storedAccountInfo,
@@ -46,15 +45,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     SecureStore.getItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED)
                 ]);
 
-                console.log("🚀 ~ Loaded auth state:", {
-                    storedEmail,
-                    storedAccountInfo: storedAccountInfo ? JSON.parse(storedAccountInfo) : null,
-                    storedKeypair: storedKeypair ? JSON.parse(storedKeypair) : null,
-                    storedCredentialsBundle,
-                    storedWallet,
-                    storedIsAuthenticated
-                });
-
                 if (storedEmail) setEmail(storedEmail);
                 if (storedAccountInfo) setAccountInfo(JSON.parse(storedAccountInfo));
                 if (storedKeypair) setKeypair(JSON.parse(storedKeypair));
@@ -62,14 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 if (storedWallet) setWallet(storedWallet);
                 if (storedIsAuthenticated) setIsAuthenticated(storedIsAuthenticated === 'true');
 
-                console.log("🚀 ~ Current auth state:", {
-                    email,
-                    accountInfo,
-                    keypair,
-                    credentialsBundle,
-                    wallet,
-                    isAuthenticated
-                });
+
             } catch (error) {
                 console.error('Error loading auth state:', error);
             } finally {
@@ -84,14 +67,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const persistAuthState = async () => {
             try {
-                console.log("🚀 ~ Persisting auth state:", {
-                    email,
-                    accountInfo,
-                    keypair,
-                    credentialsBundle,
-                    wallet,
-                    isAuthenticated
-                });
 
                 await Promise.all([
                     email ? SecureStore.setItemAsync(AUTH_STORAGE_KEYS.EMAIL, email) : SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.EMAIL),
@@ -102,7 +77,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     SecureStore.setItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED, String(isAuthenticated))
                 ]);
 
-                console.log("🚀 ~ Auth state persisted successfully");
             } catch (error) {
                 console.error('Error persisting auth state:', error);
             }
@@ -112,35 +86,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [email, accountInfo, keypair, credentialsBundle, wallet, isAuthenticated]);
 
     useEffect(() => {
-        console.log("🚀 ~ Auth state changed:", {
-            isAuthenticated,
-            email,
-            accountInfo,
-            keypair,
-            credentialsBundle,
-            wallet
-        });
 
         if (isAuthenticated === false) {
-            console.log("🚀 ~ Redirecting to start screen due to isAuthenticated being false");
             router.replace('/(auth)/start');
         }
     }, [isAuthenticated]);
 
     const verifyCode = async (code: string, otpId: string): Promise<boolean> => {
-        console.log("🚀 ~ verifyCode ~ code:", code)
         try {
             if (!accountInfo) {
-                console.log("🚀 ~ verifyCode ~ No accountInfo found");
                 return false;
             }
 
             const { credentialBundle, keypair } = await verifyOtpCode(code, otpId, accountInfo.user_id);
-            console.log("🚀 ~ verifyCode ~ credentialBundle:", credentialBundle)
-            console.log("🚀 ~ verifyCode ~ keypair:", keypair)
 
             if (!keypair || !keypair.privateKey || !keypair.publicKey) {
-                console.error("🚀 ~ verifyCode ~ Invalid keypair received:", keypair);
                 return false;
             }
 
@@ -151,12 +111,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setKeypair(keypair);
             setIsAuthenticated(true);
             setAuthError(null);
-
-            console.log("🚀 ~ verifyCode ~ Auth state updated:", {
-                credentialBundle,
-                keypair,
-                isAuthenticated: true
-            });
 
             router.replace('/success');
             return true;

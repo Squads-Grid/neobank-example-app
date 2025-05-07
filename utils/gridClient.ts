@@ -1,5 +1,6 @@
 import { AuthenticationRequest, AuthenticationResponse, Keypair, OTPData, VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
+import { PrepareTransactionParams } from '@/types/Transaction';
 
 class GridApiError extends Error {
     constructor(
@@ -88,9 +89,20 @@ export class GridClient {
 
     // Creates a smart account.
     async createSmartAccount(request: CreateSmartAccountRequest): Promise<CreateSmartAccountResponse> {
-        console.log("🚀 ~ GridClient ~ createSmartAccount ~ createSmartAccount:")
         return this.request<CreateSmartAccountResponse>('', {
             method: 'POST',
+            body: JSON.stringify(request),
+        });
+    }
+
+    // Prepares a transaction.
+    async prepareTransaction(request: PrepareTransactionParams): Promise<any> {
+        return this.request<[]>(`/${request.smartAccountAddress}/transfers`, {
+            method: 'POST',
+            headers: {
+                ...this.defaultHeaders,
+                'x-idempotency-key': request.idempotency_key
+            },
             body: JSON.stringify(request),
         });
     }

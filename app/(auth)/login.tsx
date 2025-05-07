@@ -9,6 +9,16 @@ import { ThemedActionText } from '@/components/ui/atoms';
 import { useResendTimer } from '@/hooks/useResendTimer';
 import { Spacing } from '@/constants/Spacing';
 import { router } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+
+const AUTH_STORAGE_KEYS = {
+    EMAIL: 'auth_email',
+    ACCOUNT_INFO: 'auth_account_info',
+    KEYPAIR: 'auth_keypair',
+    CREDENTIALS_BUNDLE: 'auth_credentials_bundle',
+    WALLET: 'auth_wallet',
+    IS_AUTHENTICATED: 'auth_is_authenticated'
+};
 
 function LoginScreen() {
     const [isLoading, setIsLoading] = useState(false);
@@ -18,6 +28,14 @@ function LoginScreen() {
     const { authenticate, verifyCode, email, setEmail } = useAuth();
 
     const triggerAuthentication = async (emailToUse: string) => {
+        await Promise.all([
+            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.EMAIL),
+            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.ACCOUNT_INFO),
+            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.KEYPAIR),
+            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.CREDENTIALS_BUNDLE),
+            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.WALLET),
+            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED)
+        ]);
 
         setShowCodeInput(true);
         const result = await authenticate(emailToUse);
@@ -38,7 +56,6 @@ function LoginScreen() {
     });
 
     const verify = async (code: string): Promise<boolean> => {
-        console.log("🚀 ~ verify ~ code:", code)
 
         if (!otpId) {
             throw new Error('No otpId found');

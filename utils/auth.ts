@@ -33,11 +33,9 @@ export const authenticateUser = async (email: string): Promise<{ otpId: string; 
 };
 
 export const verifyOtpCode = async (code: string, otpId: string, suborgId: string): Promise<{ credentialBundle: string; keypair: Keypair }> => {
-    console.log("🚀 ~ verifyOtpCode ~ code:", code)
 
     // Generate a new keypair for the request
     const keyPair = await generateKeyPairP256();
-    console.log("🚀 ~ verifyOtpCode ~ generated keyPair:", keyPair)
 
     const otpData: OTPData = {
         otp_code: code,
@@ -46,10 +44,8 @@ export const verifyOtpCode = async (code: string, otpId: string, suborgId: strin
         expiration: 900, // 15 minutes
         sub_organization_id: suborgId
     };
-    console.log("🚀 ~ verifyOtpCode ~ otpData:", otpData)
 
     const response = await easClient.verifyOtp(otpData);
-    console.log("🚀 ~ verifyOtpCode ~ response:", response)
 
     // Use our generated keypair instead of expecting one from the server
     return {

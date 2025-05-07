@@ -4,8 +4,6 @@ export async function POST(request: Request) {
         const smartAccountAddress = body.smartAccountAddress;
         const url = `${process.env.EXPO_PUBLIC_BASE_URL}:50001/api/v1/smart-accounts/${smartAccountAddress}/balances`;
 
-        console.log("🚀 ~ POST ~ url:", url)
-
         const response = await fetch(url, {
             method: "GET",
             headers: {

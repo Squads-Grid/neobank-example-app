@@ -12,8 +12,13 @@ import { Height, Size, Weight } from '@/constants/Typography';
 import { signTransactionWithTurnkey } from '@/utils/turnkey';
 import { useAuth } from '@/contexts/AuthContext';
 import { TurnkeySuborgStamper } from '@/utils/turnkey';
-import { VersionedTransaction, TransactionMessage, PublicKey, Connection } from '@solana/web3.js';
+import { VersionedTransaction, TransactionMessage, PublicKey, Connection, Transaction } from '@solana/web3.js';
 import { getAssociatedTokenAddress, createAssociatedTokenAccountIdempotentInstruction, createTransferInstruction } from '@solana/spl-token';
+import { decryptCredentialBundle } from '@turnkey/crypto';
+import { uint8ArrayToHexString } from "@turnkey/encoding";
+import { EasClient } from '@/utils/easClient';
+import { PrepareTransactionParams, SmartAccount, SolanaAddress } from '@/types/Transaction';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function ConfirmScreen() {
     const textColor = useThemeColor({}, 'text');
@@ -31,11 +36,7 @@ export default function ConfirmScreen() {
     const handleConfirm = async () => {
         setIsLoading(true);
         try {
-            console.log("🚀 ~ handleConfirm ~ accountInfo:", accountInfo);
-            console.log("🚀 ~ handleConfirm ~ credentialsBundle:", credentialsBundle);
-            console.log("🚀 ~ handleConfirm ~ keypair:", keypair);
             if (!accountInfo || !credentialsBundle || !keypair) {
-                console.log("Missing auth data:", { accountInfo, credentialsBundle, keypair });
                 logout();
                 router.push({
                     pathname: '/(auth)/login',
@@ -44,64 +45,67 @@ export default function ConfirmScreen() {
             }
 
             const connection = new Connection("https://api.devnet.solana.com");
-            const recentBlockhash = await connection.getLatestBlockhash();
 
-            // Create USDC transfer instructions
-            const fromPublicKey = new PublicKey(accountInfo.smart_account_address);
-            const toPublicKey = new PublicKey(recipient);
-            const usdcMint = new PublicKey('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
-            const fromTokenAccount = await getAssociatedTokenAddress(usdcMint, fromPublicKey);
-            const toTokenAccount = await getAssociatedTokenAddress(usdcMint, toPublicKey);
+            const source: SmartAccount = {
+                smart_account_address: accountInfo.smart_account_address,
+                currency: 'usdc'
+            }
 
-            const instructions = [
-                createAssociatedTokenAccountIdempotentInstruction(
-                    fromPublicKey,
-                    toTokenAccount,
-                    toPublicKey,
-                    usdcMint
-                ),
-                createTransferInstruction(
-                    fromTokenAccount,
-                    toTokenAccount,
-                    fromPublicKey,
-                    Number(amount) * 10 ** 6
-                )
-            ];
+            const destination: SolanaAddress = {
+                address: recipient,
+                currency: 'usdc'
+            }
 
-            // Create and compile the transaction message
-            const messageV0 = new TransactionMessage({
-                payerKey: fromPublicKey,
-                recentBlockhash: recentBlockhash.blockhash,
-                instructions
-            }).compileToV0Message();
+            const prepareTransactionParams: PrepareTransactionParams = {
+                smartAccountAddress: accountInfo.smart_account_address,
+                amount: amount,
+                grid_user_id: 'd79a2375-cf54-4a4f-a477-bd6edfc262e9', /// we need the user id from the db!
+                idempotency_key: uuidv4(),
+                source,
+                destination
+            };
 
-            const transaction = new VersionedTransaction(messageV0);
-            const encodedTransaction = Buffer.from(transaction.serialize()).toString('base64');
+            const easClient = new EasClient();
+
+            const res = await easClient.prepareTransaction(prepareTransactionParams);
 
             if (!email) {
                 logout();
                 router.push({
                     pathname: '/(auth)/login',
                 });
+
                 return;
             }
+            const userPublicKey = accountInfo.public_key;
 
-            // Create the stamper
-            const stamper = new TurnkeySuborgStamper(keypair.privateKey, {
-                subOrganizationId: accountInfo.user_id,
-                email: email,
-                publicKey: keypair.publicKey
-            });
+            const decryptedData = decryptCredentialBundle(credentialsBundle, keypair.privateKey);
+            const stamper = new TurnkeySuborgStamper(
+                decryptedData,
+                {
+                    subOrganizationId: accountInfo.user_id,
+                    email: email,
+                    publicKey: keypair.publicKey
+                }
+            );
 
-            const signedTx = await signTransactionWithTurnkey({
-                encodedTx: encodedTransaction,
-                stamper,
-                userOrganizationId: accountInfo.user_id,
-                userPublicKey: keypair.publicKey,
-            });
+            const userOrganizationId = accountInfo.user_id;
 
-            // TODO: Broadcast `signedTx` to the Solana network
-            console.log(signedTx);
+            try {
+                const signedTx = await signTransactionWithTurnkey({
+                    encodedTx: res.data.transaction_hash,
+                    stamper,
+                    userOrganizationId,
+                    userPublicKey
+                });
+
+                const tx = VersionedTransaction.deserialize(Buffer.from(signedTx, 'base64'));
+                const txHash = await connection.sendTransaction(tx);
+
+            } catch (e) {
+                console.error("Failed to sign transaction:", e);
+                setIsLoading(false);
+            }
 
             router.push({
                 pathname: '/success',
@@ -164,9 +168,7 @@ export default function ConfirmScreen() {
             )}
         </ThemedScreen>
     );
-}
-
-const styles = StyleSheet.create({
+} const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: Spacing.lg,
@@ -190,3 +192,4 @@ const styles = StyleSheet.create({
         lineHeight: Size.mediumLarge * Height.lineHeightMedium,
     },
 });
+
