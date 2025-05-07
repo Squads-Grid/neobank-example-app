@@ -72,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 return false;
             }
 
-            const { credentialBundle, keypair } = await verifyOtpCode(code, otpId, accountInfo.user_id);
+            const { credentialBundle, keypair } = await verifyOtpCode(code, otpId, accountInfo.mpc_primary_id);
 
             if (!keypair || !keypair.privateKey || !keypair.publicKey) {
                 return false;

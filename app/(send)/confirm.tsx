@@ -83,13 +83,13 @@ export default function ConfirmScreen() {
             const stamper = new TurnkeySuborgStamper(
                 decryptedData,
                 {
-                    subOrganizationId: accountInfo.user_id,
+                    subOrganizationId: accountInfo.mpc_primary_id,
                     email: email,
                     publicKey: keypair.publicKey
                 }
             );
 
-            const userOrganizationId = accountInfo.user_id;
+            const userOrganizationId = accountInfo.mpc_primary_id;
 
             try {
                 const signedTx = await signTransactionWithTurnkey({

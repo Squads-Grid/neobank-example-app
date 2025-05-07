@@ -42,7 +42,7 @@ export const verifyOtpCode = async (code: string, otpId: string, suborgId: strin
         otp_id: otpId,
         public_key: keyPair.publicKeyUncompressed,
         expiration: 900, // 15 minutes
-        sub_organization_id: suborgId
+        mpc_primary_id: suborgId
     };
 
     const response = await easClient.verifyOtp(otpData);

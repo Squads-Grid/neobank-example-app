@@ -6,14 +6,14 @@ export interface AuthenticationResponse {
 }
 
 export interface AccountInfo {
-    user_id: string;
+    mpc_primary_id: string;
     wallet_id: string; // Id of the wallet that has permissions for smart account
     public_key: string;
     smart_account_address: string;
 }
 
 export interface OTPData {
-    sub_organization_id: string;
+    mpc_primary_id: string;
     otp_id: string;
     otp_code: string;
     public_key: string;

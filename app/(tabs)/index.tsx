@@ -87,7 +87,7 @@ export default function HomeScreen() {
                         wallet_id: accountInfo.wallet_id,
                         wallet_address: wallet
                     },
-                    user_id: accountInfo.user_id
+                    user_id: accountInfo.mpc_primary_id
                 };
 
                 (async () => {
