@@ -70,7 +70,6 @@ export class EasClient {
 
     // Creates an account if it doesn't already exist and triggers otp. If the account already exists, it just triggers otp.
     async authenticate(request: AuthenticationRequest): Promise<AuthenticationResponse> {
-        console.log('🚀 ~ EasClient ~ authenticate ~ ')
         return this.request<AuthenticationResponse>('/auth', {
             method: 'POST',
             body: JSON.stringify(request),

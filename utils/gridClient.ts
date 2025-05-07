@@ -29,7 +29,6 @@ export class GridClient {
         options: RequestInit = {}
     ): Promise<T> {
         const url = `${this.baseUrl}${endpoint}`;
-        console.log("🚀 ~ GridClient ~ url:", url)
         const response = await fetch(url, {
             ...options,
             headers: {
@@ -49,7 +48,6 @@ export class GridClient {
 
     // Auth endpoints
     async authenticate(request: AuthenticationRequest): Promise<AuthenticationResponse> {
-        console.log('🚀 ~ GridClient ~ authenticate ~ ')
 
         return this.request<AuthenticationResponse>('/auth', {
             method: 'POST',

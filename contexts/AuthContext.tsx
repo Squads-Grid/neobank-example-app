@@ -29,9 +29,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const initializeAuth = async () => {
             try {
-                // Check for stored auth data
                 const storedAuth = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED);
-                console.log("🚀 ~ initializeAuth ~ storedAuth:", storedAuth)
+
                 if (storedAuth === 'true') {
                     const accountInfo = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.ACCOUNT_INFO);
                     const keypair = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.KEYPAIR);
@@ -46,10 +45,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         setEmail(email);
                         setWallet(wallet);
                         setIsAuthenticated(true);
+                    } else {
+                        setIsAuthenticated(false);
                     }
+                } else {
+                    setIsAuthenticated(false);
                 }
             } catch (error) {
                 console.error('Error initializing auth:', error);
+                setIsAuthenticated(false);
             } finally {
                 setIsLoading(false);
             }
@@ -74,8 +78,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 return false;
             }
 
-            // Store the keypair in SecureStore immediately
-            await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KEYPAIR, JSON.stringify(keypair));
+            // Store all auth data in SecureStore
+            // TODO: Check what to do with the keypair
+            await Promise.all([
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KEYPAIR, JSON.stringify(keypair)),
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.CREDENTIALS_BUNDLE, credentialBundle),
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED, 'true')
+            ]);
 
             setCredentialsBundle(credentialBundle);
             setKeypair(keypair);
@@ -114,7 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             ]);
 
             // Replace the entire stack with the start screen
-            router.replace('/(auth)/start');
+            // router.replace('/(auth)/start');
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             setAuthError(errorMessage);
@@ -125,6 +134,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const authenticate = async (email: string): Promise<string> => {
         try {
             const { otpId, accountInfo } = await authenticateUser(email);
+
+            // Store initial auth data
+            await Promise.all([
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.EMAIL, email),
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.ACCOUNT_INFO, JSON.stringify(accountInfo))
+            ]);
 
             setAccountInfo(accountInfo);
             setEmail(email);

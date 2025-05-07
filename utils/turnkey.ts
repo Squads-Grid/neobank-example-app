@@ -29,8 +29,6 @@ export async function signTransactionWithTurnkey({
         const messageBytes = tx.message.serialize();
         const hexPayload = uint8ArrayToHexString(messageBytes);
 
-        console.log("🚀 ~ userPublicKey:", userPublicKey)
-
         const client = new TurnkeyClient(
             { baseUrl: "https://api.turnkey.com" },
             stamper

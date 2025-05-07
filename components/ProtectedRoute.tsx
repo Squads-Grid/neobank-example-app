@@ -7,15 +7,15 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isLoading } = useAuth();
 
     useEffect(() => {
-        if (!isAuthenticated) {
-            router.replace('/(auth)/start' as any);
+        if (!isLoading && !isAuthenticated) {
+            router.replace('/(auth)/start');
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, isLoading]);
 
-    if (!isAuthenticated) {
+    if (isLoading || !isAuthenticated) {
         return null;
     }
 
