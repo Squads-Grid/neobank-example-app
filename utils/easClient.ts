@@ -1,6 +1,7 @@
 import { AuthenticationRequest, AuthenticationResponse, Keypair, OTPData, VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
 import { PrepareTransactionParams } from '@/types/Transaction';
+import { handleError, AppError, ErrorCode } from './errors';
 
 class EasError extends Error {
     constructor(
@@ -15,7 +16,7 @@ class EasError extends Error {
 
 export class EasClient {
     private baseUrl: string;
-    private defaultHeaders: HeadersInit;
+    private defaultHeaders: Record<string, string>;
 
     constructor() {
         this.validateEnv();
@@ -35,41 +36,41 @@ export class EasClient {
         endpoint: string,
         options: RequestInit = {}
     ): Promise<T> {
-        const url = `${this.baseUrl}${endpoint}`;
-        const headers = {
-            ...this.defaultHeaders,
-            ...options.headers,
-        };
-
         try {
+            const url = `${this.baseUrl}${endpoint}`;
+
             const response = await fetch(url, {
                 ...options,
-                headers,
+                headers: {
+                    ...this.defaultHeaders,
+                    ...options.headers,
+                },
             });
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new EasError(
-                    errorData.message || response.statusText,
-                    response.status,
-                    errorData
-                );
+
+                const errorCodesToDisplay = [
+                    ErrorCode.INSUFFICIENT_FUNDS,
+                    ErrorCode.SESSION_EXPIRED,
+                ];
+
+                if (errorCodesToDisplay.includes(errorData.code as ErrorCode)) {
+                    throw new AppError(errorData.code as ErrorCode, true, true);
+                }
+                throw new AppError(errorData.code as ErrorCode, true, false);
             }
 
             return response.json();
         } catch (error) {
-            if (error instanceof EasError) {
-                throw error;
-            }
-            throw new EasError(
-                error instanceof Error ? error.message : 'An unknown error occurred',
-                0
-            );
+            // Use our error handler
+            throw handleError(error);
         }
     }
 
     // Creates an account if it doesn't already exist and triggers otp. If the account already exists, it just triggers otp.
     async authenticate(request: AuthenticationRequest): Promise<AuthenticationResponse> {
+        console.log('🚀 ~ EasClient ~ authenticate ~ ')
         return this.request<AuthenticationResponse>('/auth', {
             method: 'POST',
             body: JSON.stringify(request),

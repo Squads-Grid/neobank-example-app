@@ -2,22 +2,22 @@ import { gridClient } from "@/utils/gridClient";
 
 export async function POST(request: Request) {
     try {
+        console.log('🚀 ~ POST ~ auth+api ~ ')
+
         const body = await request.json();
         const response = await gridClient.authenticate(body);
         return new Response(JSON.stringify(response), {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
-    } catch (error) {
-        if (error instanceof Error) {
-            return new Response(
-                JSON.stringify({ error: error.message }),
-                { status: 500, headers: { "Content-Type": "application/json" } }
-            );
-        }
+    } catch (error: any) {
+        // Pass through the error data
         return new Response(
-            JSON.stringify({ error: "An unknown error occurred" }),
-            { status: 500, headers: { "Content-Type": "application/json" } }
+            JSON.stringify(error),
+            {
+                status: error.status || 500,
+                headers: { "Content-Type": "application/json" }
+            }
         );
     }
 }

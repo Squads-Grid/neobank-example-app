@@ -2,30 +2,19 @@ import { AuthenticationRequest, AuthenticationResponse, Keypair, OTPData, Verify
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
 import { PrepareTransactionParams } from '@/types/Transaction';
 
-class GridApiError extends Error {
-    constructor(
-        message: string,
-        public status: number,
-        public data?: any
-    ) {
-        super(message);
-        this.name = 'GridApiError';
-    }
-}
-
 export class GridClient {
     private baseUrl: string;
-    private defaultHeaders: HeadersInit;
+    private defaultHeaders: Record<string, string>;
 
     constructor() {
         this.validateEnv();
+        const url = process.env.EXPO_PUBLIC_BASE_URL || '';
+        const endpoint = process.env.GRID_ENDPOINT || '';
 
-        this.baseUrl = `${process.env.EXPO_PUBLIC_BASE_URL}${process.env.GRID_ENDPOINT}`;
-
+        this.baseUrl = `${url}${endpoint}`;
         this.defaultHeaders = {
-            "Content-Type": "application/json",
-            "x-grid-environment": `${process.env.GRID_ENV ?? "sandbox"}`,
-            "Authorization": `Bearer ${process.env.GRID_API_KEY}`,
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.GRID_API_KEY}`,
         };
     }
 
@@ -40,40 +29,28 @@ export class GridClient {
         options: RequestInit = {}
     ): Promise<T> {
         const url = `${this.baseUrl}${endpoint}`;
-        const headers = {
-            ...this.defaultHeaders,
-            ...options.headers,
-        };
+        console.log("🚀 ~ GridClient ~ url:", url)
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                ...this.defaultHeaders,
+                ...options.headers,
+            },
+        });
 
-        try {
-            const response = await fetch(url, {
-                ...options,
-                headers,
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new GridApiError(
-                    errorData.message || response.statusText,
-                    response.status,
-                    errorData
-                );
-            }
-
-            return response.json();
-        } catch (error) {
-            if (error instanceof GridApiError) {
-                throw error;
-            }
-            throw new GridApiError(
-                error instanceof Error ? error.message : 'An unknown error occurred',
-                0
-            );
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            // Just pass through the error data from the backend
+            throw errorData;
         }
+
+        return response.json();
     }
 
     // Auth endpoints
     async authenticate(request: AuthenticationRequest): Promise<AuthenticationResponse> {
+        console.log('🚀 ~ GridClient ~ authenticate ~ ')
+
         return this.request<AuthenticationResponse>('/auth', {
             method: 'POST',
             body: JSON.stringify(request),
