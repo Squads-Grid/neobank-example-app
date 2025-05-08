@@ -77,7 +77,7 @@ export default function ConfirmScreen() {
 
                 return;
             }
-            const userPublicKey = accountInfo.public_key;
+            const userPublicKey = accountInfo.smart_account_signer_public_key;
 
             const decryptedData = decryptCredentialBundle(credentialsBundle, keypair.privateKey);
             const stamper = new TurnkeySuborgStamper(

@@ -1,3 +1,4 @@
+// TODO: Fetch balance from grid api and check error handling
 export async function POST(request: Request) {
     try {
         const body = await request.json();

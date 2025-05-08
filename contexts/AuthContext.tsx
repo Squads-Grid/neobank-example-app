@@ -11,7 +11,8 @@ const AUTH_STORAGE_KEYS = {
     KEYPAIR: 'auth_keypair',
     CREDENTIALS_BUNDLE: 'auth_credentials_bundle',
     WALLET: 'auth_wallet',
-    IS_AUTHENTICATED: 'auth_is_authenticated'
+    IS_AUTHENTICATED: 'auth_is_authenticated',
+    MPC_PRIMARY_ID: 'auth_mpc_primary_id'
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,6 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [authError, setAuthError] = useState<string | null>(null);
     const [wallet, setWallet] = useState<string | null>(null);
     const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
+    const [mpcPrimaryId, setMpcPrimaryId] = useState<string | null>(null);
 
     useEffect(() => {
         const initializeAuth = async () => {
@@ -68,11 +70,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const verifyCode = async (code: string, otpId: string): Promise<boolean> => {
         try {
-            if (!accountInfo) {
-                return false;
+            if (!mpcPrimaryId) {
+                throw new Error('No mpcPrimaryId found');
             }
 
-            const { credentialBundle, keypair } = await verifyOtpCode(code, otpId, accountInfo.mpc_primary_id);
+            const { credentialBundle, keypair, accountInfo } = await verifyOtpCode(code, otpId, mpcPrimaryId);
 
             if (!keypair || !keypair.privateKey || !keypair.publicKey) {
                 return false;
@@ -83,13 +85,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             await Promise.all([
                 SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KEYPAIR, JSON.stringify(keypair)),
                 SecureStore.setItemAsync(AUTH_STORAGE_KEYS.CREDENTIALS_BUNDLE, credentialBundle),
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED, 'true')
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED, 'true'),
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.ACCOUNT_INFO, JSON.stringify(accountInfo))
             ]);
 
             setCredentialsBundle(credentialBundle);
             setKeypair(keypair);
             setIsAuthenticated(true);
             setAuthError(null);
+            setAccountInfo(accountInfo);
 
             router.replace('/success');
             return true;
@@ -133,19 +137,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const authenticate = async (email: string): Promise<string> => {
         try {
-            const { otpId, accountInfo } = await authenticateUser(email);
+            const { otpId, mpcPrimaryId } = await authenticateUser(email);
             console.log("🚀 ~ authenticate ~ accountInfo:", accountInfo)
 
             // Store initial auth data
             await Promise.all([
                 SecureStore.setItemAsync(AUTH_STORAGE_KEYS.EMAIL, email),
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.ACCOUNT_INFO, JSON.stringify(accountInfo))
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.MPC_PRIMARY_ID, mpcPrimaryId)
             ]);
 
-            setAccountInfo(accountInfo);
+            setMpcPrimaryId(mpcPrimaryId);
             setEmail(email);
             setAuthError(null);
-            setWallet(accountInfo.public_key);
             return otpId;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';

@@ -28,14 +28,6 @@ function LoginScreen() {
     const { authenticate, verifyCode, email, setEmail } = useAuth();
 
     const triggerAuthentication = async (emailToUse: string) => {
-        await Promise.all([
-            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.EMAIL),
-            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.ACCOUNT_INFO),
-            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.KEYPAIR),
-            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.CREDENTIALS_BUNDLE),
-            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.WALLET),
-            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED)
-        ]);
 
         setShowCodeInput(true);
         const result = await authenticate(emailToUse);
@@ -56,11 +48,12 @@ function LoginScreen() {
     });
 
     const verify = async (code: string): Promise<boolean> => {
-
+        console.log("🚀 ~ verify ~ code:", code)
         if (!otpId) {
             throw new Error('No otpId found');
         }
 
+        console.log("🚀 ~ verify ~ otpId:", otpId)
         // Simulate API delay
         const result = await verifyCode(
             code,
@@ -70,12 +63,15 @@ function LoginScreen() {
     };
 
     const handleSubmit = async (submittedEmail: string, code?: string) => {
+        console.log("🚀 ~ handleSubmit ~ code:", code)
         try {
             setIsLoading(true);
             setError(null);
             setEmail(submittedEmail);
             if (code && otpId) {
+                console.log("🚀 ~ handleSubmit ~ code:", code)
                 const isValid = await verify(code);
+                console.log("🚀 ~ handleSubmit ~ isValid:", isValid)
                 if (!isValid) {
                     setError('Invalid code');
                     return;

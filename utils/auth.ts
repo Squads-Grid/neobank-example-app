@@ -17,7 +17,7 @@ export const generateKeyPairForAuth = async (): Promise<Keypair> => {
     };
 };
 
-export const authenticateUser = async (email: string): Promise<{ otpId: string; accountInfo: AccountInfo }> => {
+export const authenticateUser = async (email: string): Promise<{ otpId: string; mpcPrimaryId: string }> => {
     const request: AuthenticationRequest = {
         email,
         app_name: "Bright",
@@ -29,11 +29,11 @@ export const authenticateUser = async (email: string): Promise<{ otpId: string; 
     console.log("🚀 ~ authenticateUser ~ response:", response)
     return {
         otpId: response.data.otp_id,
-        accountInfo: response.data.account_info
+        mpcPrimaryId: response.data.mpc_primary_id
     };
 };
 
-export const verifyOtpCode = async (code: string, otpId: string, suborgId: string): Promise<{ credentialBundle: string; keypair: Keypair }> => {
+export const verifyOtpCode = async (code: string, otpId: string, suborgId: string): Promise<{ credentialBundle: string; keypair: Keypair, accountInfo: AccountInfo }> => {
 
     // Generate a new keypair for the request
     const keyPair = await generateKeyPairP256();
@@ -41,7 +41,7 @@ export const verifyOtpCode = async (code: string, otpId: string, suborgId: strin
     const otpData: OTPData = {
         otp_code: code,
         otp_id: otpId,
-        public_key: keyPair.publicKeyUncompressed,
+        auth_public_key: keyPair.publicKeyUncompressed,
         expiration: 900, // 15 minutes
         mpc_primary_id: suborgId
     };
@@ -51,6 +51,7 @@ export const verifyOtpCode = async (code: string, otpId: string, suborgId: strin
     // Use our generated keypair instead of expecting one from the server
     return {
         credentialBundle: response.data.credential_bundle,
-        keypair: keyPair
+        keypair: keyPair,
+        accountInfo: response.data.account_info
     };
 }; 

@@ -36,7 +36,7 @@ enum BankStatus {
 
 export default function HomeScreen() {
     const { stage } = useStage();
-    const { wallet, accountInfo, setAccountInfo } = useAuth();
+    const { accountInfo, setAccountInfo } = useAuth();
     const [refreshing, setRefreshing] = useState(false);
     const [balance, setBalance] = useState(0);
 
@@ -51,9 +51,11 @@ export default function HomeScreen() {
     };
 
     const updateBalance = (balances: TokenBalance[]) => {
+        console.log("🚀 ~ updateBalance ~ balances:", balances)
         if (balances.length === 0) {
             setBalance(0);
         } else {
+            // TODO: add usdc address for devent and mainnet to env
             const usdcBalance = balances.find((balance: any) => balance.token_address === '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
             if (usdcBalance) {
                 setBalance(parseFloat(parseFloat(usdcBalance.amount_decimal).toFixed(2)));
@@ -66,7 +68,7 @@ export default function HomeScreen() {
             console.log("🚀 ~ getUserId ~ accountInfo:", accountInfo)
 
             // Prevent running if not logged in
-            if (!accountInfo || !wallet) {
+            if (!accountInfo || !accountInfo.smart_account_signer_public_key) {
 
                 return;
             }
@@ -76,7 +78,7 @@ export default function HomeScreen() {
                 const request = {
                     policies: {
                         signers: [{
-                            address: wallet,
+                            address: accountInfo.smart_account_signer_public_key,
                             permissions: ['CAN_INITIATE', 'CAN_VOTE', 'CAN_EXECUTE'] as Permission[]
                         }],
                         admin_address: null,
@@ -87,7 +89,7 @@ export default function HomeScreen() {
                     grid_user_id: null,
                     wallet_account: {
                         wallet_id: accountInfo.wallet_id,
-                        wallet_address: wallet
+                        wallet_address: accountInfo.smart_account_signer_public_key
                     },
                     mpc_primary_id: accountInfo.mpc_primary_id
                 };
@@ -106,7 +108,7 @@ export default function HomeScreen() {
             }
         }
         getUserId();
-    }, [wallet, accountInfo, setAccountInfo]);
+    }, [accountInfo, setAccountInfo]);
 
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
     const [isReceiveModalVisible, setIsReceiveModalVisible] = useState(false);
@@ -245,10 +247,12 @@ export default function HomeScreen() {
     }
 
     const onRefresh = React.useCallback(async () => {
+        console.log("🚀 ~ onRefresh ~ accountInfo:", accountInfo?.smart_account_address)
         setRefreshing(true);
         if (accountInfo?.smart_account_address) {
             const result = await easClient.getBalance({ smartAccountAddress: accountInfo.smart_account_address });
             updateBalance(result.balances);
+
         }
 
         setRefreshing(false);
