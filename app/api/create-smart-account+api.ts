@@ -5,10 +5,12 @@ export async function POST(request: Request) {
         const body = await request.json();
         const customerId = process.env.GRID_CUSTOMER_ID;
         const response = await gridClient.createSmartAccount({ ...body, grid_customer_id: customerId });
+        console.log("🚀 ~ POST ~ response:", response)
         return new Response(JSON.stringify(response), {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
+
     } catch (error: any) {
         // Pass through the error data
         return new Response(

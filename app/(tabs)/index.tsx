@@ -68,12 +68,13 @@ export default function HomeScreen() {
             console.log("🚀 ~ getUserId ~ accountInfo:", accountInfo)
 
             // Prevent running if not logged in
-            if (!accountInfo || !accountInfo.smart_account_signer_public_key) {
+            if (!accountInfo! || !accountInfo.smart_account_signer_public_key) {
 
                 return;
             }
 
-            if (!accountInfo.smart_account_address) {
+            // If there is no grid_user_id, it means the smart account is not created yet
+            if (!accountInfo.grid_user_id) {
                 console.log("🚀 ~ getUserId ~ creating smart account")
                 const request = {
                     policies: {
@@ -99,7 +100,8 @@ export default function HomeScreen() {
                     const data = response.data;
                     setAccountInfo({
                         ...accountInfo,
-                        smart_account_address: data.smart_account_address
+                        smart_account_address: data.smart_account_address,
+                        grid_user_id: data.grid_user_id
                     });
                 })();
             } else {

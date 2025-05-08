@@ -10,6 +10,7 @@ export interface AccountInfo {
     wallet_id: string; // Id of the wallet that has permissions for smart account
     smart_account_signer_public_key: string; // Public key set in the smart account settings
     smart_account_address: string;
+    grid_user_id: string;
 }
 
 export interface OTPData {
@@ -59,7 +60,7 @@ export interface AuthResponse {
 export interface VerifyOtpResponse {
     data: {
         credential_bundle: string;
-        auth_keypair: Keypair;
+        // auth_keypair: Keypair;
         account_info: AccountInfo;
     };
 } 

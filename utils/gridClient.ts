@@ -82,6 +82,12 @@ export class GridClient {
             body: JSON.stringify(request),
         });
     }
+
+    async getSmartAccount(smartAccountAddress: string): Promise<any> {
+        return this.request<any>(`/${smartAccountAddress}`, {
+            method: 'GET',
+        });
+    }
 }
 
 // Create a singleton instance
