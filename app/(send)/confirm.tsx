@@ -12,10 +12,8 @@ import { Height, Size, Weight } from '@/constants/Typography';
 import { signTransactionWithTurnkey } from '@/utils/turnkey';
 import { useAuth } from '@/contexts/AuthContext';
 import { TurnkeySuborgStamper } from '@/utils/turnkey';
-import { VersionedTransaction, TransactionMessage, PublicKey, Connection, Transaction } from '@solana/web3.js';
-import { getAssociatedTokenAddress, createAssociatedTokenAccountIdempotentInstruction, createTransferInstruction } from '@solana/spl-token';
+import { VersionedTransaction, Connection } from '@solana/web3.js';
 import { decryptCredentialBundle } from '@turnkey/crypto';
-import { uint8ArrayToHexString } from "@turnkey/encoding";
 import { EasClient } from '@/utils/easClient';
 import { PrepareTransactionParams, SmartAccount, SolanaAddress } from '@/types/Transaction';
 import { v4 as uuidv4 } from 'uuid';
@@ -59,7 +57,7 @@ export default function ConfirmScreen() {
             const prepareTransactionParams: PrepareTransactionParams = {
                 smartAccountAddress: accountInfo.smart_account_address,
                 amount: amount,
-                grid_user_id: 'd79a2375-cf54-4a4f-a477-bd6edfc262e9', /// we need the user id from the db!
+                grid_user_id: accountInfo.grid_user_id,
                 idempotency_key: uuidv4(),
                 source,
                 destination
