@@ -63,6 +63,8 @@ export default function HomeScreen() {
 
     useEffect(() => {
         const getUserId = async () => {
+            console.log("🚀 ~ getUserId ~ accountInfo:", accountInfo)
+
             // Prevent running if not logged in
             if (!accountInfo || !wallet) {
 
@@ -70,7 +72,7 @@ export default function HomeScreen() {
             }
 
             if (!accountInfo.smart_account_address) {
-
+                console.log("🚀 ~ getUserId ~ creating smart account")
                 const request = {
                     policies: {
                         signers: [{
@@ -87,7 +89,7 @@ export default function HomeScreen() {
                         wallet_id: accountInfo.wallet_id,
                         wallet_address: wallet
                     },
-                    user_id: accountInfo.mpc_primary_id
+                    mpc_primary_id: accountInfo.mpc_primary_id
                 };
 
                 (async () => {

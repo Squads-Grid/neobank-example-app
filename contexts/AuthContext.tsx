@@ -134,6 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const authenticate = async (email: string): Promise<string> => {
         try {
             const { otpId, accountInfo } = await authenticateUser(email);
+            console.log("🚀 ~ authenticate ~ accountInfo:", accountInfo)
 
             // Store initial auth data
             await Promise.all([

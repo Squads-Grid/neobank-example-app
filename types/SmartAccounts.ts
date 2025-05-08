@@ -16,7 +16,7 @@ export interface CreateSmartAccountRequest {
     memo: string;
     grid_user_id: string | null;
     wallet_account: WalletAccount | null;
-    user_id: string;
+    mpc_primary_id: string;
 }
 
 export interface SmartAccountData {

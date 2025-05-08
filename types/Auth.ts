@@ -8,7 +8,7 @@ export interface AuthenticationResponse {
 export interface AccountInfo {
     mpc_primary_id: string;
     wallet_id: string; // Id of the wallet that has permissions for smart account
-    public_key: string;
+    public_key: string; // Public key set in the smart account settings
     smart_account_address: string;
 }
 
