@@ -1,0 +1,1 @@
+export type KycStatus = 'NotStarted' | 'UnderReview' | 'Incomplete' | 'Approved' | 'Rejected';

@@ -2,8 +2,7 @@ import { Platform, StyleSheet, View, Image, ScrollView, RefreshControl } from 'r
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { router } from 'expo-router';
-
-import { ThemedText, IconSymbol } from '@/components/ui/atoms';
+import { ThemedText } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { CircleButtonGroup } from '@/components/ui/molecules';
 import { TransactionList } from '@/components/ui/organisms';
@@ -12,106 +11,23 @@ import { TransactionGroup } from '@/types/Transaction';
 import { ActionModal } from '@/components/ui/organisms';
 import { ModalOptionsList } from '@/components/ui/molecules';
 import { ActionOption } from '@/components/ui/molecules/ModalOptionsList';
-import QRCode from 'react-native-qrcode-svg';
-import { useStage } from '@/contexts/StageContext';
-import { Stage } from '@/components/devtools/StageSelector';
 import { easClient } from '@/utils/easClient';
-import { CreateSmartAccountRequest, Policies, WalletAccount, Permission } from '@/types/SmartAccounts';
 import { useAuth } from '@/contexts/AuthContext';
-import { TokenBalance } from '@/types/SmartAccounts';
+import { KycStatus } from '@/types/Kyc';
+import WalletQRCode from '@/components/ui/organisms/WalletQRCode';
+import { createSmartAccount } from '@/utils/smartAccount';
 
 const placeholder = require('@/assets/images/no-txn.png');
 const bankIcon = require('@/assets/icons/bank.png');
 const walletIcon = require('@/assets/icons/wallet.png');
 
-// TODO: Refactor!!!!
-
-// Map Stage from the context to BankStatus enum
-// This ensures backward compatibility with existing code
-enum BankStatus {
-    NEW = 'new',
-    KYC = 'kyc',
-    FINISHED = 'finished'
-}
+// TODO: Refactor Modals!!!!
 
 export default function HomeScreen() {
-    const { stage } = useStage();
     const { accountInfo, setAccountInfo } = useAuth();
     const [refreshing, setRefreshing] = useState(false);
     const [balance, setBalance] = useState(0);
-
-    // Convert Stage type to BankStatus enum
-    const getBankStatus = (stageValue: Stage): BankStatus => {
-        switch (stageValue) {
-            case 'new': return BankStatus.NEW;
-            case 'kyc': return BankStatus.KYC;
-            case 'finished': return BankStatus.FINISHED;
-            default: return BankStatus.NEW;
-        }
-    };
-
-    const updateBalance = (balances: TokenBalance[]) => {
-        console.log("🚀 ~ updateBalance ~ balances:", balances)
-        if (balances.length === 0) {
-            setBalance(0);
-        } else {
-            // TODO: add usdc address for devent and mainnet to env
-            const usdcBalance = balances.find((balance: any) => balance.token_address === '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
-            if (usdcBalance) {
-                setBalance(parseFloat(parseFloat(usdcBalance.amount_decimal).toFixed(2)));
-            }
-        }
-    }
-
-    useEffect(() => {
-        const getUserId = async () => {
-            console.log("🚀 ~ getUserId ~ accountInfo:", accountInfo)
-
-            // Prevent running if not logged in
-            if (!accountInfo! || !accountInfo.smart_account_signer_public_key) {
-
-                return;
-            }
-
-            // If there is no grid_user_id, it means the smart account is not created yet
-            if (!accountInfo.grid_user_id) {
-                console.log("🚀 ~ getUserId ~ creating smart account")
-                const request = {
-                    policies: {
-                        signers: [{
-                            address: accountInfo.smart_account_signer_public_key,
-                            permissions: ['CAN_INITIATE', 'CAN_VOTE', 'CAN_EXECUTE'] as Permission[]
-                        }],
-                        admin_address: null,
-                        threshold: 1,
-                        grid_user_id: null,
-                    },
-                    memo: '',
-                    grid_user_id: null,
-                    wallet_account: {
-                        wallet_id: accountInfo.wallet_id,
-                        wallet_address: accountInfo.smart_account_signer_public_key
-                    },
-                    mpc_primary_id: accountInfo.mpc_primary_id
-                };
-
-                (async () => {
-                    const response = await easClient.createSmartAccount(request);
-                    const data = response.data;
-                    setAccountInfo({
-                        ...accountInfo,
-                        smart_account_address: data.smart_account_address,
-                        grid_user_id: data.grid_user_id
-                    });
-                })();
-            } else {
-                const result = await easClient.getBalance({ smartAccountAddress: accountInfo.smart_account_address });
-                updateBalance(result.balances);
-            }
-        }
-        getUserId();
-    }, [accountInfo, setAccountInfo]);
-
+    const [kycStatus, setKycStatus] = useState<KycStatus>('NotStarted');
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
     const [isReceiveModalVisible, setIsReceiveModalVisible] = useState(false);
 
@@ -127,6 +43,57 @@ export default function HomeScreen() {
     const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false);
     const openQRCodeModal = () => setIsQRCodeModalVisible(true);
     const closeQRCodeModal = () => setIsQRCodeModalVisible(false);
+
+    useEffect(() => {
+        // Prevent running if not logged in
+        if (!accountInfo! || !accountInfo.smart_account_signer_public_key) {
+
+            return;
+        }
+
+        // If there is no grid_user_id, it means the smart account is not created yet
+        if (!accountInfo.grid_user_id) {
+            (async () => await createSmartAccount(accountInfo))();
+        } else {
+            updateBalance();
+        }
+
+        checkKycStatus();
+    }, [accountInfo, setAccountInfo]);
+
+    const updateBalance = async () => {
+        if (!accountInfo) {
+            console.error('Account info not found');
+            return;
+        }
+
+        const result = await easClient.getBalance({ smartAccountAddress: accountInfo.smart_account_address });
+        const balances = result.balances;
+
+        if (balances.length === 0) {
+            setBalance(0);
+        } else {
+            // TODO: add usdc address for devent and mainnet to env
+            const usdcBalance = balances.find((balance: any) => balance.token_address === '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
+            if (usdcBalance) {
+                setBalance(parseFloat(parseFloat(usdcBalance.amount_decimal).toFixed(2)));
+            }
+        }
+    }
+
+    const onRefresh = React.useCallback(async () => {
+        setRefreshing(true);
+        if (accountInfo?.smart_account_address) {
+            updateBalance();
+
+        }
+
+        setRefreshing(false);
+    }, [accountInfo]);
+
+    const checkKycStatus = async () => {
+        setKycStatus('NotStarted');
+    }
 
     // Send action handlers
     const handleSendToWallet = () => {
@@ -160,20 +127,12 @@ export default function HomeScreen() {
     const handleReceiveFromBank = () => {
         closeReceiveModal();
 
-        const bankStatus = getBankStatus(stage);
-
-        // Demo/Development feature: Using stage from context to determine app flow
-        switch (bankStatus) {
-            case BankStatus.NEW:
-                router.push('/(modals)/create-bank-account');
-                break;
-            case BankStatus.KYC:
-                router.push('/(modals)/kyc');
-                break;
-            case BankStatus.FINISHED:
-                router.push('/(modals)/bankdetails?currency=EUR');
-                break;
+        if (kycStatus !== 'Approved') {
+            router.push('/(modals)/kyc');
+        } else {
+            router.push('/(modals)/create-bank-account');
         }
+        // TODO: if bank account exists
     };
 
     // Define options for Send modal
@@ -236,30 +195,6 @@ export default function HomeScreen() {
         }
     ];
 
-    const renderQRCode = () => {
-        return (
-            <QRCode
-                value={accountInfo?.smart_account_address}
-                size={250}
-                color="white"
-                backgroundColor="#000033"
-                ecl="H" // Error correction level - H is highest
-            />
-        );
-    }
-
-    const onRefresh = React.useCallback(async () => {
-        console.log("🚀 ~ onRefresh ~ accountInfo:", accountInfo?.smart_account_address)
-        setRefreshing(true);
-        if (accountInfo?.smart_account_address) {
-            const result = await easClient.getBalance({ smartAccountAddress: accountInfo.smart_account_address });
-            updateBalance(result.balances);
-
-        }
-
-        setRefreshing(false);
-    }, [accountInfo]);
-
     return (
         <ThemedScreen>
             <ScrollView
@@ -318,19 +253,7 @@ export default function HomeScreen() {
                     onClose={closeQRCodeModal}
                     useStarburstModal={true}
                 >
-                    <View style={styles.qrCodeContainer}>
-                        <ThemedText type="large" style={[styles.qrCodeHeadline, { color: 'white' }]}>Bright</ThemedText>
-                        {renderQRCode()}
-                        <ThemedText type="default" style={styles.qrCodeAddress}>{accountInfo?.smart_account_address}</ThemedText>
-                        <View style={styles.qrCodeSupportContainer}>
-                            <IconSymbol name="info.circle" size={16} color="white" />
-                            <ThemedText type="tiny" style={styles.qrCodeSupportText}>We don't support NFTs.</ThemedText>
-                        </View>
-                        <View style={styles.qrCodeCopyContainer}>
-                            <IconSymbol name="doc.on.doc" size={16} color="white" />
-                            <ThemedText type="regularSemiBold" style={styles.qrCodeCopyText}>Copy</ThemedText>
-                        </View>
-                    </View>
+                    <WalletQRCode walletAddress={accountInfo ? accountInfo.smart_account_address : ''} />
                 </ActionModal>
             </ScrollView>
         </ThemedScreen>
@@ -357,37 +280,6 @@ const styles = StyleSheet.create({
     placeholderImage: {
         height: 46,
         resizeMode: 'contain',
-    },
-    qrCodeContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: Spacing.md,
-        paddingHorizontal: Spacing.xl,
-    },
-    qrCodeHeadline: {
-        marginBottom: Spacing.lg
-    },
-    qrCodeCopyText: {
-        color: 'white',
-        marginLeft: Spacing.xs
-    },
-    qrCodeCopyContainer: {
-        flexDirection: 'row',
-        marginTop: Spacing.xl,
-    },
-    qrCodeSupportContainer: {
-        flexDirection: 'row',
-        marginTop: Spacing.md,
-        opacity: 0.4
-    },
-    qrCodeSupportText: {
-        color: 'white',
-        marginLeft: Spacing.xxs
-    },
-    qrCodeAddress: {
-        color: 'white',
-        marginTop: Spacing.lg,
-        textAlign: 'center'
     },
 });
 

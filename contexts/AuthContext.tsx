@@ -4,6 +4,8 @@ import { AuthContextType, AccountInfo } from '@/types/Auth';
 import { authenticateUser, verifyOtpCode } from '@/utils/auth';
 import * as SecureStore from 'expo-secure-store';
 import { LoadingSpinner } from '@/components/ui/atoms/LoadingSpinner';
+import { Permission } from '@/types/SmartAccounts';
+import { easClient } from '@/utils/easClient';
 
 const AUTH_STORAGE_KEYS = {
     EMAIL: 'auth_email',
@@ -157,6 +159,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const fetchAccountInfo = async (accountInfo: AccountInfo) => {
+        const request = {
+            policies: {
+                signers: [{
+                    address: accountInfo.smart_account_signer_public_key,
+                    permissions: ['CAN_INITIATE', 'CAN_VOTE', 'CAN_EXECUTE'] as Permission[]
+                }],
+                admin_address: null,
+                threshold: 1,
+                grid_user_id: null,
+            },
+            memo: '',
+            grid_user_id: null,
+            wallet_account: {
+                wallet_id: accountInfo.wallet_id,
+                wallet_address: accountInfo.smart_account_signer_public_key
+            },
+            mpc_primary_id: accountInfo.mpc_primary_id
+        };
+
+        const response = await easClient.createSmartAccount(request);
+        const data = response.data;
+        return {
+            ...accountInfo,
+            smart_account_address: data.smart_account_address,
+            grid_user_id: data.grid_user_id
+        };
+    }
+
     return (
         <AuthContext.Provider
             value={{
@@ -172,7 +203,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 verifyCode,
                 logout,
                 wallet,
-                isLoading
+                isLoading,
+                fetchAccountInfo
             }}
         >
             {children}
