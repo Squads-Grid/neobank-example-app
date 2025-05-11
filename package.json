@@ -25,11 +25,13 @@
         "@turnkey/api-key-stamper": "^0.4.5",
         "@turnkey/crypto": "^2.3.1",
         "@turnkey/http": "^3.2.0",
+        "@types/uuid": "^10.0.0",
         "buffer": "^6.0.3",
-        "expo": "~53.0.5",
+        "expo": "^53.0.9",
         "expo-blur": "~14.1.4",
         "expo-clipboard": "^7.1.4",
         "expo-constants": "~17.1.5",
+        "expo-dev-client": "~5.1.8",
         "expo-font": "~13.3.0",
         "expo-haptics": "~14.1.4",
         "expo-image": "~2.1.6",
@@ -57,7 +59,7 @@
         "react-native-webview": "13.13.5",
         "text-encoding": "^0.7.0",
         "tinycolor2": "^1.6.0",
-        "expo-dev-client": "~5.1.8"
+        "uuid": "^11.1.0"
     },
     "devDependencies": {
         "@babel/core": "^7.25.2",

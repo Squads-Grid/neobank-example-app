@@ -1,7 +1,6 @@
 import { Platform, StyleSheet, View, Image, ScrollView, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
-import { router } from 'expo-router';
 import { ThemedText } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { CircleButtonGroup } from '@/components/ui/molecules';
@@ -9,7 +8,6 @@ import { TransactionList } from '@/components/ui/organisms';
 import { ThemedScreen } from '@/components/ui/layout';
 import { TransactionGroup } from '@/types/Transaction';
 import { useAuth } from '@/contexts/AuthContext';
-import { KycStatus } from '@/types/Kyc';
 import { createSmartAccount } from '@/utils/smartAccount';
 import { SendModal } from '@/components/ui/organisms/modals/SendModal';
 import { ReceiveModal } from '@/components/ui/organisms/modals/ReceiveModal';
@@ -17,16 +15,12 @@ import { QRCodeModal } from '@/components/ui/organisms/modals/QRCodeModal';
 import { easClient } from '@/utils/easClient';
 
 const placeholder = require('@/assets/images/no-txn.png');
-const bankIcon = require('@/assets/icons/bank.png');
-const walletIcon = require('@/assets/icons/wallet.png');
 
-// TODO: Refactor Modals!!!!
 
 export default function HomeScreen() {
-    const { accountInfo, setAccountInfo } = useAuth();
+    const { accountInfo, setAccountInfo, kycStatus } = useAuth();
     const [refreshing, setRefreshing] = useState(false);
     const [balance, setBalance] = useState(0);
-    const [kycStatus, setKycStatus] = useState<KycStatus>('NotStarted');
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
     const [isReceiveModalVisible, setIsReceiveModalVisible] = useState(false);
     const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false);
@@ -41,8 +35,6 @@ export default function HomeScreen() {
         } else {
             updateBalance();
         }
-
-        checkKycStatus();
     }, [accountInfo, setAccountInfo]);
 
     const updateBalance = async () => {
@@ -72,10 +64,6 @@ export default function HomeScreen() {
         }
         setRefreshing(false);
     }, [accountInfo]);
-
-    const checkKycStatus = async () => {
-        setKycStatus('NotStarted');
-    }
 
     const actions: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void }[] = [
         {

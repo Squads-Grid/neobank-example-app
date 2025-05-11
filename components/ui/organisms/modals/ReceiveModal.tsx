@@ -4,6 +4,7 @@ import { ModalOptionsList } from '../../molecules/ModalOptionsList';
 import { ActionOption } from '../../molecules/ModalOptionsList';
 import { router } from 'expo-router';
 import { KycStatus } from '@/types/Kyc';
+import { ActivityIndicator } from 'react-native';
 
 const bankIcon = require('@/assets/icons/bank.png');
 const walletIcon = require('@/assets/icons/wallet.png');
@@ -12,10 +13,11 @@ interface ReceiveModalProps {
     visible: boolean;
     onClose: () => void;
     onOpenQRCode: () => void;
-    kycStatus: KycStatus;
+    kycStatus: KycStatus | null;
 }
 
 export function ReceiveModal({ visible, onClose, onOpenQRCode, kycStatus }: ReceiveModalProps) {
+
     const handleReceiveToWallet = () => {
         onClose();
         onOpenQRCode();

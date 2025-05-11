@@ -88,6 +88,12 @@ export class GridClient {
             method: 'GET',
         });
     }
+
+    async getUser(gridUserId: string): Promise<any> {
+        return this.request<any>(`/user/${gridUserId}`, {
+            method: 'GET',
+        });
+    }
 }
 
 // Create a singleton instance

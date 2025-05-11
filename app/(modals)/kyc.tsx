@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { router, useGlobalSearchParams } from 'expo-router';
 
 import { withScreenTheme } from '@/components/withScreenTheme';
@@ -10,23 +10,53 @@ import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { ThemedText } from '@/components/ui/atoms';
 import { Link } from 'expo-router';
 import { ThemedButton } from '@/components/ui/molecules';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEffect, useState } from 'react';
+import { easClient } from '@/utils/easClient';
 
 function KYCModal() {
-    const params = useGlobalSearchParams();
-
-    const [error, setError] = useState<string | null>(null);
     const { textColor } = useScreenTheme();
+    const { kycStatus, accountInfo, logout, updateKycStatus } = useAuth();
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Handle close modal
+    useEffect(() => {
+        if (!kycStatus) {
+            setIsLoading(true);
+            checkKycStatus();
+            setIsLoading(false);
+        }
+    }, [kycStatus]);
+
+    const checkKycStatus = async () => {
+        if (!accountInfo) {
+            logout();
+            return;
+        }
+
+        try {
+            const response = await easClient.getUser(accountInfo?.grid_user_id);
+            const { bridge_kyc_link } = response.data;
+            if (!bridge_kyc_link) {
+                setIsLoading(false);
+                updateKycStatus('NotStarted');
+                return;
+            } else {
+                // get kyc status
+            }
+
+        } catch (err) {
+            console.error('Error checking KYC status:', err);
+            // setError('Failed to check KYC status');
+        }
+    };
+
     const handleClose = () => {
         router.back();
     };
 
-    return (
-
-        <ThemedScreen>
-            <SwipeableModal onDismiss={handleClose}>
-                <StarburstBank primaryColor={error ? '#FF0048' : "#0080FF"} />
+    const renderContent = () => {
+        return (
+            <>
                 <View style={styles.contentContainer}>
                     <View style={styles.flagContainer}>
                         <OverlappingImages
@@ -51,20 +81,30 @@ function KYCModal() {
                     onPress={() => { }}
                     title="Continue"
                 />
+            </>
+        )
+    }
+
+    return (
+        <ThemedScreen>
+            <SwipeableModal onDismiss={handleClose}>
+                <StarburstBank primaryColor={"#0080FF"} />
+                {isLoading ?
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator />
+                    </View>
+                    : renderContent()}
             </SwipeableModal>
         </ThemedScreen>
-
     );
 }
 
-export default withScreenTheme(KYCModal, {
-    backgroundColor: '#000000',
-    textColor: '#FFFFFF',
-    primaryColor: '#FFFFFF'
-});
-
 const styles = StyleSheet.create({
-
+    loadingContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     flagContainer: {
         alignItems: 'center',
         marginBottom: Spacing.md
@@ -90,4 +130,10 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: Spacing.xl
     }
-}); 
+});
+
+export default withScreenTheme(KYCModal, {
+    backgroundColor: '#000000',
+    textColor: '#FFFFFF',
+    primaryColor: '#FFFFFF'
+});

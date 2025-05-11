@@ -26,7 +26,7 @@ export const authenticateUser = async (email: string): Promise<{ otpId: string; 
     };
 
     const response = await easClient.authenticate(request);
-    console.log("🚀 ~ authenticateUser ~ response:", response)
+
     return {
         otpId: response.data.otp_id,
         mpcPrimaryId: response.data.mpc_primary_id

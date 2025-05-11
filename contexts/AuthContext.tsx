@@ -4,8 +4,7 @@ import { AuthContextType, AccountInfo } from '@/types/Auth';
 import { authenticateUser, verifyOtpCode } from '@/utils/auth';
 import * as SecureStore from 'expo-secure-store';
 import { LoadingSpinner } from '@/components/ui/atoms/LoadingSpinner';
-import { Permission } from '@/types/SmartAccounts';
-import { easClient } from '@/utils/easClient';
+import { KycStatus } from '@/types/Kyc';
 
 const AUTH_STORAGE_KEYS = {
     EMAIL: 'auth_email',
@@ -14,7 +13,8 @@ const AUTH_STORAGE_KEYS = {
     CREDENTIALS_BUNDLE: 'auth_credentials_bundle',
     WALLET: 'auth_wallet',
     IS_AUTHENTICATED: 'auth_is_authenticated',
-    MPC_PRIMARY_ID: 'auth_mpc_primary_id'
+    MPC_PRIMARY_ID: 'auth_mpc_primary_id',
+    KYC_STATUS: 'auth_kyc_status'
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,6 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [wallet, setWallet] = useState<string | null>(null);
     const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
     const [mpcPrimaryId, setMpcPrimaryId] = useState<string | null>(null);
+    const [kycStatus, setKycStatus] = useState<KycStatus | null>(null);
 
     useEffect(() => {
         const initializeAuth = async () => {
@@ -41,6 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     const credentialsBundle = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.CREDENTIALS_BUNDLE);
                     const email = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.EMAIL);
                     const wallet = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.WALLET);
+                    const kycStatus = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.KYC_STATUS);
 
                     if (accountInfo && keypair && credentialsBundle && email) {
                         setAccountInfo(JSON.parse(accountInfo));
@@ -65,6 +67,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         initializeAuth();
     }, []);
+
+    const updateKycStatus = async (status: KycStatus) => {
+        try {
+            await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KYC_STATUS, status);
+            setKycStatus(status);
+        } catch (error) {
+            console.error('Error updating KYC status:', error);
+        }
+    };
 
     if (isLoading) {
         return <LoadingSpinner />;
@@ -128,8 +139,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED)
             ]);
 
-            // Replace the entire stack with the start screen
-            // router.replace('/(auth)/start');
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             setAuthError(errorMessage);
@@ -140,7 +149,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const authenticate = async (email: string): Promise<string> => {
         try {
             const { otpId, mpcPrimaryId } = await authenticateUser(email);
-            console.log("🚀 ~ authenticate ~ accountInfo:", accountInfo)
 
             // Store initial auth data
             await Promise.all([
@@ -159,35 +167,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const fetchAccountInfo = async (accountInfo: AccountInfo) => {
-        const request = {
-            policies: {
-                signers: [{
-                    address: accountInfo.smart_account_signer_public_key,
-                    permissions: ['CAN_INITIATE', 'CAN_VOTE', 'CAN_EXECUTE'] as Permission[]
-                }],
-                admin_address: null,
-                threshold: 1,
-                grid_user_id: null,
-            },
-            memo: '',
-            grid_user_id: null,
-            wallet_account: {
-                wallet_id: accountInfo.wallet_id,
-                wallet_address: accountInfo.smart_account_signer_public_key
-            },
-            mpc_primary_id: accountInfo.mpc_primary_id
-        };
-
-        const response = await easClient.createSmartAccount(request);
-        const data = response.data;
-        return {
-            ...accountInfo,
-            smart_account_address: data.smart_account_address,
-            grid_user_id: data.grid_user_id
-        };
-    }
-
     return (
         <AuthContext.Provider
             value={{
@@ -204,7 +183,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 logout,
                 wallet,
                 isLoading,
-                fetchAccountInfo
+                kycStatus,
+                updateKycStatus
             }}
         >
             {children}

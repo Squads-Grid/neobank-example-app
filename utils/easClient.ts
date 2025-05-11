@@ -39,26 +39,33 @@ export class EasClient {
         try {
             const url = `${this.baseUrl}${endpoint}`;
 
-            const response = await fetch(url, {
+            // Only include body for non-GET requests
+            const fetchOptions: RequestInit = {
                 ...options,
                 headers: {
                     ...this.defaultHeaders,
                     ...options.headers,
                 },
-            });
+            };
+
+
+            const response = await fetch(url, fetchOptions);
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
 
-                const code = errorData.details[0].code as ErrorCode;
-                const errorCodesToDisplay = [
-                    ErrorCode.OTP_RATE_LIMIT,
-                ];
+                // Check if errorData has the expected structure
+                if (errorData?.details?.[0]?.code) {
+                    const code = errorData.details[0].code as ErrorCode;
+                    const errorCodesToDisplay = [
+                        ErrorCode.OTP_RATE_LIMIT,
+                    ];
 
-                if (errorCodesToDisplay.includes(code as ErrorCode)) {
-                    handleError(code, true, true);
-                } else {
-                    handleError(code, true, false);
+                    if (errorCodesToDisplay.includes(code as ErrorCode)) {
+                        handleError(code, true, true);
+                    } else {
+                        handleError(code, true, false);
+                    }
                 }
                 throw new EasError('Request failed', response.status, errorData);
             }
@@ -107,6 +114,13 @@ export class EasClient {
         return this.request<[]>('/prepare-transaction', {
             method: 'POST',
             body: JSON.stringify(request),
+        });
+    }
+
+    // Get user
+    async getUser(gridUserId: string): Promise<any> {
+        return this.request<[]>(`/user?id=${gridUserId}`, {
+            method: 'GET',
         });
     }
 }

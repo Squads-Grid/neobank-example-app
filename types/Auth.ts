@@ -1,3 +1,5 @@
+import { KycStatus } from './Kyc';
+
 export interface AuthenticationResponse {
     data: {
         otp_id: string;
@@ -48,6 +50,8 @@ export interface AuthContextType {
     logout: () => Promise<void>;
     wallet: string | null;
     isLoading: boolean;
+    kycStatus: KycStatus | null;
+    updateKycStatus: (status: KycStatus) => Promise<void>;
 }
 
 export interface AuthResponse {

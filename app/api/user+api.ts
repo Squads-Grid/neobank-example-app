@@ -1,10 +1,17 @@
 import { gridClient } from "@/utils/gridClient";
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
     try {
-        const body = await request.json();
-        const customerId = process.env.GRID_CUSTOMER_ID;
-        const response = await gridClient.createSmartAccount({ ...body, grid_customer_id: customerId });
+        const { searchParams } = new URL(request.url);
+        const gridUserId = searchParams.get('id');
+
+        if (!gridUserId) {
+            return new Response(JSON.stringify({ error: "gridUserId is required" }), {
+                status: 400,
+                headers: { "Content-Type": "application/json" }
+            });
+        }
+        const response = await gridClient.getUser(gridUserId);
         return new Response(JSON.stringify(response), {
             status: 200,
             headers: { "Content-Type": "application/json" },
