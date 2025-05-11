@@ -54,6 +54,23 @@ function KYCModal() {
         router.back();
     };
 
+    const handleContinue = async () => {
+        if (!accountInfo) {
+            logout();
+            return;
+        }
+
+        const response = await easClient.getKYCLink({
+            grid_user_id: accountInfo?.grid_user_id,
+            grid_customer_id: accountInfo?.grid_customer_id,
+            type: accountInfo?.type,
+            email: accountInfo?.email,
+            full_name: accountInfo?.full_name,
+            "endorsements": [],
+            "redirect_uri": "https://squads.so"
+        });
+    }
+
     const renderContent = () => {
         return (
             <>

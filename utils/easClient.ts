@@ -2,6 +2,8 @@ import { AuthenticationRequest, AuthenticationResponse, Keypair, OTPData, Verify
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
 import { PrepareTransactionParams } from '@/types/Transaction';
 import { handleError, AppError, ErrorCode } from './errors';
+import { UserKycResponse } from '@/types/Kyc';
+import { UserKycRequest } from '@/types/User';
 
 class EasError extends Error {
     constructor(
@@ -121,6 +123,13 @@ export class EasClient {
     async getUser(gridUserId: string): Promise<any> {
         return this.request<[]>(`/user?id=${gridUserId}`, {
             method: 'GET',
+        });
+    }
+
+    async getKYCLink(request: UserKycRequest): Promise<UserKycResponse> {
+        return this.request<UserKycResponse>('/kyc', {
+            method: 'POST',
+            body: JSON.stringify(request),
         });
     }
 }

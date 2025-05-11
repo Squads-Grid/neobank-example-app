@@ -1,7 +1,8 @@
 import { AuthenticationRequest, AuthenticationResponse, Keypair, OTPData, VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
 import { PrepareTransactionParams } from '@/types/Transaction';
-
+import { UserKycRequest, UserResponse } from '@/types/User';
+import { UserKycResponse } from '@/types/Kyc';
 export class GridClient {
     private baseUrl: string;
     private defaultHeaders: Record<string, string>;
@@ -73,11 +74,39 @@ export class GridClient {
 
     // Prepares a transaction.
     async prepareTransaction(request: PrepareTransactionParams): Promise<any> {
-        return this.request<[]>(`/${request.smartAccountAddress}/transfers`, {
+        return this.request<UserResponse>(`/${request.smartAccountAddress}/transfers`, {
             method: 'POST',
             headers: {
                 ...this.defaultHeaders,
                 'x-idempotency-key': request.idempotency_key
+            },
+            body: JSON.stringify(request),
+        });
+    }
+
+    /**
+     * curl --location 'http://localhost:50001/api/v0/grid/smart-accounts/3CgNNg1Ug3SLWeFwEsCBC4kGGrLJav3GxeRhHWiNJXCh/kyc' \
+--header 'x-grid-environment: production' \
+--header 'x-idempotency-key: c64d3cc0-2771-11f0-8569-02d762fb6cd4' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer 2295b9dc-c415-406b-a270-4ba3a2e58201' \
+--data-raw '{
+    "grid_user_id": "62a28937-e904-48a9-85c0-04551bb0eaa1",
+    "grid_customer_id": "90f369b4-53ea-466c-9558-01fd6cc1b548",
+    "type": "individual",
+    "email": "elias@sqds.io",
+    "full_name": "Elias Moreno",
+    "endorsements": [],
+    "redirect_uri": "https://squads.so"
+}'
+     */
+
+    async getKYCLink(request: UserKycRequest, idempotencyKey: string): Promise<UserKycResponse> {
+        return this.request<UserKycResponse>('/kyc', {
+            method: 'POST',
+            headers: {
+                ...this.defaultHeaders,
+                'x-idempotency-key': idempotencyKey
             },
             body: JSON.stringify(request),
         });
