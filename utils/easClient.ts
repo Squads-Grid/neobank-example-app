@@ -149,6 +149,12 @@ export class EasClient {
             }),
         });
     }
+
+    async getVirtualAccounts(smartAccountAddress: string): Promise<any> {
+        return this.request<any>(`/get-virtual-accounts?smart_account_address=${smartAccountAddress}`, {
+            method: 'GET',
+        });
+    }
 }
 
 // Create a singleton instance

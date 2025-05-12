@@ -126,6 +126,12 @@ export class GridClient {
             method: 'GET',
         });
     }
+
+    async getVirtualAccounts(smartAccountAddress: string): Promise<any> {
+        return this.request<any>(`/${smartAccountAddress}/virtual-accounts`, {
+            method: 'GET',
+        });
+    }
 }
 
 // Create a singleton instance
