@@ -1,18 +1,48 @@
 import '@/polyfills';
-import React from 'react';
-import { Stack } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Stack, Slot, useRouter, useSegments } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { View, Text } from 'react-native';
 
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@react-navigation/native';
 import { lightTheme, darkTheme } from '@/constants/Theme';
 import { ScreenThemeProvider } from '@/contexts/ScreenThemeContext';
 import { StageProvider } from '@/contexts/StageContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+function AuthLayout() {
+    const segments = useSegments();
+    const router = useRouter();
+    const { isAuthenticated } = useAuth();
+    const colorScheme = useColorScheme();
+
+    useEffect(() => {
+        const inAuthGroup = segments[0] === '(auth)';
+
+        if (!isAuthenticated && !inAuthGroup) {
+            // Redirect to the sign-in page
+            router.replace('/login');
+        } else if (isAuthenticated && inAuthGroup) {
+            // Redirect away from the sign-in page
+            router.replace('/');
+        }
+    }, [isAuthenticated, segments]);
+
+    return (
+        <ThemeProvider value={colorScheme === 'dark' ? darkTheme : lightTheme}>
+            <ScreenThemeProvider>
+                <StageProvider>
+                    <RootLayoutNav />
+                    <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+                    <Toast config={toastConfig} />
+                </StageProvider>
+            </ScreenThemeProvider>
+        </ThemeProvider>
+    );
+}
 
 function RootLayoutNav() {
     return (
@@ -80,19 +110,9 @@ const toastConfig = {
 };
 
 export default function RootLayout() {
-    const colorScheme = useColorScheme();
-
     return (
         <AuthProvider>
-            <ThemeProvider value={colorScheme === 'dark' ? darkTheme : lightTheme}>
-                <ScreenThemeProvider>
-                    <StageProvider>
-                        <RootLayoutNav />
-                        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-                        <Toast config={toastConfig} />
-                    </StageProvider>
-                </ScreenThemeProvider>
-            </ThemeProvider>
+            <AuthLayout />
         </AuthProvider>
     );
 }

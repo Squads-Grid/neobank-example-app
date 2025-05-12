@@ -3,7 +3,7 @@ import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/S
 import { PrepareTransactionParams } from '@/types/Transaction';
 import { handleError, AppError, ErrorCode } from './errors';
 import { UserKycResponse } from '@/types/Kyc';
-import { UserKycRequest } from '@/types/User';
+import { UserKycParams, UserKycRequest } from '@/types/User';
 
 class EasError extends Error {
     constructor(
@@ -50,6 +50,9 @@ export class EasClient {
                 },
             };
 
+            if (options.method === 'GET') {
+                delete fetchOptions.body;
+            }
 
             const response = await fetch(url, fetchOptions);
 
@@ -72,8 +75,12 @@ export class EasClient {
                 throw new EasError('Request failed', response.status, errorData);
             }
 
-            return response.json();
+            const data = await response.json();
+            return data;
         } catch (error) {
+            if (error instanceof EasError) {
+                throw error;
+            }
             handleError(ErrorCode.UNKNOWN_ERROR, true, false);
             throw error;
         }
@@ -126,7 +133,7 @@ export class EasClient {
         });
     }
 
-    async getKYCLink(request: UserKycRequest): Promise<UserKycResponse> {
+    async getKYCLink(request: UserKycParams): Promise<UserKycResponse> {
         return this.request<UserKycResponse>('/kyc', {
             method: 'POST',
             body: JSON.stringify(request),

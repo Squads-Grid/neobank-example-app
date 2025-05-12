@@ -1,6 +1,7 @@
-import React from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { router, useGlobalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { Linking } from 'react-native';
 
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
@@ -9,15 +10,26 @@ import { SwipeableModal, OverlappingImages } from '@/components/ui/organisms';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { ThemedText } from '@/components/ui/atoms';
 import { Link } from 'expo-router';
-import { ThemedButton } from '@/components/ui/molecules';
+import { ThemedButton, ThemedTextInput } from '@/components/ui/molecules';
 import { useAuth } from '@/contexts/AuthContext';
-import { useEffect, useState } from 'react';
 import { easClient } from '@/utils/easClient';
 
 function KYCModal() {
     const { textColor } = useScreenTheme();
-    const { kycStatus, accountInfo, logout, updateKycStatus } = useAuth();
+    const { kycStatus, accountInfo, logout, updateKycStatus, email } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [showNameInputs, setShowNameInputs] = useState(false);
+    const params = useLocalSearchParams();
+
+    useEffect(() => {
+        if (params.status === 'success') {
+            // Handle successful KYC completion
+            updateKycStatus('Approved');
+            router.back();
+        }
+    }, [params]);
 
     useEffect(() => {
         if (!kycStatus) {
@@ -43,10 +55,8 @@ function KYCModal() {
             } else {
                 // get kyc status
             }
-
         } catch (err) {
             console.error('Error checking KYC status:', err);
-            // setError('Failed to check KYC status');
         }
     };
 
@@ -54,51 +64,86 @@ function KYCModal() {
         router.back();
     };
 
-    const handleContinue = async () => {
-        if (!accountInfo) {
+    const handleInitialContinue = () => {
+        setShowNameInputs(true);
+    };
+
+    const handleSubmit = async () => {
+        if (!accountInfo || !email) {
             logout();
             return;
         }
 
         const response = await easClient.getKYCLink({
             grid_user_id: accountInfo?.grid_user_id,
-            grid_customer_id: accountInfo?.grid_customer_id,
-            type: accountInfo?.type,
-            email: accountInfo?.email,
-            full_name: accountInfo?.full_name,
-            "endorsements": [],
-            "redirect_uri": "https://squads.so"
+            smart_account_address: accountInfo?.smart_account_address,
+            email: email,
+            full_name: `${firstName} ${lastName}`.trim(),
+            redirect_uri: 'https://squads.so' // TODO: Replace with deeplink
         });
+
+        if (response.data.kyc_link) {
+            // Open the KYC link in the device's browser
+            Linking.openURL(response.data.kyc_link);
+        }
     }
 
     const renderContent = () => {
         return (
-            <>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ flex: 1 }}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+            >
                 <View style={styles.contentContainer}>
-                    <View style={styles.flagContainer}>
-                        <OverlappingImages
-                            leftImage={require('@/assets/images/bridge.png')}
-                            rightImage={require('@/assets/images/starburst-round.png')}
-                            size={64}
-                            overlap={0.3}
-                            borderWidth={0}
-                        />
-                    </View>
-                    <ThemedText type="large" style={styles.headline}>
-                        Continue with Bridge for identity verification
-                    </ThemedText>
-                    <ThemedText type="regular" style={[styles.subtitle, { color: textColor + 40 }]}>
-                        Complete verification with Bridge.xyz and your account details will automatically appear in your Bright App.
-                    </ThemedText>
+                    {!showNameInputs ? (
+                        <>
+                            <View style={styles.flagContainer}>
+                                <OverlappingImages
+                                    leftImage={require('@/assets/images/bridge.png')}
+                                    rightImage={require('@/assets/images/starburst-round.png')}
+                                    size={64}
+                                    overlap={0.3}
+                                    borderWidth={0}
+                                />
+                            </View>
+                            <ThemedText type="large" style={styles.headline}>
+                                Continue with Bridge for identity verification
+                            </ThemedText>
+                            <ThemedText type="regular" style={[styles.subtitle, { color: textColor + 40 }]}>
+                                Complete verification with Bridge.xyz and your account details will automatically appear in your Bright App.
+                            </ThemedText>
+                        </>
+                    ) : (
+                        <View style={styles.inputContainer}>
+                            <ThemedTextInput
+                                value={firstName}
+                                onChangeText={setFirstName}
+                                placeholder="First Name"
+                                style={[styles.input, { backgroundColor: textColor + 10 }]}
+                                inputStyle={{ color: textColor }}
+                            />
+                            <ThemedTextInput
+                                value={lastName}
+                                onChangeText={setLastName}
+                                placeholder="Last Name"
+                                style={[styles.input, { backgroundColor: textColor + 10 }]}
+                                inputStyle={{ color: textColor }}
+                            />
+                        </View>
+                    )}
                 </View>
-                <ThemedText type="tiny" style={[styles.footerText, { color: textColor + 40 }]}>
-                    By pressing continue, you agree to the <Link href="https://bridge.xyz/terms-of-service">Terms and conditions</Link>.
-                </ThemedText>
-                <ThemedButton
-                    onPress={() => { }}
-                    title="Continue"
-                />
-            </>
+                <View style={styles.bottomContainer}>
+                    <ThemedText type="tiny" style={[styles.footerText, { color: textColor + 40 }]}>
+                        By pressing continue, you agree to the <Link href="https://bridge.xyz/terms-of-service">Terms and conditions</Link>.
+                    </ThemedText>
+                    <ThemedButton
+                        onPress={showNameInputs ? handleSubmit : handleInitialContinue}
+                        title={showNameInputs ? "Submit" : "Continue"}
+                        disabled={showNameInputs && (!firstName.trim() || !lastName.trim())}
+                    />
+                </View>
+            </KeyboardAvoidingView>
         )
     }
 
@@ -146,6 +191,19 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         alignSelf: 'center',
         marginBottom: Spacing.xl
+    },
+    inputContainer: {
+        width: '100%',
+        gap: Spacing.sm,
+        marginTop: Spacing.md
+    },
+    input: {
+        width: '100%'
+    },
+    bottomContainer: {
+        width: '100%',
+        paddingHorizontal: Spacing.xl,
+        paddingBottom: Platform.OS === 'ios' ? Spacing.xl : Spacing.md
     }
 });
 

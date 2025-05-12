@@ -12,14 +12,39 @@
             "supportsTablet": true,
             "bundleIdentifier": "io.sqds.neobank-example-app",
             "infoPlist": {
-                "ITSAppUsesNonExemptEncryption": false
-            }
+                "ITSAppUsesNonExemptEncryption": false,
+                "CFBundleURLTypes": [
+                    {
+                        "CFBundleURLSchemes": [
+                            "bright"
+                        ]
+                    }
+                ]
+            },
+            "associatedDomains": [
+                "applinks:bright.app"
+            ]
         },
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./assets/images/adaptive-icon.png",
                 "backgroundColor": "#ffffff"
-            }
+            },
+            "package": "io.sqds.neobankexampleapp",
+            "intentFilters": [
+                {
+                    "action": "VIEW",
+                    "data": [
+                        {
+                            "scheme": "bright"
+                        }
+                    ],
+                    "category": [
+                        "BROWSABLE",
+                        "DEFAULT"
+                    ]
+                }
+            ]
         },
         "web": {
             "bundler": "metro",
@@ -44,7 +69,9 @@
             "typedRoutes": true
         },
         "extra": {
-            "router": {},
+            "router": {
+                "origin": false
+            },
             "eas": {
                 "projectId": "c4fb20df-095a-40ad-bb76-fd434e4e32c0"
             }
