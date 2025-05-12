@@ -10,7 +10,7 @@ interface BankAccountDetails {
     routingNumber?: string;
     iban?: string;
     swift?: string;
-    bankName: string;
+    bank_name: string;
     beneficiaryName: string;
     bankAddress: string;
 }
@@ -25,7 +25,7 @@ interface ModalFlowContextType {
     // Shared data
     selectedCurrency: Currency;
     kycStatus: KycStatus | null;
-    bankAccountDetails: BankAccountDetails[] | null;
+    bankAccountDetails: any[] | null; // TODO: define type
     isLoading: boolean;
     error: string | null;
 

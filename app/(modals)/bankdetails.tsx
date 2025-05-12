@@ -61,18 +61,11 @@ function BankDetailsModal() {
         if (!bankAccountDetails) return;
 
         try {
-            // Create a formatted string of all bank details
-            const details = [
-                { label: 'Bank Name', value: bankAccountDetails[0].bankName },
-                { label: 'Account Number', value: bankAccountDetails[0].accountNumber },
-                { label: 'Beneficiary Name', value: bankAccountDetails[0].beneficiaryName },
-                { label: 'Bank Address', value: bankAccountDetails[0].bankAddress },
-                ...(selectedCurrency === 'usd' && bankAccountDetails[0].routingNumber ?
-                    [{ label: 'Routing Number', value: bankAccountDetails[0].routingNumber }] : []),
-                ...(selectedCurrency === 'eur' && bankAccountDetails[0].iban ?
-                    [{ label: 'IBAN', value: bankAccountDetails[0].iban }] : []),
-                ...(selectedCurrency === 'eur' && bankAccountDetails[0].swift ?
-                    [{ label: 'SWIFT', value: bankAccountDetails[0].swift }] : [])
+            const details: BankDetail[] = [
+                { label: 'Bank Name', value: bankAccountDetails[0].source_deposit_instructions.bank_name },
+                { label: 'Account Number', value: bankAccountDetails[0].source_deposit_instructions.bank_account_number },
+                { label: 'Beneficiary Name', value: bankAccountDetails[0].source_deposit_instructions.bank_beneficiary_name },
+                { label: 'Bank Address', value: bankAccountDetails[0].source_deposit_instructions.bank_address },
             ];
 
             const allDetails = details.map(detail => `${detail.label}: ${detail.value}`).join('\n');
@@ -132,6 +125,7 @@ function BankDetailsModal() {
     }
 
     const renderInfo = (detail: BankDetail) => {
+        console.log("🚀 ~ renderInfo ~ detail:", detail)
         const isCopied = copiedField === detail.label;
 
         return (
@@ -140,7 +134,7 @@ function BankDetailsModal() {
                 <View style={styles.infoValueContainer}>
                     <ThemedText
                         type="regular"
-                        style={styles.infoValue}
+                        style={[styles.infoValue, { color: textColor }]}
                         numberOfLines={0}
                     >
                         {detail.value}
@@ -160,51 +154,22 @@ function BankDetailsModal() {
         )
     }
 
-    if (isLoading) {
-        return (
-            <ThemedScreen>
-                <View style={styles.container}>
-                    <ThemedText>Loading bank details...</ThemedText>
-                </View>
-            </ThemedScreen>
-        );
-    }
-
-    if (error) {
-        return (
-            <ThemedScreen>
-                <View style={styles.container}>
-                    <ThemedText style={styles.errorText}>{error}</ThemedText>
-                    <ThemedButton
-                        title="Try Again"
-                        onPress={() => router.back()}
-                    />
-                </View>
-            </ThemedScreen>
-        );
-    }
-
     if (!bankAccountDetails?.[0]) {
         return (
             <ThemedScreen>
-                <View style={styles.container}>
+                <View>
                     <ThemedText>No bank details found</ThemedText>
                 </View>
             </ThemedScreen>
         );
     }
 
+
     const bankDetails: BankDetail[] = [
-        { label: 'Bank Name', value: bankAccountDetails[0].bankName },
-        { label: 'Account Number', value: bankAccountDetails[0].accountNumber },
-        { label: 'Beneficiary Name', value: bankAccountDetails[0].beneficiaryName },
-        { label: 'Bank Address', value: bankAccountDetails[0].bankAddress },
-        ...(selectedCurrency === 'usd' && bankAccountDetails[0].routingNumber ?
-            [{ label: 'Routing Number', value: bankAccountDetails[0].routingNumber }] : []),
-        ...(selectedCurrency === 'eur' && bankAccountDetails[0].iban ?
-            [{ label: 'IBAN', value: bankAccountDetails[0].iban }] : []),
-        ...(selectedCurrency === 'eur' && bankAccountDetails[0].swift ?
-            [{ label: 'SWIFT', value: bankAccountDetails[0].swift }] : [])
+        { label: 'Bank Name', value: bankAccountDetails[0].source_deposit_instructions.bank_name },
+        { label: 'Account Number', value: bankAccountDetails[0].source_deposit_instructions.bank_account_number },
+        { label: 'Beneficiary Name', value: bankAccountDetails[0].source_deposit_instructions.bank_beneficiary_name },
+        { label: 'Bank Address', value: bankAccountDetails[0].source_deposit_instructions.bank_address },
     ];
 
     return (
@@ -238,10 +203,6 @@ function BankDetailsModal() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: Spacing.lg,
-    },
     contentContainer: {
         flex: 1,
         alignItems: 'center',
@@ -279,11 +240,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         alignSelf: 'center',
         marginBottom: Spacing.xl
-    },
-    errorText: {
-        color: 'red',
-        textAlign: 'center',
-        marginBottom: Spacing.md,
     }
 });
 

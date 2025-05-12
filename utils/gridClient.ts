@@ -145,7 +145,14 @@ export class GridClient {
     async openVirtualAccount(request: OpenVirtualAccountParams): Promise<any> {
         return this.request<any>(`/${request.smartAccountAddress}/virtual-accounts`, {
             method: 'POST',
-            body: JSON.stringify(request),
+            headers: {
+                ...this.defaultHeaders,
+                'x-idempotency-key': this.generateIdempotencyKey()
+            },
+            body: JSON.stringify({
+                "currency": request.currency,
+                "grid_user_id": request.gridUserId
+            }),
         });
     }
 }
