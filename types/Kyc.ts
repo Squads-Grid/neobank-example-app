@@ -1,4 +1,4 @@
-export type KycStatus = 'NotStarted' | 'UnderReview' | 'Incomplete' | 'Approved' | 'Rejected';
+export type KycStatus = 'not_started' | 'under_review' | 'incomplete' | 'approved' | 'rejected';
 
 export interface UserKycResponse {
     data: {

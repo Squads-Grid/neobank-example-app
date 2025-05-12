@@ -13,16 +13,16 @@ import { SendModal } from '@/components/ui/organisms/modals/SendModal';
 import { ReceiveModal } from '@/components/ui/organisms/modals/ReceiveModal';
 import { QRCodeModal } from '@/components/ui/organisms/modals/QRCodeModal';
 import { easClient } from '@/utils/easClient';
+import { useModalFlow } from '@/contexts/ModalFlowContext';
 
 const placeholder = require('@/assets/images/no-txn.png');
 
-
-export default function HomeScreen() {
-    const { accountInfo, setAccountInfo, kycStatus } = useAuth();
+function HomeScreenContent() {
+    const { accountInfo, setAccountInfo } = useAuth();
+    const { showReceiveModal, isReceiveModalVisible, hideAllModals } = useModalFlow();
     const [refreshing, setRefreshing] = useState(false);
     const [balance, setBalance] = useState(0);
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
-    const [isReceiveModalVisible, setIsReceiveModalVisible] = useState(false);
     const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false);
 
     useEffect(() => {
@@ -69,7 +69,7 @@ export default function HomeScreen() {
         {
             icon: 'add-outline',
             label: 'Add',
-            onPress: () => setIsReceiveModalVisible(true),
+            onPress: showReceiveModal,
         },
         {
             icon: 'arrow-forward-outline',
@@ -127,9 +127,8 @@ export default function HomeScreen() {
 
                 <ReceiveModal
                     visible={isReceiveModalVisible}
-                    onClose={() => setIsReceiveModalVisible(false)}
+                    onClose={hideAllModals}
                     onOpenQRCode={() => setIsQRCodeModalVisible(true)}
-                    kycStatus={kycStatus}
                 />
 
                 <QRCodeModal
@@ -140,6 +139,10 @@ export default function HomeScreen() {
             </ScrollView>
         </ThemedScreen>
     );
+}
+
+export default function HomeScreen() {
+    return <HomeScreenContent />;
 }
 
 const styles = StyleSheet.create({
@@ -165,6 +168,4 @@ const styles = StyleSheet.create({
     },
 });
 
-const transactionData: TransactionGroup[] = [
-
-];
+const transactionData: TransactionGroup[] = [];

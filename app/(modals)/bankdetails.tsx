@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import { router, useGlobalSearchParams } from 'expo-router';
-
+import { router } from 'expo-router';
+import { useModalFlow } from '@/contexts/ModalFlowContext';
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
 import { Spacing } from '@/constants/Spacing';
@@ -14,52 +14,6 @@ import { Link } from 'expo-router';
 import { ThemedButton } from '@/components/ui/molecules';
 import * as Haptics from 'expo-haptics';
 
-const US_BANK_DETAILS = [
-    {
-        label: 'Bank routing number',
-        value: '101019644'
-    },
-    {
-        label: 'Bank account number',
-        value: '1234567890'
-    },
-    {
-        label: 'Bank name',
-        value: 'Bank of Nowhere'
-    },
-    {
-        label: 'Bank beneficiary name',
-        value: 'DENI ERSHTUKAEV'
-    },
-    {
-        label: 'Bank address',
-        value: '123 Main St, Anytown, USA'
-    },
-];
-
-const EU_BANK_DETAILS = [
-    {
-        label: 'IBAN',
-        value: 'DE89 3704 0044 0532 0130 00'
-    },
-    {
-        label: 'BIC/SWIFT',
-        value: 'DEUTDEDBXXX'
-    },
-    {
-        label: 'Bank name',
-        value: 'Deutsche Bank'
-    },
-    {
-        label: 'Bank beneficiary name',
-        value: 'DENI ERSHTUKAEV'
-    },
-    {
-        label: 'Bank address',
-        value: 'Unter den Linden 13-15, 10117 Berlin, Germany'
-    },
-];
-
 interface BankDetail {
     label: string;
     value: string;
@@ -67,15 +21,17 @@ interface BankDetail {
 }
 
 function BankDetailsModal() {
-    const params = useGlobalSearchParams();
+    const {
+        selectedCurrency,
+        setSelectedCurrency,
+        bankAccountDetails,
+        isLoading,
+        error: contextError
+    } = useModalFlow();
 
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(contextError);
     const { backgroundColor, textColor } = useScreenTheme();
-    const [selectedCurrency, setSelectedCurrency] = useState('USD');
     const [copiedField, setCopiedField] = useState<string | null>(null);
-
-    // Get the appropriate bank details based on selected currency
-    const bankDetails = selectedCurrency === 'USD' ? US_BANK_DETAILS : EU_BANK_DETAILS;
 
     // Handle close modal
     const handleClose = () => {
@@ -102,10 +58,24 @@ function BankDetailsModal() {
 
     // Handle copying all fields
     const handleCopyAll = async () => {
+        if (!bankAccountDetails) return;
+
         try {
             // Create a formatted string of all bank details
-            const allDetails = bankDetails.map(detail => `${detail.label}: ${detail.value}`).join('\n');
+            const details = [
+                { label: 'Bank Name', value: bankAccountDetails[0].bankName },
+                { label: 'Account Number', value: bankAccountDetails[0].accountNumber },
+                { label: 'Beneficiary Name', value: bankAccountDetails[0].beneficiaryName },
+                { label: 'Bank Address', value: bankAccountDetails[0].bankAddress },
+                ...(selectedCurrency === 'USD' && bankAccountDetails[0].routingNumber ?
+                    [{ label: 'Routing Number', value: bankAccountDetails[0].routingNumber }] : []),
+                ...(selectedCurrency === 'EUR' && bankAccountDetails[0].iban ?
+                    [{ label: 'IBAN', value: bankAccountDetails[0].iban }] : []),
+                ...(selectedCurrency === 'EUR' && bankAccountDetails[0].swift ?
+                    [{ label: 'SWIFT', value: bankAccountDetails[0].swift }] : [])
+            ];
 
+            const allDetails = details.map(detail => `${detail.label}: ${detail.value}`).join('\n');
             await Clipboard.setStringAsync(allDetails);
             setCopiedField('all');
 
@@ -156,7 +126,6 @@ function BankDetailsModal() {
                     <ThemedText type="regular" style={{ color: textColor + 40 }}>
                         Min. transfer is {selectedCurrency === 'USD' ? '$2' : '€2'}
                     </ThemedText>
-
                 )}
             </View>
         );
@@ -191,8 +160,54 @@ function BankDetailsModal() {
         )
     }
 
-    return (
+    if (isLoading) {
+        return (
+            <ThemedScreen>
+                <View style={styles.container}>
+                    <ThemedText>Loading bank details...</ThemedText>
+                </View>
+            </ThemedScreen>
+        );
+    }
 
+    if (error) {
+        return (
+            <ThemedScreen>
+                <View style={styles.container}>
+                    <ThemedText style={styles.errorText}>{error}</ThemedText>
+                    <ThemedButton
+                        title="Try Again"
+                        onPress={() => router.back()}
+                    />
+                </View>
+            </ThemedScreen>
+        );
+    }
+
+    if (!bankAccountDetails?.[0]) {
+        return (
+            <ThemedScreen>
+                <View style={styles.container}>
+                    <ThemedText>No bank details found</ThemedText>
+                </View>
+            </ThemedScreen>
+        );
+    }
+
+    const bankDetails: BankDetail[] = [
+        { label: 'Bank Name', value: bankAccountDetails[0].bankName },
+        { label: 'Account Number', value: bankAccountDetails[0].accountNumber },
+        { label: 'Beneficiary Name', value: bankAccountDetails[0].beneficiaryName },
+        { label: 'Bank Address', value: bankAccountDetails[0].bankAddress },
+        ...(selectedCurrency === 'USD' && bankAccountDetails[0].routingNumber ?
+            [{ label: 'Routing Number', value: bankAccountDetails[0].routingNumber }] : []),
+        ...(selectedCurrency === 'EUR' && bankAccountDetails[0].iban ?
+            [{ label: 'IBAN', value: bankAccountDetails[0].iban }] : []),
+        ...(selectedCurrency === 'EUR' && bankAccountDetails[0].swift ?
+            [{ label: 'SWIFT', value: bankAccountDetails[0].swift }] : [])
+    ];
+
+    return (
         <ThemedScreen>
             <SwipeableModal onDismiss={handleClose}>
                 <StarburstBank primaryColor={error ? '#FF0048' : "#0080FF"} />
@@ -219,17 +234,14 @@ function BankDetailsModal() {
                 />
             </SwipeableModal>
         </ThemedScreen>
-
     );
 }
 
-export default withScreenTheme(BankDetailsModal, {
-    backgroundColor: '#000000',
-    textColor: '#FFFFFF',
-    primaryColor: '#FFFFFF'
-});
-
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: Spacing.lg,
+    },
     contentContainer: {
         flex: 1,
         alignItems: 'center',
@@ -267,5 +279,16 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         alignSelf: 'center',
         marginBottom: Spacing.xl
+    },
+    errorText: {
+        color: 'red',
+        textAlign: 'center',
+        marginBottom: Spacing.md,
     }
+});
+
+export default withScreenTheme(BankDetailsModal, {
+    backgroundColor: '#000000',
+    textColor: '#FFFFFF',
+    primaryColor: '#FFFFFF'
 }); 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { router, useGlobalSearchParams } from 'expo-router';
-
+import { useModalFlow } from '@/contexts/ModalFlowContext';
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
 import { Spacing } from '@/constants/Spacing';
@@ -40,15 +40,20 @@ function CreateBankAccountModal() {
     const params = useGlobalSearchParams();
     const initialCurrency = params.currency as string || 'USD';
 
+    const { setSelectedCurrency } = useModalFlow();
     const [error, setError] = useState<string | null>(null);
     const { backgroundColor, textColor } = useScreenTheme();
-    const [selectedCurrency, setSelectedCurrency] = useState(initialCurrency);
+    const [selectedCurrency, setSelectedCurrencyState] = useState(initialCurrency);
 
     // Handle close modal
     const handleClose = () => {
         router.back();
     };
 
+    const handleCurrencyChange = (currency: 'USD' | 'EUR') => {
+        setSelectedCurrencyState(currency);
+        setSelectedCurrency(currency);
+    };
 
     const renderInfo = (detail: InfoItem, isLast: boolean) => {
         return (
@@ -77,12 +82,11 @@ function CreateBankAccountModal() {
     }
 
     return (
-
         <ThemedScreen>
             <SwipeableModal onDismiss={handleClose}>
                 <StarburstBank primaryColor={error ? '#FF0048' : "#0080FF"} />
                 <View style={{ height: Spacing.md }} />
-                <CurrencySwitcher onCurrencyChange={setSelectedCurrency} backgroundColor={textColor} textColor={backgroundColor} />
+                <CurrencySwitcher onCurrencyChange={handleCurrencyChange} backgroundColor={textColor} textColor={backgroundColor} />
                 <View style={styles.flagContainer}>
                     <OverlappingImages
                         leftImage={require('@/assets/images/us-flag-round.png')}
@@ -111,15 +115,8 @@ function CreateBankAccountModal() {
                 />
             </SwipeableModal>
         </ThemedScreen>
-
     );
 }
-
-export default withScreenTheme(CreateBankAccountModal, {
-    backgroundColor: '#000000',
-    textColor: '#FFFFFF',
-    primaryColor: '#FFFFFF'
-});
 
 const styles = StyleSheet.create({
     flagContainer: {
@@ -156,4 +153,10 @@ const styles = StyleSheet.create({
         marginBottom: Spacing.xxs,
         paddingRight: Spacing.md
     },
+});
+
+export default withScreenTheme(CreateBankAccountModal, {
+    backgroundColor: '#000000',
+    textColor: '#FFFFFF',
+    primaryColor: '#FFFFFF'
 }); 

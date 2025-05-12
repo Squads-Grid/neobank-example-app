@@ -3,14 +3,16 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { BlurView } from 'expo-blur';
 import tinycolor from 'tinycolor2';
 
+type Currency = 'USD' | 'EUR';
+
 interface CurrencySwitcherProps {
-    onCurrencyChange: (currency: string) => void;
+    onCurrencyChange: (currency: Currency) => void;
     backgroundColor?: string;
     textColor?: string;
 }
 
 export function CurrencySwitcher({ onCurrencyChange, backgroundColor = 'white', textColor = '#000' }: CurrencySwitcherProps) {
-    const [selectedCurrency, setSelectedCurrency] = useState('USD');
+    const [selectedCurrency, setSelectedCurrency] = useState<Currency>('USD');
 
     // Define colors
     const selectedBackgroundColor = backgroundColor;
@@ -22,7 +24,7 @@ export function CurrencySwitcher({ onCurrencyChange, backgroundColor = 'white', 
     // Example: A dark grey at 50% opacity
     // const unselectedBackgroundColor = 'rgba(50, 50, 50, 0.5)';
 
-    const handleCurrencyChange = (currency: string) => {
+    const handleCurrencyChange = (currency: Currency) => {
         setSelectedCurrency(currency);
         onCurrencyChange(currency);
     }

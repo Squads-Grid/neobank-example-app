@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Linking } from 'react-native';
-
+import { useModalFlow } from '@/contexts/ModalFlowContext';
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
 import { Spacing } from '@/constants/Spacing';
@@ -17,6 +17,7 @@ import { easClient } from '@/utils/easClient';
 function KYCModal() {
     const { textColor } = useScreenTheme();
     const { kycStatus, accountInfo, logout, updateKycStatus, email } = useAuth();
+    const { fetchKycStatus } = useModalFlow();
     const [isLoading, setIsLoading] = useState(false);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -26,7 +27,7 @@ function KYCModal() {
     useEffect(() => {
         if (params.status === 'success') {
             // Handle successful KYC completion
-            updateKycStatus('Approved');
+            updateKycStatus('approved');
             router.back();
         }
     }, [params]);
@@ -47,15 +48,13 @@ function KYCModal() {
 
         try {
             const response = await easClient.getUser(accountInfo?.grid_user_id);
-            const { bridge_kyc_link_id } = response.data.user;
-            if (!bridge_kyc_link_id) {
+            const { bridge_kyc_link } = response.data;
+            if (!bridge_kyc_link) {
                 setIsLoading(false);
-                updateKycStatus('NotStarted');
+                updateKycStatus('not_started');
                 return;
             } else {
                 // get kyc status
-                const response = await easClient.getKYCStatus(accountInfo?.smart_account_address, bridge_kyc_link_id);
-                updateKycStatus(response.data.status);
             }
         } catch (err) {
             console.error('Error checking KYC status:', err);
@@ -67,11 +66,7 @@ function KYCModal() {
     };
 
     const handleInitialContinue = () => {
-        if (!kycStatus) {
-            setShowNameInputs(true);
-        } else {
-            setShowNameInputs(false);
-        }
+        setShowNameInputs(true);
     };
 
     const handleSubmit = async () => {
@@ -80,17 +75,23 @@ function KYCModal() {
             return;
         }
 
-        const response = await easClient.getKYCLink({
-            grid_user_id: accountInfo?.grid_user_id,
-            smart_account_address: accountInfo?.smart_account_address,
-            email: email,
-            full_name: `${firstName} ${lastName}`.trim(),
-            redirect_uri: 'https://squads.so' // TODO: Replace with deeplink
-        });
+        try {
+            const response = await easClient.getKYCLink({
+                grid_user_id: accountInfo?.grid_user_id,
+                smart_account_address: accountInfo?.smart_account_address,
+                email: email,
+                full_name: `${firstName} ${lastName}`.trim(),
+                redirect_uri: 'https://squads.so' // TODO: Replace with deeplink
+            });
 
-        if (response.data.kyc_link) {
-            // Open the KYC link in the device's browser
-            Linking.openURL(response.data.kyc_link);
+            if (response.data.kyc_link) {
+                // Open the KYC link in the device's browser
+                await Linking.openURL(response.data.kyc_link);
+                updateKycStatus('under_review');
+                handleClose();
+            }
+        } catch (err) {
+            console.error('Error getting KYC link:', err);
         }
     }
 
