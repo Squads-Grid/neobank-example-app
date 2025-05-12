@@ -139,6 +139,16 @@ export class EasClient {
             body: JSON.stringify(request),
         });
     }
+
+    async getKYCStatus(smartAccountAddress: string, kycId: string): Promise<any> {
+        return this.request<any>(`/kyc-status`, {
+            method: 'POST',
+            body: JSON.stringify({
+                smart_account_address: smartAccountAddress,
+                kyc_id: kycId,
+            }),
+        });
+    }
 }
 
 // Create a singleton instance

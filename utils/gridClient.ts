@@ -15,7 +15,7 @@ export class GridClient {
         this.baseUrl = `${url}${endpoint}`;
         this.defaultHeaders = {
             'Content-Type': 'application/json',
-            'x-grid-environment': 'sandbox',
+            'x-grid-environment': 'sandbox', // TODO: Replace with env variable
             'Authorization': `Bearer ${process.env.GRID_API_KEY}`,
         };
     }
@@ -117,6 +117,12 @@ export class GridClient {
 
     async getUser(gridUserId: string): Promise<any> {
         return this.request<any>(`/user/${gridUserId}`, {
+            method: 'GET',
+        });
+    }
+
+    async getKYCStatus(smartAccountAddress: string, kycId: string): Promise<any> {
+        return this.request<any>(`/${smartAccountAddress}/kyc/${kycId}`, {
             method: 'GET',
         });
     }

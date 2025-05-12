@@ -44,7 +44,7 @@ export const ThemedTextInput = forwardRef<TextInput, ThemedTextInputProps>(
                     styles.container,
                     {
                         borderColor: error ? errorColor : textColor + '20',
-                        backgroundColor: textColor + '20', // Changed to yellow
+                        backgroundColor: textColor + '20',
                     },
                     style,
                 ]}

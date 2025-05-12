@@ -47,13 +47,15 @@ function KYCModal() {
 
         try {
             const response = await easClient.getUser(accountInfo?.grid_user_id);
-            const { bridge_kyc_link } = response.data;
-            if (!bridge_kyc_link) {
+            const { bridge_kyc_link_id } = response.data.user;
+            if (!bridge_kyc_link_id) {
                 setIsLoading(false);
                 updateKycStatus('NotStarted');
                 return;
             } else {
                 // get kyc status
+                const response = await easClient.getKYCStatus(accountInfo?.smart_account_address, bridge_kyc_link_id);
+                updateKycStatus(response.data.status);
             }
         } catch (err) {
             console.error('Error checking KYC status:', err);
@@ -65,7 +67,11 @@ function KYCModal() {
     };
 
     const handleInitialContinue = () => {
-        setShowNameInputs(true);
+        if (!kycStatus) {
+            setShowNameInputs(true);
+        } else {
+            setShowNameInputs(false);
+        }
     };
 
     const handleSubmit = async () => {
