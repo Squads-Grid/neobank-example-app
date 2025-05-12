@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 export async function POST(request: Request) {
     try {
         const body = await request.json() as UserKycParams;
-        const idempotencyKey = uuidv4();
+        const idempotencyKey = uuidv4(); // TODO: move to client
 
         const gridCustomerId = process.env.GRID_CUSTOMER_ID;
         if (!gridCustomerId) {

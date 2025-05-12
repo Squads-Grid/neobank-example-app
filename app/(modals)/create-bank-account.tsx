@@ -11,6 +11,10 @@ import { ThemedText, IconSymbol, Divider } from '@/components/ui/atoms';
 import { IconSymbolName } from '@/components/ui/atoms/IconSymbol';
 import { ThemedButton } from '@/components/ui/molecules';
 import { OverlappingImages } from '@/components/ui/organisms';
+import { easClient } from '@/utils/easClient';
+import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
+import { useAuth } from '@/contexts/AuthContext';
+import { Currency } from '@/types/Transaction';
 
 const INFO = [
     {
@@ -38,19 +42,20 @@ interface InfoItem {
 
 function CreateBankAccountModal() {
     const params = useGlobalSearchParams();
-    const initialCurrency = params.currency as string || 'USD';
+    const initialCurrency = params.currency as Currency || 'usd';
 
     const { setSelectedCurrency } = useModalFlow();
     const [error, setError] = useState<string | null>(null);
     const { backgroundColor, textColor } = useScreenTheme();
-    const [selectedCurrency, setSelectedCurrencyState] = useState(initialCurrency);
+    const [selectedCurrency, setSelectedCurrencyState] = useState<Currency>(initialCurrency);
+    const { accountInfo, logout } = useAuth();
 
     // Handle close modal
     const handleClose = () => {
         router.back();
     };
 
-    const handleCurrencyChange = (currency: 'USD' | 'EUR') => {
+    const handleCurrencyChange = (currency: Currency) => {
         setSelectedCurrencyState(currency);
         setSelectedCurrency(currency);
     };
@@ -72,13 +77,28 @@ function CreateBankAccountModal() {
                             style={[styles.infoValue, { color: textColor + 40 }]}
                             numberOfLines={0}
                         >
-                            {selectedCurrency === 'EUR' ? detail.textEUR : detail.textUSD}
+                            {selectedCurrency === 'eur' ? detail.textEUR : detail.textUSD}
                         </ThemedText>
                         {!isLast && <Divider type="solid" color={textColor + 10} thickness={1} />}
                     </View>
                 </View>
             </View>
         )
+    }
+
+    const handleCreateBankAccount = async () => {
+        if (!accountInfo) {
+            logout();
+            return;
+        }
+        console.log('create bank account');
+        const accountParams: OpenVirtualAccountParams = {
+            smartAccountAddress: accountInfo.smart_account_address,
+            gridUserId: accountInfo.grid_user_id,
+            currency: selectedCurrency
+        }
+        const response = await easClient.openVirtualAccount(accountParams);
+        console.log(response);
     }
 
     return (
@@ -94,7 +114,7 @@ function CreateBankAccountModal() {
                         size={64}
                         overlap={0.3}
                         borderWidth={0}
-                        leftOnTop={selectedCurrency === 'USD'}
+                        leftOnTop={selectedCurrency === 'usd'}
                         backdropOpacity={0.4}
                     />
                 </View>
@@ -103,15 +123,15 @@ function CreateBankAccountModal() {
                         Create your
                     </ThemedText>
                     <ThemedText type="large" style={styles.headline}>
-                        {selectedCurrency === 'USD' ? 'Virtual US Bank Account' : 'Virtual EU Bank Account'}
+                        {selectedCurrency === 'usd' ? 'Virtual US Bank Account' : 'Virtual EU Bank Account'}
                     </ThemedText>
                     <View style={styles.infoWrapper}>
                         {INFO.map((detail, index) => renderInfo(detail, index === INFO.length - 1))}
                     </View>
                 </View>
                 <ThemedButton
-                    onPress={() => { }}
-                    title={selectedCurrency === 'USD' ? 'Create Virtual US Account' : 'Create Virtual EU Account'}
+                    onPress={handleCreateBankAccount}
+                    title={selectedCurrency === 'usd' ? 'Create Virtual US Account' : 'Create Virtual EU Account'}
                 />
             </SwipeableModal>
         </ThemedScreen>

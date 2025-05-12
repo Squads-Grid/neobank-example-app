@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 import { KycStatus } from '@/types/Kyc';
 import { easClient } from '@/utils/easClient';
 import { useAuth } from './AuthContext';
+import { Currency } from '@/types/Transaction';
 
 interface BankAccountDetails {
     currency: 'USD' | 'EUR';
@@ -22,7 +23,7 @@ interface ModalFlowContextType {
     isKycModalVisible: boolean;
 
     // Shared data
-    selectedCurrency: 'USD' | 'EUR';
+    selectedCurrency: Currency;
     kycStatus: KycStatus | null;
     bankAccountDetails: BankAccountDetails[] | null;
     isLoading: boolean;
@@ -36,7 +37,7 @@ interface ModalFlowContextType {
     hideAllModals: () => void;
 
     // Data actions
-    setSelectedCurrency: (currency: 'USD' | 'EUR') => void;
+    setSelectedCurrency: (currency: Currency) => void;
     fetchBankDetails: () => Promise<void>;
     fetchKycStatus: () => Promise<void>;
 }
@@ -53,7 +54,7 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
     const [isKycModalVisible, setIsKycModalVisible] = useState(false);
 
     // Shared data
-    const [selectedCurrency, setSelectedCurrency] = useState<'USD' | 'EUR'>('USD');
+    const [selectedCurrency, setSelectedCurrency] = useState<Currency>('usd');
     const [kycStatus, setKycStatus] = useState<KycStatus | null>(null);
     const [bankAccountDetails, setBankAccountDetails] = useState<BankAccountDetails[] | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -92,7 +93,7 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
 
         try {
             const response = await easClient.getVirtualAccounts(accountInfo.smart_account_address);
-            setBankAccountDetails([response.data]);
+            setBankAccountDetails(response.data);
         } catch (err) {
             setError('Failed to fetch bank details');
             console.error('Error fetching bank details:', err);

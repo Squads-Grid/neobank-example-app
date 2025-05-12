@@ -3,6 +3,11 @@ import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/S
 import { PrepareTransactionParams } from '@/types/Transaction';
 import { UserKycRequest, UserResponse } from '@/types/User';
 import { UserKycResponse } from '@/types/Kyc';
+import { v4 as uuidv4 } from 'uuid';
+import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
+
+// TODO: USE RESPONSE TYPES NOT ANY
+
 export class GridClient {
     private baseUrl: string;
     private defaultHeaders: Record<string, string>;
@@ -60,6 +65,10 @@ export class GridClient {
         } catch (error) {
             throw error;
         }
+    }
+
+    generateIdempotencyKey(): string {
+        return uuidv4();
     }
 
     // Auth endpoints
@@ -130,6 +139,13 @@ export class GridClient {
     async getVirtualAccounts(smartAccountAddress: string): Promise<any> {
         return this.request<any>(`/${smartAccountAddress}/virtual-accounts`, {
             method: 'GET',
+        });
+    }
+
+    async openVirtualAccount(request: OpenVirtualAccountParams): Promise<any> {
+        return this.request<any>(`/${request.smartAccountAddress}/virtual-accounts`, {
+            method: 'POST',
+            body: JSON.stringify(request),
         });
     }
 }

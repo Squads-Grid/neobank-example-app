@@ -4,6 +4,7 @@ import { PrepareTransactionParams } from '@/types/Transaction';
 import { handleError, AppError, ErrorCode } from './errors';
 import { UserKycResponse } from '@/types/Kyc';
 import { UserKycParams, UserKycRequest } from '@/types/User';
+import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 
 class EasError extends Error {
     constructor(
@@ -153,6 +154,13 @@ export class EasClient {
     async getVirtualAccounts(smartAccountAddress: string): Promise<any> {
         return this.request<any>(`/get-virtual-accounts?smart_account_address=${smartAccountAddress}`, {
             method: 'GET',
+        });
+    }
+
+    async openVirtualAccount(request: OpenVirtualAccountParams): Promise<any> {
+        return this.request<any>(`/open-virtual-account`, {
+            method: 'POST',
+            body: JSON.stringify(request),
         });
     }
 }

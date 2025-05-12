@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { BlurView } from 'expo-blur';
 import tinycolor from 'tinycolor2';
-
-type Currency = 'USD' | 'EUR';
+import { Currency } from '@/types/Transaction';
 
 interface CurrencySwitcherProps {
     onCurrencyChange: (currency: Currency) => void;
@@ -12,17 +11,13 @@ interface CurrencySwitcherProps {
 }
 
 export function CurrencySwitcher({ onCurrencyChange, backgroundColor = 'white', textColor = '#000' }: CurrencySwitcherProps) {
-    const [selectedCurrency, setSelectedCurrency] = useState<Currency>('USD');
+    const [selectedCurrency, setSelectedCurrency] = useState<Currency>('usd');
 
     // Define colors
     const selectedBackgroundColor = backgroundColor;
-    // Define unselected background using RGBA for opacity
-    // Example: White background at 10% opacity
-    const colorInstance = tinycolor(backgroundColor); // Use tinycolor() function
+    const colorInstance = tinycolor(backgroundColor);
     const unselectedBackgroundColor = colorInstance.setAlpha(0.1).toRgbString();
     const unselectedTextColor = backgroundColor;
-    // Example: A dark grey at 50% opacity
-    // const unselectedBackgroundColor = 'rgba(50, 50, 50, 0.5)';
 
     const handleCurrencyChange = (currency: Currency) => {
         setSelectedCurrency(currency);
@@ -40,18 +35,18 @@ export function CurrencySwitcher({ onCurrencyChange, backgroundColor = 'white', 
                     style={[
                         styles.tab,
                         {
-                            backgroundColor: selectedCurrency === 'USD'
+                            backgroundColor: selectedCurrency === 'usd'
                                 ? selectedBackgroundColor
                                 : 'transparent'
                         }
                     ]}
-                    onPress={() => handleCurrencyChange('USD')}
+                    onPress={() => handleCurrencyChange('usd')}
                 >
                     <View style={styles.tabContent}>
                         <Image source={usFlagIcon} style={styles.flagIcon} />
                         <Text style={[
                             styles.tabText,
-                            { color: selectedCurrency === 'USD' ? textColor : unselectedTextColor }
+                            { color: selectedCurrency === 'usd' ? textColor : unselectedTextColor }
                         ]}>USD</Text>
                     </View>
                 </TouchableOpacity>
@@ -60,25 +55,25 @@ export function CurrencySwitcher({ onCurrencyChange, backgroundColor = 'white', 
                     style={[
                         styles.tab,
                         {
-                            backgroundColor: selectedCurrency === 'EUR'
+                            backgroundColor: selectedCurrency === 'eur'
                                 ? selectedBackgroundColor
                                 : 'transparent'
                         }
                     ]}
-                    onPress={() => handleCurrencyChange('EUR')}
+                    onPress={() => handleCurrencyChange('eur')}
                 >
                     <View style={styles.tabContent}>
                         <Image source={euFlagIcon} style={styles.flagIcon} />
                         <Text style={[
                             styles.tabText,
-                            { color: selectedCurrency === 'EUR' ? textColor : unselectedTextColor }
+                            { color: selectedCurrency === 'eur' ? textColor : unselectedTextColor }
                         ]}>EUR</Text>
                     </View>
                 </TouchableOpacity>
             </BlurView>
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     wrapper: {

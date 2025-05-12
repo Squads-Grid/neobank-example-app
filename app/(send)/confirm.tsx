@@ -58,7 +58,7 @@ export default function ConfirmScreen() {
                 smartAccountAddress: accountInfo.smart_account_address,
                 amount: amount,
                 grid_user_id: accountInfo.grid_user_id,
-                idempotency_key: uuidv4(),
+                idempotency_key: uuidv4(), // TODO: move to backend
                 source,
                 destination
             };

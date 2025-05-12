@@ -67,11 +67,11 @@ function BankDetailsModal() {
                 { label: 'Account Number', value: bankAccountDetails[0].accountNumber },
                 { label: 'Beneficiary Name', value: bankAccountDetails[0].beneficiaryName },
                 { label: 'Bank Address', value: bankAccountDetails[0].bankAddress },
-                ...(selectedCurrency === 'USD' && bankAccountDetails[0].routingNumber ?
+                ...(selectedCurrency === 'usd' && bankAccountDetails[0].routingNumber ?
                     [{ label: 'Routing Number', value: bankAccountDetails[0].routingNumber }] : []),
-                ...(selectedCurrency === 'EUR' && bankAccountDetails[0].iban ?
+                ...(selectedCurrency === 'eur' && bankAccountDetails[0].iban ?
                     [{ label: 'IBAN', value: bankAccountDetails[0].iban }] : []),
-                ...(selectedCurrency === 'EUR' && bankAccountDetails[0].swift ?
+                ...(selectedCurrency === 'eur' && bankAccountDetails[0].swift ?
                     [{ label: 'SWIFT', value: bankAccountDetails[0].swift }] : [])
             ];
 
@@ -124,7 +124,7 @@ function BankDetailsModal() {
                 )}
                 {renderChipContent(
                     <ThemedText type="regular" style={{ color: textColor + 40 }}>
-                        Min. transfer is {selectedCurrency === 'USD' ? '$2' : '€2'}
+                        Min. transfer is {selectedCurrency === 'usd' ? '$2' : '€2'}
                     </ThemedText>
                 )}
             </View>
@@ -199,11 +199,11 @@ function BankDetailsModal() {
         { label: 'Account Number', value: bankAccountDetails[0].accountNumber },
         { label: 'Beneficiary Name', value: bankAccountDetails[0].beneficiaryName },
         { label: 'Bank Address', value: bankAccountDetails[0].bankAddress },
-        ...(selectedCurrency === 'USD' && bankAccountDetails[0].routingNumber ?
+        ...(selectedCurrency === 'usd' && bankAccountDetails[0].routingNumber ?
             [{ label: 'Routing Number', value: bankAccountDetails[0].routingNumber }] : []),
-        ...(selectedCurrency === 'EUR' && bankAccountDetails[0].iban ?
+        ...(selectedCurrency === 'eur' && bankAccountDetails[0].iban ?
             [{ label: 'IBAN', value: bankAccountDetails[0].iban }] : []),
-        ...(selectedCurrency === 'EUR' && bankAccountDetails[0].swift ?
+        ...(selectedCurrency === 'eur' && bankAccountDetails[0].swift ?
             [{ label: 'SWIFT', value: bankAccountDetails[0].swift }] : [])
     ];
 
@@ -215,10 +215,10 @@ function BankDetailsModal() {
                 <CurrencySwitcher onCurrencyChange={setSelectedCurrency} backgroundColor={textColor} textColor={backgroundColor} />
                 <View style={styles.contentContainer}>
                     <ThemedText type="subtitle">
-                        {selectedCurrency === 'USD' ? 'Virtual US Bank Account' : 'Virtual EU Bank Account'}
+                        {selectedCurrency === 'usd' ? 'Virtual US Bank Account' : 'Virtual EU Bank Account'}
                     </ThemedText>
                     <ThemedText type="regular" style={[styles.subtitle, { color: textColor + 40 }]} >
-                        Accept {selectedCurrency === 'USD' ? 'ACH & Wire' : 'SEPA'} Payments
+                        Accept {selectedCurrency === 'usd' ? 'ACH & Wire' : 'SEPA'} Payments
                     </ThemedText>
                     {renderChips()}
                     <Divider type="dashed" color={textColor + 10} thickness={1} />
