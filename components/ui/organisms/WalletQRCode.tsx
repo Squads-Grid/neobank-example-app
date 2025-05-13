@@ -1,15 +1,23 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Clipboard } from 'react-native';
 import { ThemedText } from '../atoms/ThemedText';
 import { IconSymbol } from '../atoms/IconSymbol';
-import { AccountInfo } from '@/types/Auth';
 import { Spacing } from '@/constants/Spacing';
 import QRCode from 'react-native-qrcode-svg';
+import { useState } from 'react';
 
 interface WalletQRCodeProps {
     walletAddress: string;
 }
 
 export default function WalletQRCode({ walletAddress }: WalletQRCodeProps) {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = async () => {
+        await Clipboard.setString(walletAddress);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+    };
+
     const renderQRCode = () => {
         return (
             <QRCode
@@ -31,10 +39,19 @@ export default function WalletQRCode({ walletAddress }: WalletQRCodeProps) {
                 <IconSymbol name="info.circle" size={16} color="white" />
                 <ThemedText type="tiny" style={styles.qrCodeSupportText}>We don't support NFTs.</ThemedText>
             </View>
-            <View style={styles.qrCodeCopyContainer}>
-                <IconSymbol name="doc.on.doc" size={16} color="white" />
-                <ThemedText type="regularSemiBold" style={styles.qrCodeCopyText}>Copy</ThemedText>
-            </View>
+            <TouchableOpacity
+                style={styles.qrCodeCopyContainer}
+                onPress={handleCopy}
+            >
+                <IconSymbol
+                    name={copied ? "checkmark.circle" : "doc.on.doc"}
+                    size={16}
+                    color="white"
+                />
+                <ThemedText type="regularSemiBold" style={styles.qrCodeCopyText}>
+                    {copied ? 'Copied!' : 'Copy'}
+                </ThemedText>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -55,6 +72,7 @@ const styles = StyleSheet.create({
     qrCodeCopyContainer: {
         flexDirection: 'row',
         marginTop: Spacing.xl,
+        alignItems: 'center',
     },
     qrCodeSupportContainer: {
         flexDirection: 'row',
