@@ -91,7 +91,7 @@ export function ComingSoonToast({
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: Spacing.xl,
+        bottom: Spacing.xxl,
         left: Spacing.lg,
         right: Spacing.lg,
         borderRadius: 12,

@@ -14,6 +14,8 @@ import { ReceiveModal } from '@/components/ui/organisms/modals/ReceiveModal';
 import { QRCodeModal } from '@/components/ui/organisms/modals/QRCodeModal';
 import { easClient } from '@/utils/easClient';
 import { useModalFlow } from '@/contexts/ModalFlowContext';
+import { ComingSoonToast } from '@/components/ui/organisms/ComingSoonToast';
+import { useComingSoonToast } from '@/hooks/useComingSoonToast';
 
 const placeholder = require('@/assets/images/no-txn.png');
 
@@ -24,6 +26,7 @@ function HomeScreenContent() {
     const [balance, setBalance] = useState(0);
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
     const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false);
+    const { isVisible, message, showToast, hideToast } = useComingSoonToast();
 
     useEffect(() => {
         if (!accountInfo || !accountInfo.smart_account_signer_public_key) {
@@ -79,12 +82,12 @@ function HomeScreenContent() {
         {
             icon: 'calendar-outline',
             label: 'Scheduled',
-            onPress: () => { /* handle scheduled */ },
+            onPress: () => showToast("Scheduled payments coming soon!"),
         },
         {
             icon: 'cash-outline',
             label: 'Invest',
-            onPress: () => { /* handle pay */ },
+            onPress: () => showToast("Investment features coming soon!"),
         }
     ];
 
@@ -135,6 +138,12 @@ function HomeScreenContent() {
                     visible={isQRCodeModalVisible}
                     onClose={() => setIsQRCodeModalVisible(false)}
                     walletAddress={accountInfo?.smart_account_address || ''}
+                />
+
+                <ComingSoonToast
+                    visible={isVisible}
+                    onHide={hideToast}
+                    message={message}
                 />
             </ScrollView>
         </ThemedScreen>
