@@ -12,6 +12,7 @@ interface CircleButtonProps {
     size?: number;
     backgroundColor?: string;
     iconColor?: string;
+    disabled?: boolean;
 }
 
 export function CircleButton({
@@ -21,6 +22,7 @@ export function CircleButton({
     size = 45,
     backgroundColor: customBackgroundColor,
     iconColor: customIconColor,
+    disabled = false,
 }: CircleButtonProps) {
     const themeBackgroundColor = useThemeColor({}, 'primary');
     const themeIconColor = useThemeColor({}, 'background');
@@ -35,6 +37,7 @@ export function CircleButton({
         <View style={styles.container}>
             <TouchableOpacity
                 onPress={onPress}
+                disabled={disabled}
                 style={[
                     styles.button,
                     {
@@ -42,6 +45,7 @@ export function CircleButton({
                         height: size,
                         backgroundColor: backgroundColor,
                         shadowColor: shadowColor,
+                        opacity: disabled ? 0.5 : 1,
                     }
                 ]}
             >
