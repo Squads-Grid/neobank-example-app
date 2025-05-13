@@ -110,7 +110,6 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
 
         try {
             const userResponse = await easClient.getUser(accountInfo.grid_user_id);
-            console.log("🚀 ~ fetchKycStatus ~ userResponse:", userResponse)
             const { bridge_kyc_link_id } = userResponse.data.user;
 
             if (!bridge_kyc_link_id) {

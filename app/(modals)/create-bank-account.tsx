@@ -91,14 +91,12 @@ function CreateBankAccountModal() {
             logout();
             return;
         }
-        console.log('create bank account');
         const accountParams: OpenVirtualAccountParams = {
             smartAccountAddress: accountInfo.smart_account_address,
             gridUserId: accountInfo.grid_user_id,
             currency: selectedCurrency
         }
         const response = await easClient.openVirtualAccount(accountParams);
-        console.log(response);
     }
 
     return (

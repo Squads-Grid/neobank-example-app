@@ -125,7 +125,6 @@ function BankDetailsModal() {
     }
 
     const renderInfo = (detail: BankDetail) => {
-        console.log("🚀 ~ renderInfo ~ detail:", detail)
         const isCopied = copiedField === detail.label;
 
         return (
@@ -178,27 +177,39 @@ function BankDetailsModal() {
                 <StarburstBank primaryColor={error ? '#FF0048' : "#0080FF"} />
                 <View style={{ height: Spacing.md }} />
                 <CurrencySwitcher onCurrencyChange={setSelectedCurrency} backgroundColor={textColor} textColor={backgroundColor} />
-                <View style={styles.contentContainer}>
-                    <ThemedText type="subtitle">
-                        {selectedCurrency === 'usd' ? 'Virtual US Bank Account' : 'Virtual EU Bank Account'}
-                    </ThemedText>
-                    <ThemedText type="regular" style={[styles.subtitle, { color: textColor + 40 }]} >
-                        Accept {selectedCurrency === 'usd' ? 'ACH & Wire' : 'SEPA'} Payments
-                    </ThemedText>
-                    {renderChips()}
-                    <Divider type="dashed" color={textColor + 10} thickness={1} />
-                    {bankDetails.map((detail) => renderInfo(detail))}
-                </View>
-                <ThemedText type="tiny" style={[styles.footerText, { color: textColor + 40 }]}>
-                    For assistance regarding issues with transfers and deposits, reach out to <Link href="mailto:support@bridge.xyz">support@bridge.xyz</Link>
-                </ThemedText>
-                <ThemedButton
-                    onPress={handleCopyAll}
-                    title={copiedField === 'all' ? 'Copied!' : 'Copy all details'}
-                    variant={copiedField === 'all' ? 'outline' : 'primary'}
-                />
+
+                {selectedCurrency === 'usd' ?
+                    <>
+                        <View style={styles.contentContainer}>
+                            <ThemedText type="subtitle">
+                                {selectedCurrency === 'usd' ? 'Virtual US Bank Account' : 'Virtual EU Bank Account'}
+                            </ThemedText>
+                            <ThemedText type="regular" style={[styles.subtitle, { color: textColor + 40 }]} >
+                                Accept {selectedCurrency === 'usd' ? 'ACH & Wire' : 'SEPA'} Payments
+                            </ThemedText>
+                            {renderChips()}
+                            <Divider type="dashed" color={textColor + 10} thickness={1} />
+                            {bankDetails.map((detail) => renderInfo(detail))}
+                        </View>
+                        <ThemedText type="tiny" style={[styles.footerText, { color: textColor + 40 }]}>
+                            For assistance regarding issues with transfers and deposits, reach out to <Link href="mailto:support@bridge.xyz">support@bridge.xyz</Link>
+                        </ThemedText>
+                        <ThemedButton
+                            onPress={handleCopyAll}
+                            title={copiedField === 'all' ? 'Copied!' : 'Copy all details'}
+                            variant={copiedField === 'all' ? 'outline' : 'primary'}
+                        />
+                    </> :
+                    <View style={styles.contentContainer}>
+                        <ThemedText type="subtitle">
+                            EUR Accounts Coming Soon
+                        </ThemedText>
+                        <ThemedText type="regular" style={[styles.subtitle, { color: textColor + 40, textAlign: 'center' }]}>
+                            We're working on expanding our payment options to your region.
+                        </ThemedText>
+                    </View>}
             </SwipeableModal>
-        </ThemedScreen>
+        </ThemedScreen >
     );
 }
 
