@@ -5,7 +5,7 @@ import { useModalFlow } from '@/contexts/ModalFlowContext';
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
 import { Spacing } from '@/constants/Spacing';
-import { CurrencySwitcher, SwipeableModal } from '@/components/ui/organisms';
+import { CurrencySwitcher, SwipeableModal, ComingSoonToast } from '@/components/ui/organisms';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { ThemedText, IconSymbol, Divider } from '@/components/ui/atoms';
 import { IconSymbolName } from '@/components/ui/atoms/IconSymbol';
@@ -49,6 +49,7 @@ function CreateBankAccountModal() {
     const { backgroundColor, textColor } = useScreenTheme();
     const [selectedCurrency, setSelectedCurrencyState] = useState<Currency>(initialCurrency);
     const { accountInfo, logout } = useAuth();
+    const [showToast, setShowToast] = useState(false);
 
     // Handle close modal
     const handleClose = () => {
@@ -87,6 +88,11 @@ function CreateBankAccountModal() {
     }
 
     const handleCreateBankAccount = async () => {
+        if (selectedCurrency === 'eur') {
+            setShowToast(true);
+            return;
+        }
+
         if (!accountInfo) {
             logout();
             return;
@@ -132,6 +138,11 @@ function CreateBankAccountModal() {
                     title={selectedCurrency === 'usd' ? 'Create Virtual US Account' : 'Create Virtual EU Account'}
                 />
             </SwipeableModal>
+            <ComingSoonToast
+                visible={showToast}
+                message="EUR accounts coming soon to your region!"
+                onHide={() => setShowToast(false)}
+            />
         </ThemedScreen>
     );
 }

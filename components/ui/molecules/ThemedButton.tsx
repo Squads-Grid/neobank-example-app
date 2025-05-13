@@ -70,6 +70,7 @@ export function ThemedButton({
                 styles.button,
                 getButtonStyle(),
                 style,
+                { backgroundColor: disabled ? textColor + 40 : textColor }
             ]}
             onPress={onPress}
             disabled={disabled}
@@ -78,7 +79,6 @@ export function ThemedButton({
                 style={[
                     styles.text,
                     { color: getTextColor() },
-                    // disabled && styles.disabledText,
                     textStyle,
                 ]}
             >

@@ -50,15 +50,15 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
             }
 
             hideAllModals();
-            if (kycStatus && kycStatus !== 'approved') {
-                console.log('KYC status is not approved, showing KYC modal');
-                router.push('/kyc');
-            } else if (bankAccountDetails && bankAccountDetails.length > 0) {
+            if (kycStatus === 'approved' && bankAccountDetails && bankAccountDetails.length > 0) {
                 console.log('Bank account details are available, showing bank details modal');
                 router.push('/bankdetails');
-            } else {
+            } else if (kycStatus === 'approved' && !bankAccountDetails) {
                 console.log('Bank account details are not available, showing create bank account modal');
                 router.push('/create-bank-account');
+            } else {
+                console.log('KYC status is not approved, showing KYC modal');
+                router.push('/kyc');
             }
         } finally {
             setIsBankLoading(false);

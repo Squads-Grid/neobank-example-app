@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, View, Keyboard } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Linking } from 'react-native';
 import { useModalFlow } from '@/contexts/ModalFlowContext';
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
 import { Spacing } from '@/constants/Spacing';
-import { SwipeableModal, OverlappingImages } from '@/components/ui/organisms';
+import { SwipeableModal, OverlappingImages, InAppBrowser } from '@/components/ui/organisms';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { ThemedText } from '@/components/ui/atoms';
 import { Link } from 'expo-router';
 import { ThemedButton, ThemedTextInput } from '@/components/ui/molecules';
 import { useAuth } from '@/contexts/AuthContext';
 import { easClient } from '@/utils/easClient';
+import { KycStatus } from '@/types/Kyc';
 
 function KYCModal() {
     const { textColor } = useScreenTheme();
@@ -22,15 +22,7 @@ function KYCModal() {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [showNameInputs, setShowNameInputs] = useState(false);
-    const params = useLocalSearchParams();
-
-    useEffect(() => {
-        if (params.status === 'success') {
-            // Handle successful KYC completion
-            updateKycStatus('approved');
-            router.back();
-        }
-    }, [params]);
+    const [kycUrl, setKycUrl] = useState<string | null>(null);
 
     useEffect(() => {
         if (!kycStatus) {
@@ -70,6 +62,8 @@ function KYCModal() {
     };
 
     const handleSubmit = async () => {
+        Keyboard.dismiss();
+
         if (!accountInfo || !email) {
             logout();
             return;
@@ -85,10 +79,7 @@ function KYCModal() {
             });
 
             if (response.data.kyc_link) {
-                // Open the KYC link in the device's browser
-                await Linking.openURL(response.data.kyc_link);
-                updateKycStatus('under_review');
-                handleClose();
+                setKycUrl(response.data.kyc_link);
             }
         } catch (err) {
             console.error('Error getting KYC link:', err);
@@ -146,12 +137,24 @@ function KYCModal() {
                     </ThemedText>
                     <ThemedButton
                         onPress={showNameInputs ? handleSubmit : handleInitialContinue}
-                        title={showNameInputs ? "Submit" : "Continue"}
-                        disabled={showNameInputs && (!firstName.trim() || !lastName.trim())}
+                        title={showNameInputs ? "Submit" : (disableButton() && kycStatus ? `Kyc status: ${kycStatus}` : "Continue")}
+                        disabled={disableButton()}
                     />
                 </View>
             </KeyboardAvoidingView>
-        )
+        );
+    }
+
+    const disableButton = () => {
+        console.log("🚀 ~ disableButton ~ kycStatus:", kycStatus)
+        if (!kycStatus || (kycStatus !== 'approved' && kycStatus !== 'not_started')) {
+            console.log("🚀 ~ aaaa ~ kycStatus:", kycStatus)
+            return true
+        }
+        if (showNameInputs && ((!firstName.trim() || !lastName.trim()))) {
+            return true
+        }
+        return false
     }
 
     return (
@@ -164,6 +167,11 @@ function KYCModal() {
                     </View>
                     : renderContent()}
             </SwipeableModal>
+            <InAppBrowser
+                visible={!!kycUrl}
+                onClose={handleClose}
+                url={kycUrl || ''}
+            />
         </ThemedScreen>
     );
 }
