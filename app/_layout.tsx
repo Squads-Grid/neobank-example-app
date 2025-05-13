@@ -10,7 +10,6 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@react-navigation/native';
 import { lightTheme, darkTheme } from '@/constants/Theme';
 import { ScreenThemeProvider } from '@/contexts/ScreenThemeContext';
-import { StageProvider } from '@/contexts/StageContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ModalFlowProvider } from '@/contexts/ModalFlowContext';
 
@@ -35,13 +34,11 @@ function AuthLayout() {
     return (
         <ThemeProvider value={colorScheme === 'dark' ? darkTheme : lightTheme}>
             <ScreenThemeProvider>
-                <StageProvider>
-                    <ModalFlowProvider>
-                        <RootLayoutNav />
-                        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-                        <Toast config={toastConfig} />
-                    </ModalFlowProvider>
-                </StageProvider>
+                <ModalFlowProvider>
+                    <RootLayoutNav />
+                    <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+                    <Toast config={toastConfig} />
+                </ModalFlowProvider>
             </ScreenThemeProvider>
         </ThemeProvider>
     );

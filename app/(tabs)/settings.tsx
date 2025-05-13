@@ -2,13 +2,11 @@ import { ThemedText } from '@/components/ui/atoms';
 import { ThemedButton } from '@/components/ui/molecules';
 import { useAuth } from '@/contexts/AuthContext';
 import { ScreenLayout } from '@/components/ui/layout';
-import { useStage } from '@/contexts/StageContext';
 import { View, StyleSheet } from 'react-native';
 import { Spacing } from '@/constants/Spacing';
 
 export default function SettingsScreen() {
     const { logout } = useAuth();
-    const { stage, setStage } = useStage();
 
     return (
         <ScreenLayout>

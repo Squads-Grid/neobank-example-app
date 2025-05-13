@@ -18,6 +18,9 @@ import { EasClient } from '@/utils/easClient';
 import { PrepareTransactionParams, SmartAccount, SolanaAddress } from '@/types/Transaction';
 import { v4 as uuidv4 } from 'uuid';
 
+// USDC has 6 decimals
+const USDC_DECIMALS = 6;
+
 export default function ConfirmScreen() {
     const textColor = useThemeColor({}, 'text');
     const [isLoading, setIsLoading] = useState(false);
@@ -54,9 +57,12 @@ export default function ConfirmScreen() {
                 currency: 'usdc'
             }
 
+            // Convert amount to USDC base units (multiply by 10^6)
+            const amountInBaseUnits = Math.round(parseFloat(amount) * Math.pow(10, USDC_DECIMALS)).toString();
+
             const prepareTransactionParams: PrepareTransactionParams = {
                 smartAccountAddress: accountInfo.smart_account_address,
-                amount: amount,
+                amount: amountInBaseUnits,
                 grid_user_id: accountInfo.grid_user_id,
                 idempotency_key: uuidv4(), // TODO: move to backend
                 source,
@@ -98,7 +104,7 @@ export default function ConfirmScreen() {
                 });
 
                 const tx = VersionedTransaction.deserialize(Buffer.from(signedTx, 'base64'));
-                const txHash = await connection.sendTransaction(tx);
+                await connection.sendTransaction(tx);
 
             } catch (e) {
                 console.error("Failed to sign transaction:", e);
