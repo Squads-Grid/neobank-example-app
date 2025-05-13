@@ -3,8 +3,8 @@ import { easClient } from '@/utils/easClient';
 import { generateKeyPairP256 } from '@/utils/helper';
 
 export const validateEnv = () => {
-    if (!process.env.EXPO_PUBLIC_BASE_URL || !process.env.EXPO_PUBLIC_API_ENDPOINT) {
-        throw new Error('Missing required environment variables: EXPO_PUBLIC_BASE_URL and EXPO_PUBLIC_API_ENDPOINT');
+    if (!process.env.EXPO_PUBLIC_API_ENDPOINT) {
+        throw new Error('Missing required environment variables: EXPO_PUBLIC_API_ENDPOINT ');
     }
 };
 

@@ -108,8 +108,8 @@ components/ui/
 2. Set up environment variables:
    - Create a `.env` file with required variables
    - Required variables:
-     - `EXPO_PUBLIC_BASE_URL`
      - `EXPO_PUBLIC_API_ENDPOINT`
+     - `GRID_API_ENPOINT`
      - `GRID_API_KEY`
 
 3. Start the development server:

@@ -30,13 +30,19 @@ function HomeScreenContent() {
 
     useEffect(() => {
         if (!accountInfo || !accountInfo.smart_account_signer_public_key) {
+
             return;
         }
-
         if (!accountInfo.grid_user_id) {
-            (async () => await createSmartAccount(accountInfo))();
+            (async () => {
+                let account = await createSmartAccount(accountInfo)
+                setAccountInfo(account);
+                updateBalance();
+                fetchTransactions();
+            })();
         } else {
             updateBalance();
+            fetchTransactions();
         }
     }, [accountInfo, setAccountInfo]);
 
@@ -67,6 +73,12 @@ function HomeScreenContent() {
         }
         setRefreshing(false);
     }, [accountInfo]);
+
+    const fetchTransactions = async () => {
+        if (accountInfo?.smart_account_address) {
+            const result = await easClient.getTransfers(accountInfo.smart_account_address);
+        }
+    }
 
     const actions: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void }[] = [
         {

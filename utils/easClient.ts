@@ -23,15 +23,15 @@ export class EasClient {
 
     constructor() {
         this.validateEnv();
-        this.baseUrl = `${process.env.EXPO_PUBLIC_BASE_URL}${process.env.EXPO_PUBLIC_API_ENDPOINT}`;
+        this.baseUrl = `${process.env.EXPO_PUBLIC_API_ENDPOINT}`;
         this.defaultHeaders = {
             'Content-Type': 'application/json',
         };
     }
 
     private validateEnv() {
-        if (!process.env.EXPO_PUBLIC_BASE_URL || !process.env.EXPO_PUBLIC_API_ENDPOINT) {
-            throw new Error('Missing required environment variables: EXPO_PUBLIC_BASE_URL and EXPO_PUBLIC_API_ENDPOINT');
+        if (!process.env.EXPO_PUBLIC_API_ENDPOINT) {
+            throw new Error('Missing required environment variables: EXPO_PUBLIC_API_ENDPOINT');
         }
     }
 
@@ -163,6 +163,13 @@ export class EasClient {
             body: JSON.stringify(request),
         });
     }
+
+    async getTransfers(smartAccountAddress: string): Promise<any> {
+        return this.request<any>(`/get-transfers?smart_account_address=${smartAccountAddress}`, {
+            method: 'GET',
+        });
+    }
+
 }
 
 // Create a singleton instance

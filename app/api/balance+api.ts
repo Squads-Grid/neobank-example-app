@@ -3,7 +3,7 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
         const smartAccountAddress = body.smartAccountAddress;
-        const url = `${process.env.EXPO_PUBLIC_BASE_URL}:50001/api/v1/smart-accounts/${smartAccountAddress}/balances`;
+        const url = `http://api-load-balancer-77548667.us-east-1.elb.amazonaws.com/api/v1/smart-accounts/${smartAccountAddress}/balances`;
 
         const response = await fetch(url, {
             method: "GET",

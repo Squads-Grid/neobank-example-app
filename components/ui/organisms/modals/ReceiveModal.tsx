@@ -16,6 +16,7 @@ interface ReceiveModalProps {
 
 export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalProps) {
     const [isBankLoading, setIsBankLoading] = useState(false);
+
     const {
         kycStatus,
         bankAccountDetails,
@@ -28,7 +29,9 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
     React.useEffect(() => {
         if (visible) {
             fetchKycStatus();
-            fetchBankDetails();
+            if (kycStatus === 'approved') {
+                fetchBankDetails();
+            }
         }
     }, [visible]);
 
@@ -42,7 +45,9 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
 
         setIsBankLoading(true);
         try {
-            await Promise.all([fetchKycStatus(), fetchBankDetails()]);
+            if (kycStatus === 'approved') {
+                await Promise.all([fetchKycStatus(), fetchBankDetails()]);
+            }
 
             hideAllModals();
             if (kycStatus && kycStatus !== 'approved') {

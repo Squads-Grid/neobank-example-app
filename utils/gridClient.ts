@@ -14,19 +14,18 @@ export class GridClient {
 
     constructor() {
         this.validateEnv();
-        const url = process.env.EXPO_PUBLIC_BASE_URL || '';
         const endpoint = process.env.GRID_ENDPOINT || '';
 
-        this.baseUrl = `${url}${endpoint}`;
+        this.baseUrl = `${endpoint}`;
         this.defaultHeaders = {
             'Content-Type': 'application/json',
-            'x-grid-environment': 'sandbox', // TODO: Replace with env variable
+            'x-grid-environment': `${process.env.GRID_ENV}`,
             'Authorization': `Bearer ${process.env.GRID_API_KEY}`,
         };
     }
 
     private validateEnv() {
-        if (!process.env.GRID_ENDPOINT || !process.env.EXPO_PUBLIC_BASE_URL || !process.env.GRID_API_KEY) {
+        if (!process.env.GRID_ENDPOINT || !process.env.GRID_API_KEY) {
             throw new Error('Missing required environment variables. Please check your .env file.');
         }
     }
@@ -153,6 +152,16 @@ export class GridClient {
                 "currency": request.currency,
                 "grid_user_id": request.gridUserId
             }),
+        });
+    }
+
+    async getTransfers(smartAccountAddress: string): Promise<any> {
+        return this.request<any>(`/${smartAccountAddress}/transfers`, {
+            method: 'GET',
+            headers: {
+                ...this.defaultHeaders,
+                'x-idempotency-key': this.generateIdempotencyKey()
+            },
         });
     }
 }
