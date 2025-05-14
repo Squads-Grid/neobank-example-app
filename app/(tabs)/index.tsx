@@ -20,7 +20,7 @@ import { useComingSoonToast } from '@/hooks/useComingSoonToast';
 const placeholder = require('@/assets/images/no-txn.png');
 
 function HomeScreenContent() {
-    const { accountInfo, setAccountInfo } = useAuth();
+    const { accountInfo, setAccountInfo, logout } = useAuth();
     const { showReceiveModal, isReceiveModalVisible, hideAllModals } = useModalFlow();
     const [refreshing, setRefreshing] = useState(false);
     const [balance, setBalance] = useState(0);
@@ -33,6 +33,7 @@ function HomeScreenContent() {
 
             return;
         }
+
         if (!accountInfo.grid_user_id) {
             (async () => {
                 let account = await createSmartAccount(accountInfo)

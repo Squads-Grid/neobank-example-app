@@ -50,8 +50,8 @@ export interface AuthContextType {
     logout: () => Promise<void>;
     wallet: string | null;
     isLoading: boolean;
-    kycStatus: KycStatus | null;
-    updateKycStatus: (status: KycStatus) => Promise<void>;
+    // kycStatus: KycStatus | null;
+    // updateKycStatus: (status: KycStatus) => Promise<void>;
 }
 
 export interface AuthResponse {

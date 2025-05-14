@@ -3,7 +3,9 @@ import { ActionModal } from '../ActionModal';
 import { ModalOptionsList } from '../../molecules/ModalOptionsList';
 import { ActionOption } from '../../molecules/ModalOptionsList';
 import { useModalFlow } from '@/contexts/ModalFlowContext';
+import { KycStatus } from '@/types/Kyc';
 import { router } from 'expo-router';
+import { useAuth } from '@/contexts/AuthContext';
 
 const bankIcon = require('@/assets/icons/bank.png');
 const walletIcon = require('@/assets/icons/wallet.png');
@@ -16,24 +18,28 @@ interface ReceiveModalProps {
 
 export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalProps) {
     const [isBankLoading, setIsBankLoading] = useState(false);
+    // const [kycStatus, setKycStatus] = useState<KycStatus | null>(null);
 
     const {
-        kycStatus,
         bankAccountDetails,
         hideAllModals,
         fetchKycStatus,
-        fetchBankDetails
+        fetchBankDetails,
+        kycStatus,
     } = useModalFlow();
+
 
     // Fetch latest KYC and bank details when modal becomes visible
     React.useEffect(() => {
-        if (visible) {
-            fetchKycStatus();
-            if (kycStatus === 'approved') {
-                fetchBankDetails();
-            }
+
+        setIsBankLoading(true);
+        fetchKycStatus();
+        if (kycStatus === 'approved') {
+            fetchBankDetails();
         }
-    }, [visible]);
+        setIsBankLoading(false);
+
+    }, []);
 
     const handleReceiveToWallet = () => {
         hideAllModals();
@@ -46,18 +52,13 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
         setIsBankLoading(true);
         try {
             if (kycStatus === 'approved') {
-                await Promise.all([fetchKycStatus(), fetchBankDetails()]);
+                await fetchBankDetails();
             }
 
             hideAllModals();
-            if (kycStatus === 'approved' && bankAccountDetails && bankAccountDetails.length > 0) {
-                console.log('Bank account details are available, showing bank details modal');
+            if (kycStatus === 'approved') {
                 router.push('/bankdetails');
-            } else if (kycStatus === 'approved' && !bankAccountDetails) {
-                console.log('Bank account details are not available, showing create bank account modal');
-                router.push('/create-bank-account');
             } else {
-                console.log('KYC status is not approved, showing KYC modal');
                 router.push('/kyc');
             }
         } finally {
@@ -69,19 +70,23 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
     const isKycRejected = kycStatus === 'rejected';
 
     const getBankDescription = () => {
-        if (isBankLoading) {
+        if (isBankLoading || !kycStatus) {
             return 'Loading...';
         }
-        if (isKycPending) {
+        else if (isKycPending) {
             return 'KYC verification in progress';
         }
-        if (isKycRejected) {
+        else if (isKycRejected) {
             return 'KYC verification failed. Please try again';
         }
-        if (kycStatus === 'not_started') {
+        else if (kycStatus === 'not_started') {
+
             return 'Complete KYC to receive via bank transfer';
         }
-        return 'Receive via bank transfer';
+        else {
+
+            return 'Receive via bank transfer';
+        }
     };
 
     const receiveOptions: ActionOption[] = [
@@ -98,7 +103,7 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
             description: getBankDescription(),
             icon: bankIcon,
             onPress: handleReceiveFromBank,
-            disabled: isBankLoading
+            disabled: isBankLoading || !kycStatus
         }
     ];
 

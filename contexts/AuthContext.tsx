@@ -183,8 +183,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 logout,
                 wallet,
                 isLoading,
-                kycStatus,
-                updateKycStatus
             }}
         >
             {children}

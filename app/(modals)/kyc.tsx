@@ -16,8 +16,8 @@ import { KycStatus } from '@/types/Kyc';
 
 function KYCModal() {
     const { textColor } = useScreenTheme();
-    const { kycStatus, accountInfo, logout, updateKycStatus, email } = useAuth();
-    const { fetchKycStatus } = useModalFlow();
+    const { accountInfo, logout, email } = useAuth();
+    const { fetchKycStatus, kycStatus, setKycStatus } = useModalFlow();
     const [isLoading, setIsLoading] = useState(false);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -43,7 +43,7 @@ function KYCModal() {
             const { bridge_kyc_link } = response.data;
             if (!bridge_kyc_link) {
                 setIsLoading(false);
-                updateKycStatus('not_started');
+                setKycStatus('not_started');
                 return;
             } else {
                 // get kyc status
@@ -80,6 +80,7 @@ function KYCModal() {
 
             if (response.data.kyc_link) {
                 setKycUrl(response.data.kyc_link);
+                setKycStatus('incomplete');
             }
         } catch (err) {
             console.error('Error getting KYC link:', err);
@@ -146,9 +147,7 @@ function KYCModal() {
     }
 
     const disableButton = () => {
-        console.log("🚀 ~ disableButton ~ kycStatus:", kycStatus)
         if (!kycStatus || (kycStatus !== 'approved' && kycStatus !== 'not_started')) {
-            console.log("🚀 ~ aaaa ~ kycStatus:", kycStatus)
             return true
         }
         if (showNameInputs && ((!firstName.trim() || !lastName.trim()))) {
@@ -174,6 +173,7 @@ function KYCModal() {
             />
         </ThemedScreen>
     );
+
 }
 
 const styles = StyleSheet.create({

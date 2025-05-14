@@ -5,7 +5,7 @@ import { useAuth } from './AuthContext';
 import { Currency } from '@/types/Transaction';
 
 interface BankAccountDetails {
-    currency: 'USD' | 'EUR';
+    currency: Currency;
     accountNumber: string;
     routingNumber?: string;
     iban?: string;
@@ -25,6 +25,7 @@ interface ModalFlowContextType {
     // Shared data
     selectedCurrency: Currency;
     kycStatus: KycStatus | null;
+    setKycStatus: (status: KycStatus) => void;
     bankAccountDetails: any[] | null; // TODO: define type
     isLoading: boolean;
     error: string | null;
@@ -140,6 +141,7 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
         // Shared data
         selectedCurrency,
         kycStatus,
+        setKycStatus,
         bankAccountDetails,
         isLoading,
         error,
