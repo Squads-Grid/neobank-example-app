@@ -20,6 +20,8 @@ function AuthLayout() {
     const colorScheme = useColorScheme();
 
     useEffect(() => {
+        if (isAuthenticated === null) return;
+
         const inAuthGroup = segments[0] === '(auth)';
 
         if (!isAuthenticated && !inAuthGroup) {
@@ -35,7 +37,7 @@ function AuthLayout() {
         <ThemeProvider value={colorScheme === 'dark' ? darkTheme : lightTheme}>
             <ScreenThemeProvider>
                 <ModalFlowProvider>
-                    <RootLayoutNav />
+                    <Slot />
                     <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
                     <Toast config={toastConfig} />
                 </ModalFlowProvider>

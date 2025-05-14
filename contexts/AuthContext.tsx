@@ -1,21 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { router } from 'expo-router';
-import { AuthContextType, AccountInfo } from '@/types/Auth';
-import { authenticateUser, verifyOtpCode } from '@/utils/auth';
+import { AccountInfo, AuthContextType, } from '@/types/Auth';
+import { authenticateUser, verifyOtpCode, AUTH_STORAGE_KEYS } from '@/utils/auth';
 import * as SecureStore from 'expo-secure-store';
 import { LoadingSpinner } from '@/components/ui/atoms/LoadingSpinner';
 import { KycStatus } from '@/types/Kyc';
-
-const AUTH_STORAGE_KEYS = {
-    EMAIL: 'auth_email',
-    ACCOUNT_INFO: 'auth_account_info',
-    KEYPAIR: 'auth_keypair',
-    CREDENTIALS_BUNDLE: 'auth_credentials_bundle',
-    WALLET: 'auth_wallet',
-    IS_AUTHENTICATED: 'auth_is_authenticated',
-    MPC_PRIMARY_ID: 'auth_mpc_primary_id',
-    KYC_STATUS: 'auth_kyc_status'
-};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -42,10 +31,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     const credentialsBundle = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.CREDENTIALS_BUNDLE);
                     const email = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.EMAIL);
                     const wallet = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.WALLET);
-                    const kycStatus = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.KYC_STATUS);
+                    const gridUserId = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID);
+                    const smartAccountAddress = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS);
 
                     if (accountInfo && keypair && credentialsBundle && email) {
-                        setAccountInfo(JSON.parse(accountInfo));
+                        setAccountInfo({ ...JSON.parse(accountInfo), grid_user_id: gridUserId, smart_account_address: smartAccountAddress });
                         setKeypair(JSON.parse(keypair));
                         setCredentialsBundle(credentialsBundle);
                         setEmail(email);
@@ -68,19 +58,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         initializeAuth();
     }, []);
 
-    const updateKycStatus = async (status: KycStatus) => {
-        try {
-            await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KYC_STATUS, status);
-            setKycStatus(status);
-        } catch (error) {
-            console.error('Error updating KYC status:', error);
-        }
-    };
-
-    if (isLoading) {
-        return <LoadingSpinner />;
-    }
-
     const verifyCode = async (code: string, otpId: string): Promise<boolean> => {
         try {
             if (!mpcPrimaryId) {
@@ -99,7 +76,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KEYPAIR, JSON.stringify(keypair)),
                 SecureStore.setItemAsync(AUTH_STORAGE_KEYS.CREDENTIALS_BUNDLE, credentialBundle),
                 SecureStore.setItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED, 'true'),
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.ACCOUNT_INFO, JSON.stringify(accountInfo))
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.ACCOUNT_INFO, JSON.stringify(accountInfo)),
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID, accountInfo.grid_user_id ?? ''),
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.WALLET, accountInfo.smart_account_address ?? ''),
             ]);
 
             setCredentialsBundle(credentialBundle);
@@ -136,7 +115,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.KEYPAIR),
                 SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.CREDENTIALS_BUNDLE),
                 SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.WALLET),
-                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED)
+                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED),
+                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID),
+                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS),
             ]);
 
         } catch (error) {

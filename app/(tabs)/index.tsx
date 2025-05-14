@@ -16,6 +16,8 @@ import { easClient } from '@/utils/easClient';
 import { useModalFlow } from '@/contexts/ModalFlowContext';
 import { ComingSoonToast } from '@/components/ui/organisms/ComingSoonToast';
 import { useComingSoonToast } from '@/hooks/useComingSoonToast';
+import { AUTH_STORAGE_KEYS } from '@/utils/auth';
+import * as SecureStore from 'expo-secure-store';
 
 const placeholder = require('@/assets/images/no-txn.png');
 
@@ -28,24 +30,33 @@ function HomeScreenContent() {
     const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false);
     const { isVisible, message, showToast, hideToast } = useComingSoonToast();
 
+
     useEffect(() => {
         if (!accountInfo || !accountInfo.smart_account_signer_public_key) {
-
+            logout();
             return;
         }
 
-        if (!accountInfo.grid_user_id) {
-            (async () => {
-                let account = await createSmartAccount(accountInfo)
-                setAccountInfo(account);
+        // Load grid user ID and check if smart account creation is needed
+        const loadDataAndCreateAccount = async () => {
+
+            if (!accountInfo.grid_user_id || accountInfo.grid_user_id === '') {
+
+                let account = await createSmartAccount(accountInfo);
+                console.log("🚀 ~ account:", account);
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID, account.grid_user_id); // TODO: refactor to a setter
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, account.smart_account_address); // TODO: refactor to a setter
+                setAccountInfo({ ...accountInfo, smart_account_address: account.smart_account_address, grid_user_id: account.grid_user_id });
                 updateBalance();
                 fetchTransactions();
-            })();
-        } else {
-            updateBalance();
-            fetchTransactions();
-        }
-    }, [accountInfo, setAccountInfo]);
+            } else {
+                updateBalance();
+                fetchTransactions();
+            }
+        };
+
+        loadDataAndCreateAccount();
+    }, []);
 
     const updateBalance = async () => {
         if (!accountInfo) {
@@ -76,8 +87,11 @@ function HomeScreenContent() {
     }, [accountInfo]);
 
     const fetchTransactions = async () => {
+        console.log("🚀 ~ fetchTransactions ~ accountInfo.smart_account_address:", accountInfo?.smart_account_address)
         if (accountInfo?.smart_account_address) {
             const result = await easClient.getTransfers(accountInfo.smart_account_address);
+
+            console.log("🚀 ~ fetchTransactions ~ result:", result)
         }
     }
 
@@ -191,3 +205,4 @@ const styles = StyleSheet.create({
 });
 
 const transactionData: TransactionGroup[] = [];
+

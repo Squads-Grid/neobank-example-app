@@ -54,4 +54,17 @@ export const verifyOtpCode = async (code: string, otpId: string, suborgId: strin
         keypair: keyPair,
         accountInfo: response.data.account_info
     };
-}; 
+};
+
+export const AUTH_STORAGE_KEYS = {
+    EMAIL: 'auth_email',
+    ACCOUNT_INFO: 'auth_account_info',
+    KEYPAIR: 'auth_keypair',
+    CREDENTIALS_BUNDLE: 'auth_credentials_bundle',
+    WALLET: 'auth_wallet',
+    IS_AUTHENTICATED: 'auth_is_authenticated',
+    MPC_PRIMARY_ID: 'auth_mpc_primary_id',
+    KYC_STATUS: 'auth_kyc_status',
+    SMART_ACCOUNT_ADDRESS: 'auth_smart_account_address',
+    GRID_USER_ID: 'auth_grid_user_id',
+};

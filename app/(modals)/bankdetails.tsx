@@ -16,6 +16,8 @@ import * as Haptics from 'expo-haptics';
 import { easClient } from '@/utils/easClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
+import { AUTH_STORAGE_KEYS } from '@/utils/auth';
+import * as SecureStore from 'expo-secure-store';
 
 interface BankDetail {
     label: string;
@@ -115,9 +117,16 @@ function BankDetailsModal() {
             logout();
             return;
         }
+
+        const gridUserId = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID);
+        if (!gridUserId) {
+            logout();
+            return;
+        }
+
         const accountParams: OpenVirtualAccountParams = {
             smartAccountAddress: accountInfo.smart_account_address,
-            gridUserId: accountInfo.grid_user_id,
+            gridUserId: gridUserId,
             currency: selectedCurrency
         }
         const response = await easClient.openVirtualAccount(accountParams);

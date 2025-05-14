@@ -4,9 +4,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ScreenLayout } from '@/components/ui/layout';
 import { View, StyleSheet } from 'react-native';
 import { Spacing } from '@/constants/Spacing';
+import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 
 export default function SettingsScreen() {
     const { logout } = useAuth();
+    const { backgroundColor } = useScreenTheme();
 
     return (
         <ScreenLayout>
@@ -20,6 +22,7 @@ export default function SettingsScreen() {
                     title="Logout"
                     onPress={logout}
                     variant="outline"
+                    textStyle={{ color: backgroundColor }}
                 />
             </View>
         </ScreenLayout>

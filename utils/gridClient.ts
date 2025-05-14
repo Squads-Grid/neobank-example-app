@@ -16,12 +16,14 @@ export class GridClient {
         this.validateEnv();
         const endpoint = process.env.GRID_ENDPOINT || '';
 
+
         this.baseUrl = `${endpoint}`;
         this.defaultHeaders = {
             'Content-Type': 'application/json',
             'x-grid-environment': `${process.env.GRID_ENV}`,
             'Authorization': `Bearer ${process.env.GRID_API_KEY}`,
         };
+
     }
 
     private validateEnv() {
@@ -46,7 +48,8 @@ export class GridClient {
             });
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
+                // TODO: check if this is the correct way to handle the error
+                const errorData = await response.json().catch((e) => console.log("🚀 ~ GridClient ~ errorData response not ok catched :", e));
 
                 // Format the error response
                 const error = {
@@ -56,10 +59,12 @@ export class GridClient {
                         details: errorData.details || [{ code: 'UNKNOWN_ERROR' }]
                     }
                 };
+
                 throw error;
             }
 
             const data = await response.json();
+            console.log("🚀 ~ GridClient ~ data:", data)
             return data;
         } catch (error) {
             throw error;

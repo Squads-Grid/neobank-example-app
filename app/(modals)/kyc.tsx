@@ -13,6 +13,8 @@ import { ThemedButton, ThemedTextInput } from '@/components/ui/molecules';
 import { useAuth } from '@/contexts/AuthContext';
 import { easClient } from '@/utils/easClient';
 import { KycStatus } from '@/types/Kyc';
+import * as SecureStore from 'expo-secure-store';
+import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 
 function KYCModal() {
     const { textColor } = useScreenTheme();
@@ -39,7 +41,13 @@ function KYCModal() {
         }
 
         try {
-            const response = await easClient.getUser(accountInfo?.grid_user_id);
+            const gridUserId = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID);
+            if (!gridUserId) {
+                logout();
+                return;
+            }
+
+            const response = await easClient.getUser(gridUserId);
             const { bridge_kyc_link } = response.data;
             if (!bridge_kyc_link) {
                 setIsLoading(false);
@@ -64,14 +72,15 @@ function KYCModal() {
     const handleSubmit = async () => {
         Keyboard.dismiss();
 
-        if (!accountInfo || !email) {
+        const gridUserId = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID);
+        if (!gridUserId || !accountInfo || !email) {
             logout();
             return;
         }
 
         try {
             const response = await easClient.getKYCLink({
-                grid_user_id: accountInfo?.grid_user_id,
+                grid_user_id: gridUserId,
                 smart_account_address: accountInfo?.smart_account_address,
                 email: email,
                 full_name: `${firstName} ${lastName}`.trim(),
