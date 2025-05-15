@@ -55,6 +55,7 @@ function BankDetailsModal() {
         setSelectedCurrency,
         bankAccountDetails,
         isLoading,
+        fetchBankDetails,
         error: contextError
     } = useModalFlow();
 
@@ -63,6 +64,14 @@ function BankDetailsModal() {
     const [copiedField, setCopiedField] = useState<string | null>(null);
     const { accountInfo, logout } = useAuth();
     const [showToast, setShowToast] = useState(false);
+    const [isCreatingAccount, setIsCreatingAccount] = useState(false);
+
+    const handleCurrencyChange = (currency: string) => {
+        // Prevent currency changes while creating an account
+        if (!isCreatingAccount) {
+            setSelectedCurrency(currency);
+        }
+    };
 
     // Handle close modal
     const handleClose = () => {
@@ -124,12 +133,23 @@ function BankDetailsModal() {
             return;
         }
 
-        const accountParams: OpenVirtualAccountParams = {
-            smartAccountAddress: accountInfo.smart_account_address,
-            gridUserId: gridUserId,
-            currency: selectedCurrency
+        setIsCreatingAccount(true);
+        try {
+            const accountParams: OpenVirtualAccountParams = {
+                smartAccountAddress: accountInfo.smart_account_address,
+                gridUserId: gridUserId,
+                currency: selectedCurrency
+            };
+            await easClient.openVirtualAccount(accountParams);
+
+            // Fetch updated bank details
+            await fetchBankDetails();
+        } catch (err) {
+            console.error('Error creating virtual account:', err);
+            setError('Failed to create virtual account');
+        } finally {
+            setIsCreatingAccount(false);
         }
-        const response = await easClient.openVirtualAccount(accountParams);
     }
 
     const renderChipContent = (content: React.ReactNode) => {
@@ -229,10 +249,13 @@ function BankDetailsModal() {
     }
 
     const renderContent = () => {
-        if (isLoading) {
+        if (isLoading || isCreatingAccount) {
             return (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator />
+                    <ThemedText type="regular" style={{ marginTop: Spacing.md, color: textColor + 40 }}>
+                        {isCreatingAccount ? 'Creating your virtual account...' : 'Loading...'}
+                    </ThemedText>
                 </View>
             );
         }
@@ -327,6 +350,7 @@ function BankDetailsModal() {
                     <ThemedButton
                         onPress={handleCreateBankAccount}
                         title={`Create Virtual ${selectedCurrency === 'usd' ? 'US' : 'EUR'} Account`}
+                        disabled={isCreatingAccount}
                     />
                 </>
             );
@@ -338,7 +362,11 @@ function BankDetailsModal() {
             <SwipeableModal onDismiss={handleClose}>
                 <StarburstBank primaryColor={error ? '#FF0048' : "#0080FF"} />
                 <View style={{ height: Spacing.md }} />
-                <CurrencySwitcher onCurrencyChange={setSelectedCurrency} backgroundColor={textColor} textColor={backgroundColor} />
+                <CurrencySwitcher
+                    onCurrencyChange={handleCurrencyChange}
+                    backgroundColor={textColor}
+                    textColor={backgroundColor}
+                />
                 {renderContent()}
             </SwipeableModal>
             <ComingSoonToast
