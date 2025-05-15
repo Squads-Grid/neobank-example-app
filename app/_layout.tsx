@@ -46,42 +46,6 @@ function AuthLayout() {
     );
 }
 
-function RootLayoutNav() {
-    return (
-        <>
-            <Stack>
-                <Stack.Screen
-                    name="(auth)"
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="(tabs)"
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="(send)"
-                    options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                    name="(modals)"
-                    options={{
-                        headerShown: false,
-                        presentation: 'modal',
-                        animation: 'slide_from_bottom',
-                        gestureEnabled: true,
-                        gestureDirection: 'vertical',
-                        animationTypeForReplace: 'push',
-                    }}
-                />
-                <Stack.Screen
-                    name="success"
-                    options={{ headerShown: false }}
-                />
-            </Stack>
-        </>
-    );
-}
-
 const toastConfig = {
     error: (props: { text1?: string }) => (
         <View style={{

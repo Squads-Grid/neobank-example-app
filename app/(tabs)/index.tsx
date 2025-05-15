@@ -68,8 +68,11 @@ function HomeScreenContent() {
         if (balances.length === 0) {
             setBalance(0);
         } else {
-            // TODO: add usdc address for devent and mainnet to env
-            const usdcBalance = balances.find((balance: any) => balance.token_address === '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
+            const usdcAddress = process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS;
+            if (!usdcAddress) {
+                console.error('USDC address not found');
+            }
+            const usdcBalance = balances.find((balance: any) => balance.token_address === usdcAddress);
             if (usdcBalance) {
                 setBalance(parseFloat(parseFloat(usdcBalance.amount_decimal).toFixed(2)));
             }
