@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { ThemedText } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { CircleButtonGroup } from '@/components/ui/molecules';
-import { TransactionList } from '@/components/ui/organisms';
+import { TransactionItem } from '@/components/ui/organisms/TransactionItem';
 import { ThemedScreen } from '@/components/ui/layout';
-import { TransactionGroup } from '@/types/Transaction';
+import { TransferResponse, Transfer, Transaction, TransactionGroup } from '@/types/Transaction';
 import { useAuth } from '@/contexts/AuthContext';
 import { createSmartAccount } from '@/utils/smartAccount';
 import { SendModal } from '@/components/ui/organisms/modals/SendModal';
@@ -18,6 +18,7 @@ import { ComingSoonToast } from '@/components/ui/organisms/ComingSoonToast';
 import { useComingSoonToast } from '@/hooks/useComingSoonToast';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import * as SecureStore from 'expo-secure-store';
+import { TransactionList } from '@/components/ui/organisms/TransactionList';
 
 const placeholder = require('@/assets/images/no-txn.png');
 
@@ -26,10 +27,10 @@ function HomeScreenContent() {
     const { showReceiveModal, isReceiveModalVisible, hideAllModals } = useModalFlow();
     const [refreshing, setRefreshing] = useState(false);
     const [balance, setBalance] = useState(0);
+    const [transfers, setTransfers] = useState<TransferResponse>([]);
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
     const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false);
     const { isVisible, message, showToast, hideToast } = useComingSoonToast();
-
 
     useEffect(() => {
         if (!accountInfo || !accountInfo.smart_account_signer_public_key) {
@@ -39,13 +40,10 @@ function HomeScreenContent() {
 
         // Load grid user ID and check if smart account creation is needed
         const loadDataAndCreateAccount = async () => {
-
             if (!accountInfo.grid_user_id || accountInfo.grid_user_id === '') {
-
                 let account = await createSmartAccount(accountInfo);
-                console.log("🚀 ~ account:", account);
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID, account.grid_user_id); // TODO: refactor to a setter
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, account.smart_account_address); // TODO: refactor to a setter
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID, account.grid_user_id);
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, account.smart_account_address);
                 setAccountInfo({ ...accountInfo, smart_account_address: account.smart_account_address, grid_user_id: account.grid_user_id });
                 updateBalance();
                 fetchTransactions();
@@ -81,17 +79,18 @@ function HomeScreenContent() {
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
         if (accountInfo?.smart_account_address) {
-            updateBalance();
+            await Promise.all([updateBalance(), fetchTransactions()]);
         }
         setRefreshing(false);
     }, [accountInfo]);
 
     const fetchTransactions = async () => {
-        console.log("🚀 ~ fetchTransactions ~ accountInfo.smart_account_address:", accountInfo?.smart_account_address)
         if (accountInfo?.smart_account_address) {
             const result = await easClient.getTransfers(accountInfo.smart_account_address);
-
-            console.log("🚀 ~ fetchTransactions ~ result:", result)
+            if (result.data) {
+                console.log("🚀 ~ fetchTransactions ~ result.data:", result.data.length)
+                setTransfers(result.data);
+            }
         }
     }
 
@@ -118,29 +117,80 @@ function HomeScreenContent() {
         }
     ];
 
+    const formatTransfers = (transfers: TransferResponse) => {
+        const transactions = transfers.map(transfer => {
+            if ('Spl' in transfer) {
+                const splTransfer = transfer.Spl;
+                return {
+                    id: splTransfer.id,
+                    amount: parseFloat(splTransfer.ui_amount),
+                    status: splTransfer.confirmation_status,
+                    type: splTransfer.from_address === accountInfo?.smart_account_address ? 'sent' : 'received',
+                    date: new Date(splTransfer.created_at),
+                    address: splTransfer.from_address === accountInfo?.smart_account_address
+                        ? splTransfer.to_address
+                        : splTransfer.from_address
+                } as Transaction;
+            } else {
+                const regularTransfer = transfer.Regular;
+                return {
+                    id: regularTransfer.id,
+                    amount: parseFloat(regularTransfer.amount),
+                    status: regularTransfer.state,
+                    type: 'regular',
+                    date: new Date(regularTransfer.created_at),
+                    address: regularTransfer.on_behalf_of
+                } as Transaction;
+            }
+        });
+
+        // Group transactions by date
+        const groups = transactions.reduce((acc: { [key: string]: Transaction[] }, transaction) => {
+            const date = transaction.date;
+            const dateStr = date.toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            });
+
+            if (!acc[dateStr]) {
+                acc[dateStr] = [];
+            }
+            acc[dateStr].push(transaction);
+            return acc;
+        }, {});
+
+        // Convert to TransactionGroup array and sort by date
+        return Object.entries(groups)
+            .map(([title, data]) => ({
+                title,
+                data: data.sort((a, b) => b.date.getTime() - a.date.getTime())
+            }))
+            .sort((a, b) => {
+                const dateA = new Date(a.data[0].date);
+                const dateB = new Date(b.data[0].date);
+                return dateB.getTime() - dateA.getTime();
+            });
+    };
+
     return (
         <ThemedScreen>
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{
-                    flexGrow: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <ThemedText style={styles.headline}>Home · Balance</ThemedText>
+                    <ThemedText type="highlight" style={styles.balanceTextStyle}>
+                        {`$${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                    </ThemedText>
+                    <CircleButtonGroup buttons={actions} />
+                </View>
+
+                {transfers.length > 0 ? (
+                    <TransactionList
+                        transactions={formatTransfers(transfers)}
                         onRefresh={onRefresh}
+                        refreshing={refreshing}
                     />
-                }
-            >
-                <ThemedText style={styles.headline}>Home · Balance</ThemedText>
-                <ThemedText type="highlight" style={styles.balanceTextStyle}>
-                    {`$${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-                </ThemedText>
-                <CircleButtonGroup buttons={actions} />
-                <View style={{ height: Spacing.xl }} />
-                {transactionData.length > 0 ? <TransactionList transactions={transactionData} /> : (
+                ) : (
                     <View style={styles.emptyContainer}>
                         <Image
                             source={placeholder}
@@ -172,7 +222,7 @@ function HomeScreenContent() {
                     onHide={hideToast}
                     message={message}
                 />
-            </ScrollView>
+            </View>
         </ThemedScreen>
     );
 }
@@ -182,6 +232,13 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    header: {
+        paddingHorizontal: Spacing.md,
+        paddingVertical: Spacing.md,
+    },
     emptyContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -203,6 +260,4 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
     },
 });
-
-const transactionData: TransactionGroup[] = [];
 
