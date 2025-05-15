@@ -26,26 +26,34 @@ export function ThemedButton({
     const primaryColorInstance = tinycolor(primaryColor);
 
     const getButtonStyle = (): ViewStyle => {
+        const baseStyle = {
+            opacity: disabled ? 0.5 : 1,
+        };
+
         switch (variant) {
             case 'primary':
                 return {
+                    ...baseStyle,
                     backgroundColor: primaryColor,
                     borderColor: primaryColor,
                 };
             case 'secondary':
                 return {
+                    ...baseStyle,
                     backgroundColor: primaryColorInstance.setAlpha(0.1).toRgbString(),
                     borderColor: primaryColorInstance.setAlpha(0.4).toRgbString(),
                 };
             case 'outline':
                 return {
+                    ...baseStyle,
                     backgroundColor: 'transparent',
                     borderColor: textColor,
                     borderWidth: 1,
                 };
             default:
                 return {
-                    backgroundColor: 'red',
+                    ...baseStyle,
+                    backgroundColor: primaryColor,
                     borderColor: primaryColor,
                 };
         }
@@ -70,7 +78,6 @@ export function ThemedButton({
                 styles.button,
                 getButtonStyle(),
                 style,
-                { backgroundColor: disabled ? textColor + 40 : textColor }
             ]}
             onPress={onPress}
             disabled={disabled}
