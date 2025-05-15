@@ -4,25 +4,23 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ScreenLayout } from '@/components/ui/layout';
 import { View, StyleSheet } from 'react-native';
 import { Spacing } from '@/constants/Spacing';
-import { useScreenTheme } from '@/contexts/ScreenThemeContext';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function SettingsScreen() {
     const { logout } = useAuth();
-    const { backgroundColor } = useScreenTheme();
+    const textColor = useThemeColor({}, 'text');
 
     return (
         <ScreenLayout>
             <View style={styles.header}>
                 <ThemedText type="highlight">Settings</ThemedText>
             </View>
-
-
             <View style={styles.footer}>
                 <ThemedButton
                     title="Logout"
                     onPress={logout}
                     variant="outline"
-                    textStyle={{ color: backgroundColor }}
+                    textStyle={{ color: textColor }}
                 />
             </View>
         </ScreenLayout>
