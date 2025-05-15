@@ -25,6 +25,7 @@ function KYCModal() {
     const [lastName, setLastName] = useState('');
     const [showNameInputs, setShowNameInputs] = useState(false);
     const [kycUrl, setKycUrl] = useState<string | null>(null);
+    const [kycLinkId, setKycLinkId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!kycStatus) {
@@ -48,12 +49,13 @@ function KYCModal() {
             }
 
             const response = await easClient.getUser(gridUserId);
-            const { bridge_kyc_link } = response.data;
+            const { bridge_kyc_link, bridge_kyc_link_id } = response.data;
             if (!bridge_kyc_link) {
                 setIsLoading(false);
                 setKycStatus('not_started');
                 return;
             } else {
+                setKycLinkId(bridge_kyc_link_id);
                 // get kyc status
             }
         } catch (err) {
@@ -83,18 +85,47 @@ function KYCModal() {
                 grid_user_id: gridUserId,
                 smart_account_address: accountInfo?.smart_account_address,
                 email: email,
-                full_name: `${firstName} ${lastName}`.trim(),
-                redirect_uri: 'https://squads.so' // TODO: Replace with deeplink
+                full_name: `${firstName} ${lastName}`.trim()
             });
 
             if (response.data.kyc_link) {
                 setKycUrl(response.data.kyc_link);
+                setKycLinkId(response.data.id);
                 setKycStatus('incomplete');
             }
         } catch (err) {
             console.error('Error getting KYC link:', err);
         }
     }
+
+    const handleNavigationStateChange = async (navState: any) => {
+        // Check if we're on the completion or success page
+        const isCompletionPage = navState.url.includes('/completion') ||
+            navState.url.includes('/success') ||
+            navState.url.includes('status=complete');
+
+        if (isCompletionPage && kycLinkId && accountInfo?.smart_account_address) {
+            try {
+                // Poll for KYC status
+                const response = await easClient.getKYCStatus(
+                    accountInfo.smart_account_address,
+                    kycLinkId
+                );
+
+                const newStatus = response.data.status;
+                if (newStatus !== kycStatus) {
+                    setKycStatus(newStatus);
+                    if (newStatus === 'approved' || newStatus === 'rejected') {
+                        // Close the WebView and modal if KYC is complete
+                        setKycUrl(null);
+                        handleClose();
+                    }
+                }
+            } catch (err) {
+                console.error('Error checking KYC status:', err);
+            }
+        }
+    };
 
     const renderContent = () => {
         return (
@@ -179,10 +210,10 @@ function KYCModal() {
                 visible={!!kycUrl}
                 onClose={handleClose}
                 url={kycUrl || ''}
+                onNavigationStateChange={handleNavigationStateChange}
             />
         </ThemedScreen>
     );
-
 }
 
 const styles = StyleSheet.create({

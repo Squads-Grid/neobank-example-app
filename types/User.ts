@@ -30,5 +30,5 @@ export interface UserKycParams {
     smart_account_address: string;
     email: string;
     full_name: string;
-    redirect_uri: string;
+    // redirect_uri: string;
 }
