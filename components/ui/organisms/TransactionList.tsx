@@ -48,6 +48,7 @@ export function TransactionList({ transactions, onRefresh, refreshing }: Transac
                                     amount={item.amount}
                                     address={item.address}
                                     isLast={index === section.data.length - 1}
+                                    status={item.status}
                                 />
                             ))}
                         </View>

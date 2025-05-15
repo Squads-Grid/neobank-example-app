@@ -47,6 +47,7 @@ export class GridClient {
                 },
             });
 
+
             if (!response.ok) {
                 // TODO: check if this is the correct way to handle the error
                 const errorData = await response.json().catch((e) => console.log("🚀 ~ GridClient ~ errorData response not ok catched :", e));
@@ -64,7 +65,6 @@ export class GridClient {
             }
 
             const data = await response.json();
-            console.log("🚀 ~ GridClient ~ data:", data)
             return data;
         } catch (error) {
             throw error;

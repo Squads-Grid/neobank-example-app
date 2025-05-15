@@ -3,13 +3,12 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
         const smartAccountAddress = body.smartAccountAddress;
-        const url = `http://api-load-balancer-77548667.us-east-1.elb.amazonaws.com/api/v1/smart-accounts/${smartAccountAddress}/balances`;
-
+        const url = `http://developer-api.squads.so/api/v1/smart-accounts/${smartAccountAddress}/balances`; //http://developer-api.squads.so
         const response = await fetch(url, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "x-squads-network": "devnet",
+                "x-squads-network": "mainnet",
                 "Authorization": `Bearer ${process.env.GRID_API_KEY}`
             }
         });

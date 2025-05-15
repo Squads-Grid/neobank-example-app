@@ -3,17 +3,18 @@ import { StyleSheet, View, Pressable } from 'react-native';
 import { ThemedText, AppIcon } from '@/components/ui/atoms';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
-
+// import { StatusChip } from '@/components/ui/atoms/StatusChip';
 interface TransactionItemProps {
     type: 'sent' | 'received' | 'regular';
     date: string;
     amount: number;
     isLast?: boolean;
     address: string;
+    status: string;
     onPress?: () => void;
 }
 
-export function TransactionItem({ type, date, amount, isLast, onPress, address }: TransactionItemProps) {
+export function TransactionItem({ type, date, amount, isLast, onPress, address, status }: TransactionItemProps) {
     const textColor = useThemeColor({}, 'text');
 
     // Determine which icon to use based on whether money was sent or received
@@ -37,8 +38,10 @@ export function TransactionItem({ type, date, amount, isLast, onPress, address }
                         {formattedAddress}
                     </ThemedText>
                     <ThemedText type="tiny" style={styles.date}> • {date}</ThemedText>
+                    {/* <StatusChip status={status} /> */}
                 </View>
             </View>
+
             <ThemedText
                 type="defaultSemiBold"
                 style={[

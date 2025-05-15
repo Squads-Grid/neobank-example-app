@@ -59,6 +59,7 @@ function HomeScreenContent() {
     const updateBalance = async () => {
         if (!accountInfo) {
             console.error('Account info not found');
+
             return;
         }
 
@@ -81,6 +82,11 @@ function HomeScreenContent() {
 
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
+        if (!accountInfo?.smart_account_address) {
+            setRefreshing(false);
+            return;
+        }
+
         if (accountInfo?.smart_account_address) {
             await Promise.all([updateBalance(), fetchTransactions()]);
         }
@@ -91,7 +97,6 @@ function HomeScreenContent() {
         if (accountInfo?.smart_account_address) {
             const result = await easClient.getTransfers(accountInfo.smart_account_address);
             if (result.data) {
-                console.log("🚀 ~ fetchTransactions ~ result.data:", result.data.length)
                 setTransfers(result.data);
             }
         }
@@ -179,30 +184,37 @@ function HomeScreenContent() {
     return (
         <ThemedScreen>
             <View style={styles.container}>
-                <View style={styles.header}>
-                    <ThemedText style={styles.headline}>Home · Balance</ThemedText>
-                    <ThemedText type="highlight" style={styles.balanceTextStyle}>
-                        {`$${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-                    </ThemedText>
-                    <CircleButtonGroup buttons={actions} />
-                </View>
+                <ScrollView
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }
+                >
+                    <View style={styles.header}>
 
-                {transfers.length > 0 ? (
-                    <TransactionList
-                        transactions={formatTransfers(transfers)}
-                        onRefresh={onRefresh}
-                        refreshing={refreshing}
-                    />
-                ) : (
-                    <View style={styles.emptyContainer}>
-                        <Image
-                            source={placeholder}
-                            style={styles.placeholderImage}
-                        />
-                        <ThemedText type="regular">No transactions yet</ThemedText>
+                        <ThemedText style={styles.headline}>Home · Balance</ThemedText>
+                        <ThemedText type="highlight" style={styles.balanceTextStyle}>
+                            {`$${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                        </ThemedText>
+                        <CircleButtonGroup buttons={actions} />
                     </View>
-                )}
 
+
+                    {transfers.length > 0 ? (
+                        <TransactionList
+                            transactions={formatTransfers(transfers)}
+                        />
+                    ) : (
+                        <View style={styles.emptyContainer}>
+                            <Image
+                                source={placeholder}
+                                style={styles.placeholderImage}
+                            />
+                            <ThemedText type="regular">No transactions yet</ThemedText>
+                        </View>
+                    )}
+
+                </ScrollView>
                 <SendModal
                     visible={isSendModalVisible}
                     onClose={() => setIsSendModalVisible(false)}
@@ -226,6 +238,7 @@ function HomeScreenContent() {
                     message={message}
                 />
             </View>
+
         </ThemedScreen>
     );
 }
@@ -247,6 +260,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingBottom: Platform.OS === 'ios' ? 60 : 50,
+        minHeight: 300,
     },
     headline: {
         opacity: 0.3,

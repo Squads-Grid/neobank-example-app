@@ -9,6 +9,7 @@ export async function POST(request: Request) {
 
         return Response.json(response);
     } catch (error: any) {
+        console.error("Error preparing transaction:", error)
         // Pass through the error data
         return new Response(
             JSON.stringify(error),
