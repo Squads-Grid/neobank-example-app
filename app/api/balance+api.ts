@@ -8,7 +8,7 @@ export async function POST(request: Request) {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "x-squads-network": "mainnet",
+                "x-squads-network": "devnet",
                 "Authorization": `Bearer ${process.env.GRID_API_KEY}`
             }
         });

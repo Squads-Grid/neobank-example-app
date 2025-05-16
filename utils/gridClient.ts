@@ -1,6 +1,6 @@
 import { AuthenticationRequest, AuthenticationResponse, OTPData, VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
-import { PrepareTransactionParams } from '@/types/Transaction';
+import { PreparePaymentIntentParams } from '@/types/Transaction';
 import { UserResponse } from '@/types/User';
 import { KycRequest, KycResponse } from '@/types/Kyc';
 import { v4 as uuidv4 } from 'uuid';
@@ -91,8 +91,8 @@ export class GridClient {
     }
 
     // Prepares a transaction.
-    async prepareTransaction(request: PrepareTransactionParams): Promise<any> {
-        return this.request<UserResponse>(`/${request.smartAccountAddress}/transfers`, {
+    async preparePaymentIntent(request: PreparePaymentIntentParams): Promise<any> {
+        return this.request<UserResponse>(`/${request.smartAccountAddress}/payment-intents`, {
             method: 'POST',
             headers: {
                 ...this.defaultHeaders,

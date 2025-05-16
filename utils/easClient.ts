@@ -1,6 +1,6 @@
 import { AuthenticationRequest, AuthenticationResponse, Keypair, OTPData, VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
-import { PrepareTransactionParams } from '@/types/Transaction';
+import { PreparePaymentIntentParams } from '@/types/Transaction';
 import { handleError, AppError, ErrorCode } from './errors';
 import { KycResponse, KycParams } from '@/types/Kyc';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
@@ -119,8 +119,8 @@ export class EasClient {
     }
 
     // Prepares a transaction.
-    async prepareTransaction(request: PrepareTransactionParams): Promise<any> {
-        return this.request<[]>('/prepare-transaction', {
+    async preparePaymentIntent(request: PreparePaymentIntentParams): Promise<any> {
+        return this.request<[]>('/prepare-payment-intent', {
             method: 'POST',
             body: JSON.stringify(request),
         });

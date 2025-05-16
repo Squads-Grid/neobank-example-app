@@ -15,7 +15,7 @@ import { TurnkeySuborgStamper } from '@/utils/turnkey';
 import { VersionedTransaction, Connection } from '@solana/web3.js';
 import { decryptCredentialBundle } from '@turnkey/crypto';
 import { EasClient } from '@/utils/easClient';
-import { PrepareTransactionParams, SmartAccount, SolanaAddress } from '@/types/Transaction';
+import { PreparePaymentIntentParams, SmartAccount, SolanaAddress } from '@/types/Transaction';
 import { v4 as uuidv4 } from 'uuid';
 
 // USDC has 6 decimals
@@ -49,7 +49,9 @@ export default function ConfirmScreen() {
 
             const source: SmartAccount = {
                 smart_account_address: accountInfo.smart_account_address,
-                currency: 'usdc'
+                currency: 'usdc',
+                authorities: [accountInfo.smart_account_signer_public_key],
+                memo: title
             }
 
             const destination: SolanaAddress = {
@@ -60,7 +62,7 @@ export default function ConfirmScreen() {
             // Convert amount to USDC base units (multiply by 10^6)
             const amountInBaseUnits = Math.round(parseFloat(amount) * Math.pow(10, USDC_DECIMALS)).toString();
 
-            const prepareTransactionParams: PrepareTransactionParams = {
+            const prepareTransactionParams: PreparePaymentIntentParams = {
                 smartAccountAddress: accountInfo.smart_account_address,
                 amount: amountInBaseUnits,
                 grid_user_id: accountInfo.grid_user_id,
@@ -71,7 +73,7 @@ export default function ConfirmScreen() {
 
             const easClient = new EasClient();
 
-            const res = await easClient.prepareTransaction(prepareTransactionParams);
+            const res = await easClient.preparePaymentIntent(prepareTransactionParams);
 
             if (!email) {
                 logout();

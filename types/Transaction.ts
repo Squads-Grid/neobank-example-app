@@ -18,18 +18,20 @@ export interface TransactionGroup {
     data: Transaction[];
 }
 
-export interface PrepareTransactionParams {
-    smartAccountAddress: string;
+export interface PreparePaymentIntentParams {
     amount: string;
     grid_user_id: string;
-    idempotency_key: string;
+    smartAccountAddress: string;
     source: SmartAccount;
     destination: SmartAccount | SolanaAddress;
+    idempotency_key: string;
 }
 
 export interface SmartAccount {
     smart_account_address: string;
     currency: Currency;
+    authorities: string[];
+    memo: string;
 }
 
 export interface SolanaAddress {
