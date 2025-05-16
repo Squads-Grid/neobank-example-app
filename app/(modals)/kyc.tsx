@@ -12,7 +12,7 @@ import { Link } from 'expo-router';
 import { ThemedButton, ThemedTextInput } from '@/components/ui/molecules';
 import { useAuth } from '@/contexts/AuthContext';
 import { easClient } from '@/utils/easClient';
-import { KycStatus } from '@/types/Kyc';
+import { KycStatus, KycParams } from '@/types/Kyc';
 import * as SecureStore from 'expo-secure-store';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 
@@ -86,7 +86,7 @@ function KYCModal() {
                 smart_account_address: accountInfo?.smart_account_address,
                 email: email,
                 full_name: `${firstName} ${lastName}`.trim()
-            });
+            } as KycParams);
 
             if (response.data.kyc_link) {
                 setKycUrl(response.data.kyc_link);

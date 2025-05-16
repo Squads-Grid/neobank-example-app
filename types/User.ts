@@ -14,21 +14,3 @@ export interface UserResponse {
     };
 }
 
-export interface UserKycRequest {
-    grid_user_id: string;
-    grid_customer_id: string;
-    smart_account_address: string;
-    type: string;
-    email: string;
-    full_name: string;
-    endorsements: string[];
-    redirect_uri: string;
-}
-
-export interface UserKycParams {
-    grid_user_id: string;
-    smart_account_address: string;
-    email: string;
-    full_name: string;
-    // redirect_uri: string;
-}

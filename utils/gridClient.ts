@@ -1,8 +1,8 @@
 import { AuthenticationRequest, AuthenticationResponse, OTPData, VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
 import { PrepareTransactionParams } from '@/types/Transaction';
-import { UserKycRequest, UserResponse } from '@/types/User';
-import { UserKycResponse } from '@/types/Kyc';
+import { UserResponse } from '@/types/User';
+import { KycRequest, KycResponse } from '@/types/Kyc';
 import { v4 as uuidv4 } from 'uuid';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 
@@ -46,27 +46,18 @@ export class GridClient {
                     ...options.headers,
                 },
             });
-
+            console.log("🚀 ~ GridClient ~ response:", response.ok)
 
             if (!response.ok) {
-                // TODO: check if this is the correct way to handle the error
-                const errorData = await response.json().catch((e) => console.log("🚀 ~ GridClient ~ errorData response not ok catched :", e));
-
-                // Format the error response
-                const error = {
-                    message: errorData.message || 'An unknown error occurred',
-                    status: response.status,
-                    data: {
-                        details: errorData.details || [{ code: 'UNKNOWN_ERROR' }]
-                    }
-                };
-
-                throw error;
+                // Optionally, try to read error text for debugging
+                const errorText = await response.text();
+                throw new Error(`Request failed: ${response.status} - ${errorText}`);
             }
 
             const data = await response.json();
             return data;
         } catch (error) {
+            console.log("🚀 ~ GridClient ~ error:", error)
             throw error;
         }
     }
@@ -77,7 +68,7 @@ export class GridClient {
 
     // Auth endpoints
     async authenticate(request: AuthenticationRequest): Promise<AuthenticationResponse> {
-
+        console.log("🚀 ~ GridClient ~ request:", request)
         return this.request<AuthenticationResponse>('/auth', {
             method: 'POST',
             body: JSON.stringify(request),
@@ -111,8 +102,8 @@ export class GridClient {
         });
     }
 
-    async getKYCLink(request: UserKycRequest, idempotencyKey: string): Promise<UserKycResponse> {
-        return this.request<UserKycResponse>(`/${request.smart_account_address}/kyc`, {
+    async getKYCLink(request: KycRequest, idempotencyKey: string): Promise<KycResponse> {
+        return this.request<KycResponse>(`/${request.smart_account_address}/kyc`, {
             method: 'POST',
             headers: {
                 ...this.defaultHeaders,

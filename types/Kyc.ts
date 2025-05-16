@@ -1,6 +1,6 @@
 export type KycStatus = 'not_started' | 'under_review' | 'incomplete' | 'approved' | 'rejected';
 
-export interface UserKycResponse {
+export interface KycResponse {
     data: {
         id: string;
         full_name: string;
@@ -18,4 +18,23 @@ export interface UserKycResponse {
     metadata: {
         timestamp: string;
     };
+}
+
+export interface KycRequest {
+    grid_user_id: string;
+    grid_customer_id: string;
+    smart_account_address: string;
+    type: string;
+    email: string;
+    full_name: string;
+    endorsements: string[];
+    redirect_uri: string | null;
+}
+
+export interface KycParams {
+    grid_user_id: string;
+    smart_account_address: string;
+    email: string;
+    full_name: string;
+    redirect_uri: string | null;
 }

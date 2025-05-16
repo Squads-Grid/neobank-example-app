@@ -2,8 +2,7 @@ import { AuthenticationRequest, AuthenticationResponse, Keypair, OTPData, Verify
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
 import { PrepareTransactionParams } from '@/types/Transaction';
 import { handleError, AppError, ErrorCode } from './errors';
-import { UserKycResponse } from '@/types/Kyc';
-import { UserKycParams, UserKycRequest } from '@/types/User';
+import { KycResponse, KycParams } from '@/types/Kyc';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 
 class EasError extends Error {
@@ -134,8 +133,8 @@ export class EasClient {
         });
     }
 
-    async getKYCLink(request: UserKycParams): Promise<UserKycResponse> {
-        return this.request<UserKycResponse>('/kyc', {
+    async getKYCLink(request: KycParams): Promise<KycResponse> {
+        return this.request<KycResponse>('/kyc', {
             method: 'POST',
             body: JSON.stringify(request),
         });

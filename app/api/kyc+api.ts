@@ -1,10 +1,10 @@
-import { UserKycParams, UserKycRequest } from "@/types/User";
+import { KycParams, KycRequest } from "@/types/Kyc";
 import { gridClient } from "@/utils/gridClient";
 import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json() as UserKycParams;
+        const body = await request.json() as KycParams;
         const idempotencyKey = uuidv4(); // TODO: move to client
 
         const gridCustomerId = process.env.GRID_CUSTOMER_ID;
@@ -21,15 +21,11 @@ export async function POST(request: Request) {
             );
         }
 
-        const kycParams: UserKycRequest = {
-            grid_user_id: body.grid_user_id,
+        const kycParams: KycRequest = {
             grid_customer_id: gridCustomerId,
-            smart_account_address: body.smart_account_address,
             type: "individual",
-            email: body.email,
-            full_name: body.full_name,
             endorsements: [],
-            redirect_uri: body.redirect_uri,
+            ...body
         }
 
         const response = await gridClient.getKYCLink(kycParams, idempotencyKey);
