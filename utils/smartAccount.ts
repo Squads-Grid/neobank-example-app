@@ -1,20 +1,23 @@
 import { AccountInfo } from "@/types/Auth";
 import { easClient } from "./easClient";
 import { Permission } from "@/types/SmartAccounts";
+import { CreateSmartAccountRequest } from "@/types/SmartAccounts";
 
 export const createSmartAccount = async (accountInfo: AccountInfo) => {
-    const request = {
+
+    const request: CreateSmartAccountRequest = {
         policies: {
-            signers: [{
+            authorities: [{
                 address: accountInfo.smart_account_signer_public_key,
                 permissions: ['CAN_INITIATE', 'CAN_VOTE', 'CAN_EXECUTE'] as Permission[]
             }],
             admin_address: null,
             threshold: 1,
-            grid_user_id: null,
+            timelock: null,
         },
         memo: '',
         grid_user_id: null,
+        grid_customer_id: null,
         wallet_account: {
             wallet_id: accountInfo.wallet_id,
             wallet_address: accountInfo.smart_account_signer_public_key

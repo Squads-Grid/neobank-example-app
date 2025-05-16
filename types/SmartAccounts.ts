@@ -6,15 +6,17 @@ export interface Signer {
 }
 
 export interface Policies {
-    signers: Signer[];
+    authorities: Signer[];
     admin_address: string | null;
     threshold: number;
+    timelock: string | null;
 }
 
 export interface CreateSmartAccountRequest {
     policies: Policies;
     memo: string;
     grid_user_id: string | null;
+    grid_customer_id: string | null;
     wallet_account: WalletAccount | null;
     mpc_primary_id: string;
 }
