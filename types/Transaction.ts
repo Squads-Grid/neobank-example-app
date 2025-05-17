@@ -27,11 +27,31 @@ export interface PreparePaymentIntentParams {
     idempotency_key: string;
 }
 
+export interface PreparePaymentIntentResponse {
+    id: string;
+    payment_rail: PaymentRail;
+    amount: string;
+    currency: Currency;
+    source_deposit_instructions?: TransferSourceDepositInstructions;
+    source: TransferSource;
+    destination: TransferDestination;
+    status: TransferState;
+    created_at: string;
+    updated_at: string;
+    completed_at?: string;
+    transaction_hash?: string;
+    signers_for_threshold?: string[];
+    threshold?: number;
+    error_message?: string;
+    fee?: Fee;
+    memo?: string;
+    valid_until?: string;
+}
+
 export interface SmartAccount {
     smart_account_address: string;
     currency: Currency;
     authorities: string[];
-    memo: string;
 }
 
 export interface SolanaAddress {
@@ -39,11 +59,31 @@ export interface SolanaAddress {
     currency: Currency;
 }
 
-export type Currency = string;
+export type Currency = 'Usd' | 'Eur' | 'Mxn' | 'Usdc' | 'Usdt' | 'Usdb' | 'Dai' | 'Pyusd' | 'Eurc';
 
-export type PaymentRail = 'ach' | 'wire' | 'sepa' | 'swift' | 'blockchain' | string;
+export type PaymentRail =
+    | 'Ach' | 'AchPush' | 'AchSameDay' | 'Sepa' | 'Swift' | 'Wire'
+    | 'Arbitrum' | 'AvalancheCChain' | 'Base' | 'BridgeWallet'
+    | 'Ethereum' | 'Optimism' | 'Polygon' | 'Solana' | 'Stellar' | 'Tron';
 
 export type ConfirmationStatus = 'pending' | 'confirmed' | 'failed';
+
+export type TransferState =
+    | 'AwaitingFunds'
+    | 'InReview'
+    | 'FundsReceived'
+    | 'PaymentSubmitted'
+    | 'PaymentProcessed'
+    | 'Canceled'
+    | 'Error'
+    | 'Undeliverable'
+    | 'Returned'
+    | 'Refunded';
+
+export interface Fee {
+    amount: string;
+    currency: Currency;
+}
 
 export interface TransferSourceDepositInstructions {
     amount?: string;
@@ -66,6 +106,25 @@ export interface TransferSourceDepositInstructions {
 }
 
 export interface TransferDestination {
+    currency: Currency;
+    payment_rail: PaymentRail;
+    external_account_id?: string;
+    bridge_wallet_id?: string;
+    from_address?: string;
+    wire_message?: string;
+    sepa_reference?: string;
+    swift_reference?: string;
+    swift_charges?: string;
+    ach_reference?: string;
+    to_address?: string;
+    omad?: string;
+    imad?: string;
+    trace_number?: string;
+    uetr?: string;
+    blockchain_memo?: string;
+}
+
+export interface TransferSource {
     currency: Currency;
     payment_rail: PaymentRail;
     external_account_id?: string;
@@ -107,12 +166,6 @@ export interface ReturnDetails {
 }
 
 export interface Receipt {
-    // Add fields as needed
-}
-
-export type TransferState = 'pending' | 'completed' | 'failed';
-
-export interface TransferSource {
     // Add fields as needed
 }
 

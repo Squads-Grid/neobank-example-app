@@ -46,7 +46,6 @@ export class GridClient {
                     ...options.headers,
                 },
             });
-            console.log("🚀 ~ GridClient ~ response:", response.ok)
 
             if (!response.ok) {
                 // Optionally, try to read error text for debugging
@@ -57,7 +56,6 @@ export class GridClient {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.log("🚀 ~ GridClient ~ error:", error)
             throw error;
         }
     }

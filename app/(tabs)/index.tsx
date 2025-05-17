@@ -60,14 +60,18 @@ function HomeScreenContent() {
     }, []);
 
     const updateBalance = async () => {
+        console.log("🚀 ~ updateBalance ~ accountInfo:", accountInfo)
         if (!accountInfo) {
             console.error('Account info not found');
 
             return;
         }
 
+        console.log("🚀 ~ hi ================================ 1")
         const result = await easClient.getBalance({ smartAccountAddress: accountInfo.smart_account_address });
+        console.log("🚀 ~ hi ================================ 2")
         const balances = result.balances;
+        console.log("🚀 ~ updateBalance ~ balances:", balances)
 
         if (balances.length === 0) {
             setBalance(0);

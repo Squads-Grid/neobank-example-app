@@ -112,6 +112,7 @@ export class EasClient {
 
     // Gets the balance of a smart account.
     async getBalance(request: { smartAccountAddress: string }): Promise<any> {
+        console.log("🚀 ~ getBalance ~ request:", request)
         return this.request<[]>('/balance', {
             method: 'POST',
             body: JSON.stringify(request),
