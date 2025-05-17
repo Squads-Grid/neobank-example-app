@@ -152,7 +152,7 @@ export class GridClient {
     }
 
     async getTransfers(smartAccountAddress: string): Promise<any> {
-        return this.request<any>(`/${smartAccountAddress}/transfers`, {
+        return this.request<any>(`/${smartAccountAddress}/payment-intents`, {
             method: 'GET',
             headers: {
                 ...this.defaultHeaders,
