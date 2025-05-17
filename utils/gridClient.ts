@@ -160,6 +160,12 @@ export class GridClient {
             },
         });
     }
+
+    async getBalance(smartAccountAddress: string): Promise<any> {
+        return this.request<any>(`/${smartAccountAddress}/balances`, {
+            method: 'GET',
+        });
+    }
 }
 
 // Create a singleton instance
