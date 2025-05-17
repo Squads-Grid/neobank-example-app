@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 SecureStore.setItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED, 'true'),
                 SecureStore.setItemAsync(AUTH_STORAGE_KEYS.ACCOUNT_INFO, JSON.stringify(accountInfo)),
                 SecureStore.setItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID, accountInfo.grid_user_id ?? ''),
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.WALLET, accountInfo.smart_account_address ?? ''),
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, accountInfo.smart_account_address ?? ''),
             ]);
 
             setCredentialsBundle(credentialBundle);

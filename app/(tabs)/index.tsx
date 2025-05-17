@@ -33,6 +33,7 @@ function HomeScreenContent() {
     const { isVisible, message, showToast, hideToast } = useComingSoonToast();
 
     useEffect(() => {
+        console.log("🚀 ~ useEffect ~ accountInfo:", accountInfo)
         if (!accountInfo || !accountInfo.smart_account_signer_public_key) {
             logout();
             return;
@@ -41,6 +42,7 @@ function HomeScreenContent() {
         // Load grid user ID and check if smart account creation is needed
         const loadDataAndCreateAccount = async () => {
             if (!accountInfo.grid_user_id || accountInfo.grid_user_id === '') {
+                console.log("🚀 ~ loadDataAndCreateAccount no account info found - assuming new user:", accountInfo)
                 let account = await createSmartAccount(accountInfo);
                 SecureStore.setItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID, account.grid_user_id);
                 SecureStore.setItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, account.smart_account_address);
@@ -48,6 +50,7 @@ function HomeScreenContent() {
                 updateBalance();
                 fetchTransactions();
             } else {
+                console.log("🚀 ~ loadDataAndCreateAccount account info found - assuming existing user fetching balances and transactions:", accountInfo)
                 updateBalance();
                 fetchTransactions();
             }
