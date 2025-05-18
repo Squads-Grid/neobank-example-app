@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, View, Pressable } from 'react-native';
-import { ThemedText, AppIcon } from '@/components/ui/atoms';
+import { ThemedText, AppIcon, Chip } from '@/components/ui/atoms';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
 // import { StatusChip } from '@/components/ui/atoms/StatusChip';
 interface TransactionItemProps {
-    type: 'sent' | 'received' | 'regular';
+    type: 'sent' | 'received' | 'bridge';
     date: string;
     amount: number;
     isLast?: boolean;
@@ -38,7 +38,15 @@ export function TransactionItem({ type, date, amount, isLast, onPress, address, 
                         {formattedAddress}
                     </ThemedText>
                     <ThemedText type="tiny" style={styles.date}> • {date}</ThemedText>
-                    {/* <StatusChip status={status} /> */}
+                    <Chip
+                        style={{
+                            backgroundColor: `#000000` + 40,
+                            ...styles.chip
+                        }}
+                        textStyle={styles.chipText}
+                    >
+                        {status}
+                    </Chip>
                 </View>
             </View>
 
@@ -80,5 +88,14 @@ const styles = StyleSheet.create({
     transactionDetails: {
         flexDirection: 'row',
         alignItems: 'center',
+    },
+    chip: {
+        borderWidth: 1,
+        paddingVertical: 1,
+        paddingHorizontal: 4,
+        marginLeft: 5,
+    },
+    chipText: {
+        fontSize: 7,
     }
 }); 

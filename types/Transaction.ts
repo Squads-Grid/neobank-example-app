@@ -5,7 +5,7 @@ export interface Transaction {
     id: string;
     amount: number;
     status: ConfirmationStatus | TransferState;
-    type: 'sent' | 'received' | 'regular';
+    type: 'sent' | 'received' | 'bridge';
     date: Date;
     address: string;
 }
@@ -74,15 +74,15 @@ export interface SolanaAddress {
 }
 
 export interface NewExternalAccountDetails {
-    payment_rail: PaymentRail;
+    type: PaymentRail;
     currency: Currency;
     details: CreateExternalAccountRequest
 }
 
-export type Currency = 'Usd' | 'Eur' | 'usdc';
+export type Currency = 'usd' | 'eur' | 'usdc';
 
 export type PaymentRail =
-    | 'Ach' | 'AchPush' | 'AchSameDay' | 'Sepa' | 'Swift' | 'Wire'
+    | 'ach' | 'AchPush' | 'AchSameDay' | 'Sepa' | 'Swift' | 'Wire'
     | 'Arbitrum' | 'AvalancheCChain' | 'Base' | 'BridgeWallet'
     | 'Ethereum' | 'Optimism' | 'Polygon' | 'Solana' | 'Stellar' | 'Tron';
 
@@ -137,7 +137,7 @@ export interface UsAccount {
     routing_number: string;
 }
 
-export type UsAccountType = 'Checking' | 'Savings';
+export type UsAccountType = 'checking' | 'savings';
 
 // ISO 3166-1 three-letter country code
 export type CountryCode = 'USA' | 'DEU' | 'FRA' | 'ITA' | 'ESP' | 'NLD' | 'BEL' | 'AUT' | 'CHE' | 'LUX';
@@ -235,7 +235,7 @@ export interface Receipt {
     // Add fields as needed
 }
 
-export interface RegularTransfer {
+export interface BridgeTransfer {
     id: string;
     state: TransferState;
     on_behalf_of: string;
@@ -256,7 +256,7 @@ export interface RegularTransfer {
 export type Transfer = {
     Spl: SplTransfer;
 } | {
-    Regular: RegularTransfer;
+    Bridge: BridgeTransfer;
 }
 
 export type TransferResponse = Transfer[];

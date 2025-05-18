@@ -71,7 +71,6 @@ export default function ConfirmScreen() {
             const easClient = new EasClient();
 
             const res = await easClient.preparePaymentIntent(prepareTransactionParams, accountInfo.smart_account_address);
-            console.log("🚀 ~ handleConfirm ~ res:", res)
 
             if (!email) {
                 logout();

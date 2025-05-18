@@ -19,7 +19,7 @@ export function SendModal({ visible, onClose }: SendModalProps) {
             pathname: '/amount',
             params: {
                 type: 'wallet',
-                title: 'Send'
+                title: 'Send Crypto'
             }
         });
     };
@@ -27,10 +27,10 @@ export function SendModal({ visible, onClose }: SendModalProps) {
     const handleSendToBank = () => {
         onClose();
         router.push({
-            pathname: '/(send)/amount',
+            pathname: '/(send)/fiatamount',
             params: {
                 type: 'bank',
-                title: 'Send'
+                title: 'Send Fiat'
             }
         });
     };

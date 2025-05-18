@@ -18,6 +18,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import * as SecureStore from 'expo-secure-store';
+import { Currency } from '@/types/Transaction';
 
 interface BankDetail {
     label: string;
@@ -66,7 +67,7 @@ function BankDetailsModal() {
     const [showToast, setShowToast] = useState(false);
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
 
-    const handleCurrencyChange = (currency: string) => {
+    const handleCurrencyChange = (currency: Currency) => {
         // Prevent currency changes while creating an account
         if (!isCreatingAccount) {
             setSelectedCurrency(currency);

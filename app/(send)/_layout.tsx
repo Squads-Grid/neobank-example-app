@@ -45,14 +45,28 @@ export default function SendLayout() {
                 name="amount"
                 options={{
                     title: '',
-                    headerTitle: () => getHeaderTitle('Send'),
+                    headerTitle: () => getHeaderTitle('Send Crypto'),
+                }}
+            />
+            <Stack.Screen
+                name="fiatamount"
+                options={{
+                    title: '',
+                    headerTitle: () => getHeaderTitle('Send Fiat'),
                 }}
             />
             <Stack.Screen
                 name="confirm"
                 options={{
                     title: '',
-                    headerTitle: () => getHeaderTitle('Confirm'),
+                    headerTitle: () => getHeaderTitle('Confirm Crypto Transfer'),
+                }}
+            />
+            <Stack.Screen
+                name="fiatconfirm"
+                options={{
+                    title: '',
+                    headerTitle: () => getHeaderTitle('Confirm Fiat Transfer'),
                 }}
             />
         </Stack>

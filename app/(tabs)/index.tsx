@@ -134,33 +134,42 @@ function HomeScreenContent() {
 
     const formatTransfers = (transfers: TransferResponse) => {
         const transactions = transfers.map(transfer => {
+            console.log("🚀 ~ formatTransfers ~ transfer:", transfer)
             if ('Spl' in transfer) {
                 const splTransfer = transfer.Spl;
+
                 return {
                     id: splTransfer.id,
                     amount: parseFloat(splTransfer.ui_amount),
                     status: splTransfer.confirmation_status,
-                    type: splTransfer.from_address === accountInfo?.smart_account_address ? 'sent' : 'received',
+                    type: splTransfer.from_address === accountInfo?.smart_account_address ? 'sent' as const : 'received' as const,
                     date: new Date(splTransfer.created_at),
                     address: splTransfer.from_address === accountInfo?.smart_account_address
                         ? splTransfer.to_address
                         : splTransfer.from_address
                 } as Transaction;
-            } else {
-                const regularTransfer = transfer.Regular;
+            } else if ('Bridge' in transfer) {
+                console.log("🚀 ~ formatTransfers ~ Bridge transfer:", transfer.Bridge);
+
+                const type = transfer.Bridge.source_deposit_instructions?.from_address === accountInfo?.smart_account_address ? 'sent' as const : 'received' as const;
+
                 return {
-                    id: regularTransfer.id,
-                    amount: parseFloat(regularTransfer.amount),
-                    status: regularTransfer.state,
-                    type: 'regular',
-                    date: new Date(regularTransfer.created_at),
-                    address: regularTransfer.on_behalf_of
+                    id: transfer.Bridge.id,
+                    amount: parseFloat(transfer.Bridge.amount),
+                    status: transfer.Bridge.state,
+                    type: type,
+                    date: new Date(transfer.Bridge.created_at),
+                    address: type === 'sent' ? transfer.Bridge.destination.external_account_id : accountInfo?.smart_account_address
                 } as Transaction;
+            } else {
+                console.log("🚀 ~ formatTransfers ~ unknown transfer:", transfer);
             }
         });
 
+
         // Group transactions by date
         const groups = transactions.reduce((acc: { [key: string]: Transaction[] }, transaction) => {
+            if (!transaction) return acc;
             const date = transaction.date;
             const dateStr = date.toLocaleDateString('en-US', {
                 month: 'long',

@@ -55,7 +55,7 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
     const [isKycModalVisible, setIsKycModalVisible] = useState(false);
 
     // Shared data
-    const [selectedCurrency, setSelectedCurrency] = useState<Currency>('Usd');
+    const [selectedCurrency, setSelectedCurrency] = useState<Currency>('usd');
     const [kycStatus, setKycStatus] = useState<KycStatus | null>(null);
     const [bankAccountDetails, setBankAccountDetails] = useState<BankAccountDetails[] | null>(null);
     const [isLoading, setIsLoading] = useState(false);
