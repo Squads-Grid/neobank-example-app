@@ -47,32 +47,30 @@ export default function ConfirmScreen() {
 
             const connection = new Connection("https://api.devnet.solana.com");
 
-            const source = {
+            const source: SmartAccount = {
                 smart_account_address: accountInfo.smart_account_address,
-                currency: 'Usdc' as Currency,
+                currency: 'usdc',
                 authorities: [accountInfo.smart_account_signer_public_key],
             }
 
-            const destination = {
+            const destination: SolanaAddress = {
                 address: recipient,
-                currency: 'Usdc' as Currency,
+                currency: 'usdc',
             }
 
             // Convert amount to USDC base units (multiply by 10^6)
             const amountInBaseUnits = Math.round(parseFloat(amount) * Math.pow(10, USDC_DECIMALS)).toString();
 
             const prepareTransactionParams: PreparePaymentIntentParams = {
-                smartAccountAddress: accountInfo.smart_account_address,
                 amount: amountInBaseUnits,
                 grid_user_id: accountInfo.grid_user_id,
-                idempotency_key: uuidv4(), // TODO: move to backend
-                source,
-                destination
+                source: source,
+                destination: destination
             };
 
             const easClient = new EasClient();
 
-            const res = await easClient.preparePaymentIntent(prepareTransactionParams);
+            const res = await easClient.preparePaymentIntent(prepareTransactionParams, accountInfo.smart_account_address);
             console.log("🚀 ~ handleConfirm ~ res:", res)
 
             if (!email) {

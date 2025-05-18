@@ -120,10 +120,10 @@ export class EasClient {
     }
 
     // Prepares a transaction.
-    async preparePaymentIntent(request: PreparePaymentIntentParams): Promise<any> {
+    async preparePaymentIntent(request: PreparePaymentIntentParams, smartAccountAddress: string): Promise<any> {
         return this.request<[]>('/prepare-payment-intent', {
             method: 'POST',
-            body: JSON.stringify(request),
+            body: JSON.stringify({ payload: request, smartAccountAddress }),
         });
     }
 

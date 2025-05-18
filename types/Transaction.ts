@@ -18,13 +18,26 @@ export interface TransactionGroup {
     data: Transaction[];
 }
 
+export interface SmartAccountDetails {
+    smart_account_address: string;
+    currency: Currency;
+    authorities: string[];
+}
+
+export interface SolanaDetails {
+    address: string;
+    currency: Currency;
+}
+
+export type Details =
+    | SmartAccountDetails
+    | SolanaDetails;
+
 export interface PreparePaymentIntentParams {
     amount: string;
     grid_user_id: string;
-    smartAccountAddress: string;
-    source: SmartAccount;
-    destination: SmartAccount | SolanaAddress;
-    idempotency_key: string;
+    source: Details;
+    destination: Details;
 }
 
 export interface PreparePaymentIntentResponse {
@@ -59,7 +72,7 @@ export interface SolanaAddress {
     currency: Currency;
 }
 
-export type Currency = 'Usd' | 'Eur' | 'Mxn' | 'Usdc' | 'Usdt' | 'Usdb' | 'Dai' | 'Pyusd' | 'Eurc';
+export type Currency = 'Usd' | 'Eur' | 'Mxn' | 'usdc' | 'Usdt' | 'Usdb' | 'Dai' | 'Pyusd' | 'Eurc';
 
 export type PaymentRail =
     | 'Ach' | 'AchPush' | 'AchSameDay' | 'Sepa' | 'Swift' | 'Wire'

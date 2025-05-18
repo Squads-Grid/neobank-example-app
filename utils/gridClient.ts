@@ -39,6 +39,9 @@ export class GridClient {
         try {
             const url = `${this.baseUrl}${endpoint}`;
 
+            console.log("🚀 ~ GridClient ~ url:", url)
+
+            console.log("🚀 ~ GridClient ~ options:", options)
             const response = await fetch(url, {
                 ...options,
                 headers: {
@@ -89,12 +92,14 @@ export class GridClient {
     }
 
     // Prepares a transaction.
-    async preparePaymentIntent(request: PreparePaymentIntentParams): Promise<any> {
-        return this.request<UserResponse>(`/${request.smartAccountAddress}/payment-intents`, {
+    async preparePaymentIntent(request: PreparePaymentIntentParams, smartAccountAddress: string): Promise<any> {
+        console.log("🚀 ~ GridClient ~ preparePaymentIntent ~ request:", request)
+        console.log("🚀 ~ GridClient ~ preparePaymentIntent ~ smartAccountAddress:", smartAccountAddress)
+        return this.request<UserResponse>(`/${smartAccountAddress}/payment-intents`, {
             method: 'POST',
             headers: {
                 ...this.defaultHeaders,
-                'x-idempotency-key': request.idempotency_key
+                'x-idempotency-key': this.generateIdempotencyKey()
             },
             body: JSON.stringify(request),
         });
