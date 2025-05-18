@@ -31,7 +31,8 @@ export interface SolanaDetails {
 
 export type Details =
     | SmartAccountDetails
-    | SolanaDetails;
+    | SolanaDetails
+    | NewExternalAccountDetails;
 
 export interface PreparePaymentIntentParams {
     amount: string;
@@ -72,7 +73,13 @@ export interface SolanaAddress {
     currency: Currency;
 }
 
-export type Currency = 'Usd' | 'Eur' | 'Mxn' | 'usdc' | 'Usdt' | 'Usdb' | 'Dai' | 'Pyusd' | 'Eurc';
+export interface NewExternalAccountDetails {
+    payment_rail: PaymentRail;
+    currency: Currency;
+    details: CreateExternalAccountRequest
+}
+
+export type Currency = 'Usd' | 'Eur' | 'usdc';
 
 export type PaymentRail =
     | 'Ach' | 'AchPush' | 'AchSameDay' | 'Sepa' | 'Swift' | 'Wire'
@@ -96,6 +103,52 @@ export type TransferState =
 export interface Fee {
     amount: string;
     currency: Currency;
+}
+
+export interface CreateExternalAccountRequest {
+    currency?: Currency;
+    bank_name?: string;
+    account_owner_name: string;
+    account_number?: string;
+    routing_number?: string;
+    account_type?: string;
+    iban?: IbanAccount;
+    account?: UsAccount;
+    // swift?: SwiftAccount; // Not supported yet
+    account_owner_type?: CustomerType;
+    first_name?: string;
+    last_name?: string;
+    business_name?: string;
+    address: Address;
+    idempotency_key: string;
+}
+
+export interface IbanAccount {
+    country: string;
+    bic: string;
+    account_number: string;
+}
+
+export type CustomerType = 'Individual' | 'Business';
+
+export interface UsAccount {
+    checking_or_savings: UsAccountType;
+    last_4: string;
+    routing_number: string;
+}
+
+export type UsAccountType = 'Checking' | 'Savings';
+
+// ISO 3166-1 three-letter country code
+export type CountryCode = 'USA' | 'DEU' | 'FRA' | 'ITA' | 'ESP' | 'NLD' | 'BEL' | 'AUT' | 'CHE' | 'LUX';
+
+export interface Address {
+    street_line_1: string;
+    street_line_2?: string;
+    city: string;
+    state: string;
+    postal_code: string;
+    country: CountryCode;
 }
 
 export interface TransferSourceDepositInstructions {
