@@ -47,7 +47,6 @@ export const verifyOtpCode = async (code: string, otpId: string, suborgId: strin
     };
 
     const response = await easClient.verifyOtp(otpData);
-    console.log("🚀 ~ verifyOtpCode ~ response.data.account_info:", response.data.account_info)
 
     // Use our generated keypair instead of expecting one from the server
     return {

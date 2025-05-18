@@ -17,8 +17,15 @@ export interface CreateSmartAccountRequest {
     memo: string;
     grid_user_id: string | null;
     grid_customer_id: string | null;
-    wallet_account: WalletAccount | null;
-    mpc_primary_id: string;
+    mpc_provider_info: MpcProviderInfo;
+}
+
+export interface MpcProviderInfo {
+    Turnkey: {
+        primary_id: string;
+        wallet_id: string;
+        wallet_address: string;
+    }
 }
 
 export interface SmartAccountData {

@@ -33,7 +33,6 @@ function HomeScreenContent() {
     const { isVisible, message, showToast, hideToast } = useComingSoonToast();
 
     useEffect(() => {
-        console.log("🚀 ~ useEffect ~ accountInfo:", accountInfo)
         if (!accountInfo || !accountInfo.smart_account_signer_public_key) {
             logout();
             return;
@@ -41,32 +40,36 @@ function HomeScreenContent() {
 
         // Load grid user ID and check if smart account creation is needed
         const loadDataAndCreateAccount = async () => {
-            if (!accountInfo.grid_user_id || accountInfo.grid_user_id === '') {
-                console.log("🚀 ~ loadDataAndCreateAccount no account info found - assuming new user:", accountInfo)
-                let account = await createSmartAccount(accountInfo);
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID, account.grid_user_id);
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, account.smart_account_address);
-                setAccountInfo({ ...accountInfo, smart_account_address: account.smart_account_address, grid_user_id: account.grid_user_id });
-                updateBalance();
-                fetchTransactions();
-            } else {
-                console.log("🚀 ~ loadDataAndCreateAccount account info found - assuming existing user fetching balances and transactions:", accountInfo)
-                updateBalance();
-                fetchTransactions();
-            }
+            let account = await createSmartAccount(accountInfo);
+            await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID, account.grid_user_id);
+            await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, account.smart_account_address);
+
+            // Create the updated account info
+            const updatedAccountInfo = {
+                ...accountInfo,
+                smart_account_address: account.smart_account_address,
+                grid_user_id: account.grid_user_id
+            };
+
+            // Update the state
+            setAccountInfo(updatedAccountInfo);
+
+            // Pass the updated account info directly to updateBalance
+            await updateBalance(updatedAccountInfo);
+            await fetchTransactions();
         };
 
         loadDataAndCreateAccount();
     }, []);
 
-    const updateBalance = async () => {
-        if (!accountInfo) {
+    const updateBalance = async (accountInfoOverride?: any) => {
+        const accountInfoToUse = accountInfoOverride || accountInfo;
+        if (!accountInfoToUse) {
             console.error('Account info not found');
-
             return;
         }
 
-        const result = await easClient.getBalance({ smartAccountAddress: accountInfo.smart_account_address });
+        const result = await easClient.getBalance({ smartAccountAddress: accountInfoToUse.smart_account_address });
         const balances = result.balances;
 
         if (balances.length === 0) {

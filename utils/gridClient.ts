@@ -46,7 +46,6 @@ export class GridClient {
                     ...options.headers,
                 },
             });
-            console.log("🚀 ~ GridClient ~ response:", response.ok)
 
             if (!response.ok) {
                 // Optionally, try to read error text for debugging
@@ -68,7 +67,6 @@ export class GridClient {
 
     // Auth endpoints
     async authenticate(request: AuthenticationRequest): Promise<AuthenticationResponse> {
-        console.log("🚀 ~ GridClient ~ request:", request)
         return this.request<AuthenticationResponse>('/auth', {
             method: 'POST',
             body: JSON.stringify(request),
