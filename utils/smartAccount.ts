@@ -1,9 +1,16 @@
 import { AccountInfo } from "@/types/Auth";
 import { easClient } from "./easClient";
-import { Permission } from "@/types/SmartAccounts";
+import { MpcProviderInfo, Permission } from "@/types/SmartAccounts";
 import { CreateSmartAccountRequest } from "@/types/SmartAccounts";
 
 export const createSmartAccount = async (accountInfo: AccountInfo) => {
+    const mpcProviderInfo = {
+        Turnkey: {
+            primary_id: accountInfo.mpc_primary_id,
+            wallet_id: accountInfo.wallet_id,
+            wallet_address: accountInfo.smart_account_signer_public_key
+        }
+    } as MpcProviderInfo;
 
     const request: CreateSmartAccountRequest = {
         policies: {
@@ -18,11 +25,7 @@ export const createSmartAccount = async (accountInfo: AccountInfo) => {
         memo: '',
         grid_user_id: null,
         grid_customer_id: null,
-        wallet_account: {
-            wallet_id: accountInfo.wallet_id,
-            wallet_address: accountInfo.smart_account_signer_public_key
-        },
-        mpc_primary_id: accountInfo.mpc_primary_id
+        mpc_provider_info: mpcProviderInfo
     };
 
     const response = await easClient.createSmartAccount(request);

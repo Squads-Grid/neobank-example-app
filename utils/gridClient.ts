@@ -69,7 +69,6 @@ export class GridClient {
 
     // Auth endpoints
     async authenticate(request: AuthenticationRequest): Promise<AuthenticationResponse> {
-        console.log("🚀 ~ GridClient ~ request:", request)
         return this.request<AuthenticationResponse>('/auth', {
             method: 'POST',
             body: JSON.stringify(request),
@@ -161,6 +160,12 @@ export class GridClient {
                 ...this.defaultHeaders,
                 'x-idempotency-key': this.generateIdempotencyKey()
             },
+        });
+    }
+
+    async getBalance(smartAccountAddress: string): Promise<any> {
+        return this.request<any>(`/${smartAccountAddress}/balances`, {
+            method: 'GET',
         });
     }
 }
