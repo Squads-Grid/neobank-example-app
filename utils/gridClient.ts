@@ -39,9 +39,6 @@ export class GridClient {
         try {
             const url = `${this.baseUrl}${endpoint}`;
 
-            console.log("🚀 ~ GridClient ~ url:", url)
-
-            console.log("🚀 ~ GridClient ~ options:", options)
             const response = await fetch(url, {
                 ...options,
                 headers: {
@@ -59,6 +56,7 @@ export class GridClient {
             const data = await response.json();
             return data;
         } catch (error) {
+            console.log("🚀 ~ GridClient ~ error:", error)
             throw error;
         }
     }
@@ -92,8 +90,6 @@ export class GridClient {
 
     // Prepares a transaction.
     async preparePaymentIntent(request: PreparePaymentIntentParams, smartAccountAddress: string): Promise<any> {
-        console.log("🚀 ~ GridClient ~ preparePaymentIntent ~ request:", request)
-        console.log("🚀 ~ GridClient ~ preparePaymentIntent ~ smartAccountAddress:", smartAccountAddress)
         return this.request<UserResponse>(`/${smartAccountAddress}/payment-intents`, {
             method: 'POST',
             headers: {
@@ -166,6 +162,19 @@ export class GridClient {
     async getBalance(smartAccountAddress: string): Promise<any> {
         return this.request<any>(`/${smartAccountAddress}/balances`, {
             method: 'GET',
+        });
+    }
+
+    async confirmPaymentIntent(smartAccountAddress: string, paymentIntentId: string, transaction: string): Promise<any> {
+        console.log("🚀 ~ GridClient ~ confirmPaymentIntent ~ paymentIntentId:", paymentIntentId)
+        return this.request<any>(`/${smartAccountAddress}/payment-intents/${paymentIntentId}/confirm`, {
+            method: 'POST',
+            headers: {
+                ...this.defaultHeaders,
+            },
+            body: JSON.stringify({
+                "transaction": transaction
+            })
         });
     }
 }

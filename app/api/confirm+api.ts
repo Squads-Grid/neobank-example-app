@@ -2,12 +2,14 @@ import { gridClient } from "@/utils/gridClient";
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
-        const response = await gridClient.authenticate(body);
+        const { smartAccountAddress, paymentIntentId, transaction } = await request.json();
+        const response = await gridClient.confirmPaymentIntent(smartAccountAddress, paymentIntentId, transaction);
+
         return new Response(JSON.stringify(response), {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
+
     } catch (error: any) {
         // Pass through the error data
         return new Response(
@@ -18,4 +20,4 @@ export async function POST(request: Request) {
             }
         );
     }
-}
+} 

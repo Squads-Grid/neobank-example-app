@@ -136,48 +136,43 @@ export default function FiatConfirmScreen() {
             const easClient = new EasClient();
             const res = await easClient.preparePaymentIntent(payload, accountInfo.smart_account_address);
 
+            const paymentIntentId = res.data.id;
 
-            // const res = await easClient.preparePaymentIntent(prepareTransactionParams, accountInfo.smart_account_address);
-            console.log("🚀 ~ handleConfirm ~ res:", res)
+            if (!email) {
+                logout();
+                router.push({
+                    pathname: '/(auth)/login',
+                });
+                return;
+            }
 
-            // if (!email) {
-            //     logout();
-            //     router.push({
-            //         pathname: '/(auth)/login',
-            //     });
-            //     return;
-            // }
+            const userPublicKey = accountInfo.smart_account_signer_public_key;
 
-            // const userPublicKey = accountInfo.smart_account_signer_public_key;
+            const decryptedData = decryptCredentialBundle(credentialsBundle, keypair.privateKey);
+            const stamper = new TurnkeySuborgStamper(
+                decryptedData,
+                {
+                    subOrganizationId: accountInfo.mpc_primary_id,
+                    email: email,
+                    publicKey: keypair.publicKey
+                }
+            );
+            const userOrganizationId = accountInfo.mpc_primary_id;
+            try {
+                const signedTx = await signTransactionWithTurnkey({
+                    encodedTx: res.data.transaction_hash,
+                    stamper,
+                    userOrganizationId,
+                    userPublicKey
+                });
+                const easClient = new EasClient();
+                const response = await easClient.confirmPaymentIntent(accountInfo.smart_account_address, paymentIntentId, signedTx);
 
-            // const decryptedData = decryptCredentialBundle(credentialsBundle, keypair.privateKey);
-            // const stamper = new TurnkeySuborgStamper(
-            //     decryptedData,
-            //     {
-            //         subOrganizationId: accountInfo.mpc_primary_id,
-            //         email: email,
-            //         publicKey: keypair.publicKey
-            //     }
-            // );
 
-            // const userOrganizationId = accountInfo.mpc_primary_id;
-
-            // try {
-            //     const signedTx = await signTransactionWithTurnkey({
-            //         encodedTx: res.data.transaction_hash,
-            //         stamper,
-            //         userOrganizationId,
-            //         userPublicKey
-            //     });
-
-            //     const connection = new Connection("https://api.devnet.solana.com");
-            //     const tx = VersionedTransaction.deserialize(Buffer.from(signedTx, 'base64'));
-            //     await connection.sendTransaction(tx);
-
-            // } catch (e) {
-            //     console.error("Failed to sign transaction:", e);
-            //     setIsLoading(false);
-            // }
+            } catch (e) {
+                console.error("Failed to sign transaction:", e);
+                setIsLoading(false);
+            }
 
             router.push({
                 pathname: '/success',

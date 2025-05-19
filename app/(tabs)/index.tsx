@@ -71,7 +71,6 @@ function HomeScreenContent() {
 
         const result = await easClient.getBalance({ smartAccountAddress: accountInfoToUse.smart_account_address });
         const balances = result.balances;
-        console.log("🚀 ~ updateBalance ~ balances:", balances)
 
         if (balances.length === 0) {
             setBalance(0);
@@ -134,7 +133,6 @@ function HomeScreenContent() {
 
     const formatTransfers = (transfers: TransferResponse) => {
         const transactions = transfers.map(transfer => {
-            console.log("🚀 ~ formatTransfers ~ transfer:", transfer)
             if ('Spl' in transfer) {
                 const splTransfer = transfer.Spl;
 
@@ -149,7 +147,6 @@ function HomeScreenContent() {
                         : splTransfer.from_address
                 } as Transaction;
             } else if ('Bridge' in transfer) {
-                console.log("🚀 ~ formatTransfers ~ Bridge transfer:", transfer.Bridge);
 
                 const type = transfer.Bridge.source_deposit_instructions?.from_address === accountInfo?.smart_account_address ? 'sent' as const : 'received' as const;
 
