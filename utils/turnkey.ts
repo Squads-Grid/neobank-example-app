@@ -8,6 +8,9 @@ import {
 
 import { VersionedTransaction, PublicKey } from "@solana/web3.js";
 import { TurnkeyClient, createActivityPoller } from "@turnkey/http";
+import Toast from 'react-native-toast-message';
+import { ErrorCode } from "./errors";
+import { handleError } from "./errors";
 
 export async function signTransactionWithTurnkey({
     encodedTx,
@@ -20,6 +23,7 @@ export async function signTransactionWithTurnkey({
     userOrganizationId: string;
     userPublicKey: string;
 }) {
+
     try {
 
         const tx = VersionedTransaction.deserialize(
@@ -66,9 +70,22 @@ export async function signTransactionWithTurnkey({
         return Buffer.from(tx.serialize()).toString(
             "base64"
         )
-    } catch (error) {
-        console.error("Error in signTransactionWithTurnkey:", error);
-        throw error;
+    } catch (error: any) {
+        if (error?.data?.details?.[0]?.turnkeyErrorCode === 'API_KEY_EXPIRED' ||
+            error?.message?.includes('expired api key')) {
+            Toast.show({
+                text1: 'API key expired',
+                type: 'error',
+                visibilityTime: 5000,
+            });
+            throw handleError(ErrorCode.SESSION_EXPIRED, true, true);
+
+
+        } else {
+            throw error;
+        }
+
+
     }
 }
 

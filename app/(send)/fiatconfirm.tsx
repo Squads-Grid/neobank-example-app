@@ -17,6 +17,8 @@ import { decryptCredentialBundle } from '@turnkey/crypto';
 import { EasClient } from '@/utils/easClient';
 import { Currency, PreparePaymentIntentParams, SmartAccount, NewExternalAccountDetails, UsAccountType, CountryCode } from '@/types/Transaction';
 import { v4 as uuidv4 } from 'uuid';
+import { ErrorMessages } from '@/utils/errors';
+import { AppError } from '@/utils/errors';
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
@@ -169,8 +171,12 @@ export default function FiatConfirmScreen() {
                 const response = await easClient.confirmPaymentIntent(accountInfo.smart_account_address, paymentIntentId, signedTx);
 
 
-            } catch (e) {
-                console.error("Failed to sign transaction:", e);
+            } catch (e: any) {
+
+                if (e instanceof AppError && e.message === ErrorMessages.SESSION_EXPIRED) {
+                    logout();
+                }
+                console.log("🚀 ~ handleConfirm ~ e:", e)
                 setIsLoading(false);
             }
 

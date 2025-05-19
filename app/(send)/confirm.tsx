@@ -17,6 +17,8 @@ import { decryptCredentialBundle } from '@turnkey/crypto';
 import { EasClient } from '@/utils/easClient';
 import { Currency, PreparePaymentIntentParams, SmartAccount, SolanaAddress } from '@/types/Transaction';
 import { v4 as uuidv4 } from 'uuid';
+import { ErrorCode, ErrorMessages, handleError } from '@/utils/errors';
+import { AppError } from '@/utils/errors';
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
@@ -102,11 +104,19 @@ export default function ConfirmScreen() {
                     userPublicKey
                 });
 
+                if (!signedTx) {
+                    throw new Error('No signed transaction returned');
+                }
+
                 const tx = VersionedTransaction.deserialize(Buffer.from(signedTx, 'base64'));
                 await connection.sendTransaction(tx);
 
-            } catch (e) {
-                console.error("Failed to sign transaction:", e);
+            } catch (e: any) {
+
+                if (e instanceof AppError && e.message === ErrorMessages.SESSION_EXPIRED) {
+                    logout();
+                }
+                console.log("🚀 ~ handleConfirm ~ e:", e)
                 setIsLoading(false);
             }
 
