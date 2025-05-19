@@ -6,7 +6,7 @@
         "orientation": "portrait",
         "icon": "./assets/images/app-icon.png",
         "scheme": "bright",
-        "userInterfaceStyle": "automatic",
+        "userInterfaceStyle": "light",
         "newArchEnabled": true,
         "ios": {
             "supportsTablet": true,

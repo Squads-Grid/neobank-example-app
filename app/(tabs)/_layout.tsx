@@ -4,7 +4,6 @@ import { Platform } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/atoms';
-import { TabBarBackground } from '@/components/ui/layout';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
@@ -16,10 +15,9 @@ export default function TabLayout() {
         <ProtectedRoute>
             <Tabs
                 screenOptions={{
-                    tabBarActiveTintColor: Colors[colorScheme ?? 'light'].icon,
+                    tabBarActiveTintColor: Colors[colorScheme as 'light' | 'dark'].icon,
                     headerShown: false,
                     tabBarButton: HapticTab,
-                    tabBarBackground: TabBarBackground,
                     tabBarStyle: Platform.select({
                         ios: {
                             // Use a transparent background on iOS to show the blur effect
