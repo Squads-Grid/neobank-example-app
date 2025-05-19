@@ -38,7 +38,7 @@ function HomeScreenContent() {
         }
 
         console.log("🚀 ~ verifyCode ~ accountInfo:", accountInfo)
-        SecureStore.setItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_ID, '2676a44a-c1ad-44a9-9909-c172ca58a68b');
+        // SecureStore.setItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_ID, '2676a44a-c1ad-44a9-9909-c172ca58a68b');
 
         // Load grid user ID and check if smart account creation is needed
         const loadDataAndCreateAccount = async () => {
