@@ -126,13 +126,6 @@ export class EasClient {
         });
     }
 
-    // Get user
-    async getUser(gridUserId: string): Promise<any> {
-        return this.request<[]>(`/user?id=${gridUserId}`, {
-            method: 'GET',
-        });
-    }
-
     async getKYCLink(request: KycParams): Promise<KycResponse> {
         return this.request<KycResponse>('/kyc', {
             method: 'POST',

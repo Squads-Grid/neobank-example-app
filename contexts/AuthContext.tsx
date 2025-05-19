@@ -81,6 +81,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 SecureStore.setItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, accountInfo.smart_account_address ?? ''),
             ]);
 
+            // Helper for kyc
+            const emailFromStorage = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.PERSISTENT_EMAIL);
+            console.log("🚀 ~ verifyCode ~ emailFromStorage:", emailFromStorage)
+            console.log("🚀 ~ verifyCode ~ email:", email)
+
+            if (emailFromStorage !== email) {
+                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_ID);
+                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.PERSISTENT_EMAIL, email ?? '');
+            }
+
             setCredentialsBundle(credentialBundle);
             setKeypair(keypair);
             setIsAuthenticated(true);
@@ -110,7 +120,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             // Clear all stored auth data
             await Promise.all([
-                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.EMAIL),
                 SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.ACCOUNT_INFO),
                 SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.KEYPAIR),
                 SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.CREDENTIALS_BUNDLE),
@@ -118,6 +127,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED),
                 SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID),
                 SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS),
+                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.KYC_STATUS),
             ]);
 
         } catch (error) {

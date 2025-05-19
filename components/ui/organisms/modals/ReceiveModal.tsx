@@ -34,9 +34,11 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
     React.useEffect(() => {
 
         setIsBankLoading(true);
-        fetchKycStatus();
+
         if (kycStatus === 'approved') {
             fetchBankDetails();
+        } else {
+            fetchKycStatus();
         }
         setIsBankLoading(false);
 

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { ThemedText } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { CircleButtonGroup } from '@/components/ui/molecules';
-import { TransactionItem } from '@/components/ui/organisms/TransactionItem';
 import { ThemedScreen } from '@/components/ui/layout';
 import { TransferResponse, Transfer, Transaction, TransactionGroup } from '@/types/Transaction';
 import { useAuth } from '@/contexts/AuthContext';
@@ -37,6 +36,9 @@ function HomeScreenContent() {
             logout();
             return;
         }
+
+        console.log("🚀 ~ verifyCode ~ accountInfo:", accountInfo)
+        SecureStore.setItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_ID, '2676a44a-c1ad-44a9-9909-c172ca58a68b');
 
         // Load grid user ID and check if smart account creation is needed
         const loadDataAndCreateAccount = async () => {
@@ -132,11 +134,9 @@ function HomeScreenContent() {
     ];
 
     const formatTransfers = (transfers: TransferResponse) => {
-        console.log("🚀 ~ formatTransfers ~ mint:", process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS);
         const transfersToConsider = transfers.filter(transfer => 'Spl' in transfer && transfer.Spl.mint === process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS);
-        const transactions = transfers.map(transfer => {
+        const transactions = transfersToConsider.map(transfer => {
             if ('Spl' in transfer) {
-                console.log("🚀 ~ formatTransfers ~ transfer mint:", transfer.Spl.mint)
                 const splTransfer = transfer.Spl;
 
                 return {
@@ -162,7 +162,7 @@ function HomeScreenContent() {
                     address: type === 'sent' ? transfer.Bridge.destination.external_account_id : accountInfo?.smart_account_address
                 } as Transaction;
             } else {
-                // console.log("🚀 ~ formatTransfers ~ unknown transfer:", transfer);
+                console.log("🚀 ~ formatTransfers ~ unknown transfer:", transfer);
             }
         });
 

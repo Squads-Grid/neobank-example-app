@@ -117,12 +117,6 @@ export class GridClient {
         });
     }
 
-    async getUser(gridUserId: string): Promise<any> {
-        return this.request<any>(`/user/${gridUserId}`, {
-            method: 'GET',
-        });
-    }
-
     async getKYCStatus(smartAccountAddress: string, kycId: string): Promise<any> {
         return this.request<any>(`/${smartAccountAddress}/kyc/${kycId}`, {
             method: 'GET',
