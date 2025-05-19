@@ -132,8 +132,11 @@ function HomeScreenContent() {
     ];
 
     const formatTransfers = (transfers: TransferResponse) => {
+        console.log("🚀 ~ formatTransfers ~ mint:", process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS);
+        const transfersToConsider = transfers.filter(transfer => 'Spl' in transfer && transfer.Spl.mint === process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS);
         const transactions = transfers.map(transfer => {
             if ('Spl' in transfer) {
+                console.log("🚀 ~ formatTransfers ~ transfer mint:", transfer.Spl.mint)
                 const splTransfer = transfer.Spl;
 
                 return {
@@ -159,7 +162,7 @@ function HomeScreenContent() {
                     address: type === 'sent' ? transfer.Bridge.destination.external_account_id : accountInfo?.smart_account_address
                 } as Transaction;
             } else {
-                console.log("🚀 ~ formatTransfers ~ unknown transfer:", transfer);
+                // console.log("🚀 ~ formatTransfers ~ unknown transfer:", transfer);
             }
         });
 

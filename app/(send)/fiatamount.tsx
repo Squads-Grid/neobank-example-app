@@ -5,7 +5,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
 import { Keypad, ThemedButton, ThemedTextInput } from '@/components/ui/molecules';
 import { router, useLocalSearchParams } from 'expo-router';
-import { ThemedText } from '@/components/ui/atoms';
+import { Chip, IconSymbol, ThemedText } from '@/components/ui/atoms';
 import * as Clipboard from 'expo-clipboard';
 import { formatAmount } from '@/utils/helper';
 import { CountryCode, UsAccountType } from '@/types/Transaction';
@@ -29,7 +29,7 @@ export default function AmountScreen() {
         },
         {
             index: 2,
-            label: 'Enter bank details',
+            label: 'Recipient details',
             render: () => renderBankDetails(),
         }
     ]
@@ -142,7 +142,7 @@ export default function AmountScreen() {
                     keyboardType="numeric"
                 />
                 <View style={{ marginBottom: Spacing.sm }} />
-                <ThemedTextInput
+                {/* <ThemedTextInput
                     value={accountType}
                     onChangeText={(text) => setAccountType(text as UsAccountType)}
                     placeholder="Account Type (Checking/Savings)"
@@ -152,7 +152,7 @@ export default function AmountScreen() {
                     value={country}
                     onChangeText={(text) => setCountry(text as CountryCode)}
                     placeholder="Country Code (e.g., USA)"
-                />
+                /> */}
             </View>
         );
     };
@@ -164,7 +164,19 @@ export default function AmountScreen() {
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
                 style={styles.container}>
                 <View style={styles.amountContainer}>
-                    <ThemedText type="defaultSemiBold" style={styles.label}>{steps[step - 1].label}</ThemedText>
+                    <View style={{ width: '100%', height: 30, paddingHorizontal: Spacing.lg, marginBottom: Spacing.md, flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <ThemedText type="defaultSemiBold" style={[styles.label, { paddingVertical: 4 }]}>{steps[step - 1].label}</ThemedText>
+                        {step === 2 &&
+                            <Chip style={{ paddingHorizontal: Spacing.sm, paddingVertical: Spacing.xs }}>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <ThemedText type="tiny">
+                                        ACH{' '}
+                                    </ThemedText>
+                                    <IconSymbol name="chevron.down" size={12} color={textColor} />
+                                </View>
+                            </Chip>
+                        }
+                    </View>
                     {steps[step - 1].render()}
                 </View>
 

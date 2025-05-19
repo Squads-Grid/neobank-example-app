@@ -15,7 +15,6 @@ interface LoginFormProps {
 
 export function LoginForm({ onSubmit, isLoading = false, style, error }: LoginFormProps) {
     const [email, setEmail] = useState('');
-    const [code, setCode] = useState('');
     const [showCodeInput, setShowCodeInput] = useState(false);
 
     const handleEmailSubmit = () => {

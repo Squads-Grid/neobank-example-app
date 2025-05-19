@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { Spacing } from '@/constants/Spacing';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { Size, Weight } from '@/constants/Typography';
@@ -17,6 +18,32 @@ export function ScreenVerificationCodeInput({ onCodeComplete }: ScreenVerificati
     const inputBackgroundColor = isBackgroundDark ? '#FFFFFF' : '#000000';
 
     const handleChange = (text: string, index: number) => {
+        // If text is longer than 1 character, it's likely a paste
+        if (text.length > 1) {
+            const digits = text.split('').slice(0, 6);
+            if (digits.length === 6 && digits.every(d => /^\d$/.test(d))) {
+                // Fill fields one by one with a small delay
+                digits.forEach((digit, i) => {
+                    setTimeout(() => {
+                        const newCode = [...code];
+                        newCode[i] = digit;
+                        setCode(newCode);
+
+                        // Focus the next input
+                        if (i < 5) {
+                            inputRefs.current[i + 1]?.focus();
+                        }
+
+                        // If this is the last digit, trigger completion
+                        if (i === 5) {
+                            onCodeComplete(digits.join(''));
+                        }
+                    }, i * 50); // 50ms delay between each digit
+                });
+                return;
+            }
+        }
+
         const newCode = [...code];
         newCode[index] = text;
         setCode(newCode);
@@ -51,7 +78,7 @@ export function ScreenVerificationCodeInput({ onCodeComplete }: ScreenVerificati
                     onChangeText={text => handleChange(text, index)}
                     onKeyPress={e => handleKeyPress(e, index)}
                     keyboardType="number-pad"
-                    maxLength={1}
+                    maxLength={6} // Allow pasting longer text
                     style={[
                         styles.input,
                         {
