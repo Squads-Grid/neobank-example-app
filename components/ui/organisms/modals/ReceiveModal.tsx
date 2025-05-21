@@ -19,10 +19,8 @@ interface ReceiveModalProps {
 export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalProps) {
     const [isBankLoading, setIsBankLoading] = useState(false);
     const { accountInfo } = useAuth();
-    // const [kycStatus, setKycStatus] = useState<KycStatus | null>(null);
 
     const {
-        bankAccountDetails,
         hideAllModals,
         fetchKycStatus,
         fetchBankDetails,

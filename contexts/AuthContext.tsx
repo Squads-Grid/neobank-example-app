@@ -3,7 +3,6 @@ import { router } from 'expo-router';
 import { AccountInfo, AuthContextType, } from '@/types/Auth';
 import { authenticateUser, verifyOtpCode, AUTH_STORAGE_KEYS } from '@/utils/auth';
 import * as SecureStore from 'expo-secure-store';
-import { LoadingSpinner } from '@/components/ui/atoms/LoadingSpinner';
 import { KycStatus } from '@/types/Kyc';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,7 +17,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [wallet, setWallet] = useState<string | null>(null);
     const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
     const [mpcPrimaryId, setMpcPrimaryId] = useState<string | null>(null);
-    const [kycStatus, setKycStatus] = useState<KycStatus | null>(null);
 
     useEffect(() => {
         const initializeAuth = async () => {
@@ -97,7 +95,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             router.replace('/success');
             return true;
         } catch (error) {
-            console.error("🚀 ~ verifyCode ~ Error:", error);
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             setAuthError(errorMessage);
             return false;

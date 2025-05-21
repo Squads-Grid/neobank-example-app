@@ -1,8 +1,6 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
-import { Spacing } from '@/constants/Spacing';
-import { ScreenHeaderText, ButtonGroup, ThemedButton } from '@/components/ui/molecules';
+import { ScreenHeaderText, ThemedButton } from '@/components/ui/molecules';
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen, Starburst } from '@/components/ui/layout';
 
@@ -19,13 +17,6 @@ export function StartScreen() {
                 onPress={() => router.push('/(auth)/login')}
                 style={{ width: 200 }}
             />
-            {/* <ButtonGroup
-                    leftTitle="Login"
-                    leftOnPress={() => router.push('/(auth)/login')}
-                    rightTitle="Sign up"
-                    rightOnPress={() => router.push('/(auth)/signup')}
-                /> */}
-            {/* </View> */}
         </ThemedScreen>
     );
 }

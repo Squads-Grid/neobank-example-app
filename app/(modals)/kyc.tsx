@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, View, Keyboard } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { useModalFlow } from '@/contexts/ModalFlowContext';
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
@@ -19,7 +19,7 @@ import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 function KYCModal() {
     const { textColor } = useScreenTheme();
     const { accountInfo, logout, email } = useAuth();
-    const { fetchKycStatus, kycStatus, setKycStatus } = useModalFlow();
+    const { kycStatus, setKycStatus } = useModalFlow();
     const [isLoading, setIsLoading] = useState(false);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');

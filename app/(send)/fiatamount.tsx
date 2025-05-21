@@ -6,7 +6,6 @@ import { Spacing } from '@/constants/Spacing';
 import { Keypad, ThemedButton, ThemedTextInput } from '@/components/ui/molecules';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Chip, IconSymbol, ThemedText } from '@/components/ui/atoms';
-import * as Clipboard from 'expo-clipboard';
 import { formatAmount } from '@/utils/helper';
 import { CountryCode, UsAccountType } from '@/types/Transaction';
 

@@ -57,9 +57,11 @@ export class GridClient {
             const data = await response.json();
             return data;
         } catch (error) {
+            console.log("🚀 ~ GridClient ~ error:", error)
             throw error;
         }
     }
+
 
 
 
@@ -172,7 +174,7 @@ export class GridClient {
         });
     }
 
-    async confirmPaymentIntent(smartAccountAddress: string, paymentIntentId: string, payload: string, useMpcProvider: boolean = false): Promise<any> {
+    async confirmPaymentIntent(smartAccountAddress: string, paymentIntentId: string, payload: any, useMpcProvider: boolean = false): Promise<any> {
         const endpoint = useMpcProvider ? `/${smartAccountAddress}/payment-intents/${paymentIntentId}/confirm?use-mpc-provider=true` : `/${smartAccountAddress}/payment-intents/${paymentIntentId}/confirm`;
 
         return this.request<any>(endpoint, {

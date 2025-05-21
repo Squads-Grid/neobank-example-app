@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { easClient } from '@/utils/easClient';
 import { useAuth } from '@/contexts/AuthContext';
 
+// TODO: Check this
 export function useVirtualAccount() {
     const { accountInfo } = useAuth();
     const [virtualAccounts, setVirtualAccounts] = useState<any[]>([]);

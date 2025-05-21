@@ -8,8 +8,6 @@ import { StarburstFull } from '@/components/ui/layout';
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { Spacing } from '@/constants/Spacing';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
-import { router } from 'expo-router';
-
 interface FaceIDScreenProps {
     show2FA: boolean;
 }

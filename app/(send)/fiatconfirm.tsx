@@ -14,6 +14,7 @@ import { decryptCredentialBundle } from '@turnkey/crypto';
 import { EasClient } from '@/utils/easClient';
 import { SmartAccount, UsAccountType, CountryCode } from '@/types/Transaction';
 import { v4 as uuidv4 } from 'uuid';
+import { GridStamper } from '@/utils/stamper';
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
@@ -103,26 +104,20 @@ export default function FiatConfirmScreen() {
                     authorities: [accountInfo.smart_account_signer_public_key]
                 },
                 destination: {
-                    type: "ach",
+                    payment_rail: "ach_push",
                     currency: "usd",
                     details: {
                         currency: "usd",
-                        bank_name: "Test Bank",
-                        account_owner_name: "Janine Wagner",
-                        // account_number: "900808588430",
-                        // routing_number: "021000021",
+                        bank_name: "Bank of Nowhere",
+                        account_owner_name: "Fred Feuerstein",
+                        account_number: "900808588430",
+                        routing_number: "021000021",
                         account_type: "us",
-                        account: {
-                            checking_or_savings: "checking",
-                            // last_4: "8430",
-                            routing_number: "021000021",
-                            account_number: "800908588421"
-                        },
                         address: {
-                            street_line_1: "123 Main St",
-                            city: "New York",
-                            state: "NY",
-                            postal_code: "10001",
+                            street_line_1: "1800 North Pole St.",
+                            city: "Orlando",
+                            state: "FL",
+                            postal_code: "32801",
                             country: "USA"
                         },
                         idempotency_key: uuidv4()
@@ -132,8 +127,7 @@ export default function FiatConfirmScreen() {
 
             const easClient = new EasClient();
             const res = await easClient.preparePaymentIntent(payload, accountInfo.smart_account_address);
-
-            const paymentIntentId = res.data.id;
+            console.log("🚀 ~ handleConfirm ~ res:", res)
 
             if (!email) {
                 logout();
@@ -143,37 +137,24 @@ export default function FiatConfirmScreen() {
                 return;
             }
 
-            const userPublicKey = accountInfo.smart_account_signer_public_key;
-
             const decryptedData = decryptCredentialBundle(credentialsBundle, keypair.privateKey);
-            // const stamper = new TurnkeySuborgStamper(
-            //     decryptedData,
-            //     {
-            //         subOrganizationId: accountInfo.mpc_primary_id,
-            //         email: email,
-            //         publicKey: keypair.publicKey
-            //     }
-            // );
-            // const userOrganizationId = accountInfo.mpc_primary_id;
-            // try {
-            //     const signedTx = await signTransactionWithTurnkey({
-            //         encodedTx: res.data.transaction_hash,
-            //         stamper,
-            //         userOrganizationId,
-            //         userPublicKey
-            //     });
-            //     const easClient = new EasClient();
-            //     const response = await easClient.confirmPaymentIntent(accountInfo.smart_account_address, paymentIntentId, signedTx);
+            const stamper = new GridStamper(decryptedData);
+            const stamp = await stamper.stamp(JSON.parse(res.data.mpc_payload));
 
+            const confirmPayload = {
+                transaction: res.data.transaction_hash,
+                mpcPayload: {
+                    requestParameters: JSON.parse(res.data.mpc_payload),
+                    stamp,
+                }
+            };
 
-            // } catch (e: any) {
-
-            //     if (e instanceof AppError && e.message === ErrorMessages.SESSION_EXPIRED) {
-            //         logout();
-            //     }
-            //     console.log("🚀 ~ handleConfirm ~ e:", e)
-            //     setIsLoading(false);
-            // }
+            const response = await easClient.confirmPaymentIntent(
+                accountInfo.smart_account_address,
+                res.data.id,
+                JSON.stringify(confirmPayload),
+                true
+            );
 
             router.push({
                 pathname: '/success',

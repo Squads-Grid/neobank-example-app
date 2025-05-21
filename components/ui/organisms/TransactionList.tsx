@@ -4,7 +4,7 @@ import { ThemedText } from '@/components/ui/atoms';
 import { TransactionItem } from './TransactionItem';
 import { Spacing } from '@/constants/Spacing';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { Transaction, TransactionGroup } from '@/types/Transaction';
+import { TransactionGroup } from '@/types/Transaction';
 
 interface TransactionListProps {
     transactions: TransactionGroup[];

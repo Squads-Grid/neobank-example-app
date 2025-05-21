@@ -9,16 +9,6 @@ import { ThemedActionText } from '@/components/ui/atoms';
 import { useResendTimer } from '@/hooks/useResendTimer';
 import { Spacing } from '@/constants/Spacing';
 import { router } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
-
-const AUTH_STORAGE_KEYS = {
-    EMAIL: 'auth_email',
-    ACCOUNT_INFO: 'auth_account_info',
-    KEYPAIR: 'auth_keypair',
-    CREDENTIALS_BUNDLE: 'auth_credentials_bundle',
-    WALLET: 'auth_wallet',
-    IS_AUTHENTICATED: 'auth_is_authenticated'
-};
 
 function LoginScreen() {
     const [isLoading, setIsLoading] = useState(false);

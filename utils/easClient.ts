@@ -162,7 +162,7 @@ export class EasClient {
         });
     }
 
-    async confirmPaymentIntent(smartAccountAddress: string, paymentIntentId: string, payload?: string, useMpcProvider: boolean = false): Promise<any> {
+    async confirmPaymentIntent(smartAccountAddress: string, paymentIntentId: string, payload?: any, useMpcProvider: boolean = false): Promise<any> {
 
         return this.request<any>(`/confirm`, {
             method: 'POST',

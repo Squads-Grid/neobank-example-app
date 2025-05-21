@@ -12,9 +12,8 @@ import { Height, Size, Weight } from '@/constants/Typography';
 import { useAuth } from '@/contexts/AuthContext';
 import { decryptCredentialBundle } from '@turnkey/crypto';
 import { EasClient } from '@/utils/easClient';
-import { Currency, PreparePaymentIntentParams, SmartAccount, SolanaAddress } from '@/types/Transaction';
-import { ErrorCode, ErrorMessages, handleError } from '@/utils/errors';
-import { AppError } from '@/utils/errors';
+import { PreparePaymentIntentParams, SmartAccount, SolanaAddress } from '@/types/Transaction';
+import { ErrorCode } from '@/utils/errors';
 import { GridStamper } from '@/utils/stamper';
 import Toast from 'react-native-toast-message';
 
@@ -86,64 +85,39 @@ export default function ConfirmScreen() {
             );
             const stamp = await stamper.stamp(JSON.parse(mpcPayload));
 
-            fetch(`http://172.20.10.2:50001/api/v0/grid/smart-accounts/${accountInfo.smart_account_address}/payment-intents/${res.data.id}/confirm?use-mpc-provider=true`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-grid-environment': 'sandbox',
-                    'Authorization': 'Bearer dc9589c7-d3cb-4bf2-b45a-b68b9f3bb2bf'
-                },
-                body: JSON.stringify({
-                    transaction: receivedPayload.transaction_hash,
-                    mpcPayload: JSON.stringify({
-                        requestParameters: JSON.parse(mpcPayload),
-                        stamp,
-                    }),
-                })
-            })
-                .then(response => {
-                    return response.json();
-                })
-                .then(data => { // TODO: Improve error handling
+            const confirmPayload = {
+                transaction: receivedPayload.transaction_hash,
+                mpcPayload: JSON.stringify({
+                    requestParameters: JSON.parse(mpcPayload),
+                    stamp,
+                }),
+            };
 
-                    if (data.details && data?.details[0].message?.includes('expired api key')) {
-                        handleError(ErrorCode.SESSION_EXPIRED, true, true);
-                        logout();
+            await easClient.confirmPaymentIntent(
+                accountInfo.smart_account_address,
+                res.data.id,
+                confirmPayload,
+                true
+            );
 
-                    } else if (data.details) {
-                        setIsLoading(false);
-                        throw new Error('Failed to confirm payment intent');
-
-                    }
-                    setIsLoading(false);
-                    router.push({
-                        pathname: '/success',
-                        params: { amount, type, title },
-                    })
-                })
-
-
-
-                .catch(error => {
-                    if (error?.message?.includes('expired api key')) {
-                        Toast.show({
-                            text1: 'API key expired',
-                            type: 'error',
-                            visibilityTime: 5000,
-                        });
-                        logout();
-
-
-                    } else {
-                        setIsLoading(false);
-                        console.log("🚀 ~ handleConfirm ~ error:", error)
-                        throw error;
-                    }
-                });
-
-
+            router.push({
+                pathname: '/success',
+                params: { amount, type, title },
+            });
 
         } catch (error: any) {
+
+            if (error?.data?.code === ErrorCode.SESSION_EXPIRED ||
+                error?.data?.details?.some((detail: any) => detail.code === 'API_KEY_EXPIRED')) {
+                Toast.show({
+                    text1: 'Session expired, please log in again',
+                    type: 'error',
+                    visibilityTime: 5000,
+                });
+                logout();
+                return;
+            }
+
             setIsLoading(false);
             throw error;
         }

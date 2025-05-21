@@ -12,7 +12,6 @@ interface ScreenLoginFormProps {
 export function ScreenLoginForm({ onSubmit, isLoading = false }: ScreenLoginFormProps) {
     const [email, setEmail] = useState('');
     const [error, setError] = useState<string | undefined>(undefined);
-    const { textColor } = useScreenTheme();
 
     const handleSubmit = () => {
         if (!email) {
