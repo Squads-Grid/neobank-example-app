@@ -80,11 +80,9 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
             return 'KYC verification failed. Please try again';
         }
         else if (kycStatus === 'not_started') {
-
             return 'Complete KYC to receive via bank transfer';
         }
         else {
-
             return 'Receive via bank transfer';
         }
     };

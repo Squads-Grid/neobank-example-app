@@ -8,6 +8,8 @@ import { useModalFlow } from '@/contexts/ModalFlowContext';
 const bankIcon = require('@/assets/icons/bank.png');
 const walletIcon = require('@/assets/icons/wallet.png');
 
+const DISABLE_OFFRAMP = true;
+
 interface SendModalProps {
     visible: boolean;
     onClose: () => void;
@@ -64,6 +66,9 @@ export function SendModal({ visible, onClose }: SendModalProps) {
             return 'Complete KYC to send via bank transfer';
         }
         else {
+            if (DISABLE_OFFRAMP) {
+                return 'Offramp is currently not available';
+            }
             return 'Send USDC to your Bank Account';
         }
     };
@@ -82,7 +87,7 @@ export function SendModal({ visible, onClose }: SendModalProps) {
             description: getBankDescription(),
             icon: bankIcon,
             onPress: handleSendToBank,
-            disabled: isBankLoading || !kycStatus || kycStatus !== 'approved'
+            disabled: isBankLoading || !kycStatus || kycStatus !== 'approved' || DISABLE_OFFRAMP
         }
     ];
 
