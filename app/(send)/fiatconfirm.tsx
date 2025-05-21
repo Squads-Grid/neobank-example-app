@@ -9,16 +9,11 @@ import { formatAmount } from '@/utils/helper';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ButtonGroup } from '@/components/ui/molecules';
 import { Height, Size, Weight } from '@/constants/Typography';
-import { signTransactionWithTurnkey } from '@/utils/turnkey';
 import { useAuth } from '@/contexts/AuthContext';
-import { TurnkeySuborgStamper } from '@/utils/turnkey';
-import { VersionedTransaction, Connection } from '@solana/web3.js';
 import { decryptCredentialBundle } from '@turnkey/crypto';
 import { EasClient } from '@/utils/easClient';
-import { Currency, PreparePaymentIntentParams, SmartAccount, NewExternalAccountDetails, UsAccountType, CountryCode } from '@/types/Transaction';
+import { SmartAccount, UsAccountType, CountryCode } from '@/types/Transaction';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorMessages } from '@/utils/errors';
-import { AppError } from '@/utils/errors';
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
