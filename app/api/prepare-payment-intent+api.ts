@@ -3,9 +3,9 @@ import { gridClient } from "@/utils/gridClient";
 
 export async function POST(request: Request) {
     try {
-        const { payload, smartAccountAddress } = await request.json() as { payload: PreparePaymentIntentParams, smartAccountAddress: string };
+        const { payload, smartAccountAddress, useMpcProvider } = await request.json() as { payload: PreparePaymentIntentParams, smartAccountAddress: string, useMpcProvider: boolean };
 
-        const response = await gridClient.preparePaymentIntent(payload, smartAccountAddress);
+        const response = await gridClient.preparePaymentIntent(payload, smartAccountAddress, useMpcProvider);
 
         return Response.json(response);
     } catch (error: any) {

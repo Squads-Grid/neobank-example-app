@@ -67,6 +67,6 @@ export const AUTH_STORAGE_KEYS = {
     KYC_STATUS: 'auth_kyc_status',
     SMART_ACCOUNT_ADDRESS: 'auth_smart_account_address',
     GRID_USER_ID: 'auth_grid_user_id',
-    BRIDGE_KYC_LINK_ID: 'auth_bridge_kyc_link_id',
+    BRIDGE_KYC_LINK_IDS: 'auth_bridge_kyc_link_id',
     PERSISTENT_EMAIL: 'auth_persistent_email',
 };

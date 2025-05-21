@@ -89,16 +89,16 @@ export type PaymentRail =
 export type ConfirmationStatus = 'pending' | 'confirmed' | 'failed';
 
 export type TransferState =
-    | 'AwaitingFunds'
-    | 'InReview'
-    | 'FundsReceived'
-    | 'PaymentSubmitted'
-    | 'PaymentProcessed'
-    | 'Canceled'
-    | 'Error'
-    | 'Undeliverable'
-    | 'Returned'
-    | 'Refunded';
+    | 'awaiting_funds'
+    | 'in_review'
+    | 'funds_received'
+    | 'payment_submitted'
+    | 'payment_processed'
+    | 'canceled'
+    | 'error'
+    | 'undeliverable'
+    | 'returned'
+    | 'refunded';
 
 export interface Fee {
     amount: string;

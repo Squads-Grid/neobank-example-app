@@ -37,8 +37,16 @@ function HomeScreenContent() {
             return;
         }
 
-        console.log("🚀 ~ verifyCode ~ accountInfo:", accountInfo)
-        // SecureStore.setItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_ID, '2676a44a-c1ad-44a9-9909-c172ca58a68b');
+        console.log("🚀 ~ useEffect ~ accountInfo:", accountInfo)
+        // SecureStore.setItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_IDS, JSON.stringify({
+        //     ids: [{
+        //         grid_user_id: '3723e3c6-74e7-4845-a27c-c6956dbcfea1',
+        //         kyc_link_id: 'c139d1c3-9a53-495e-a264-789351bcac85'
+        //     }, {
+        //         grid_user_id: 'd691d46c-a3f2-49bc-a8f6-745e2063be08',
+        //         kyc_link_id: '2676a44a-c1ad-44a9-9909-c172ca58a68b'
+        //     }]
+        // }));
 
         // Load grid user ID and check if smart account creation is needed
         const loadDataAndCreateAccount = async () => {
@@ -72,16 +80,21 @@ function HomeScreenContent() {
         }
 
         const result = await easClient.getBalance({ smartAccountAddress: accountInfoToUse.smart_account_address });
-        const balances = result.balances;
-
+        const balances = result.data.balances;
+        console.log("🚀 ~ updateBalance ~ balances:", balances)
         if (balances.length === 0) {
             setBalance(0);
         } else {
             const usdcAddress = process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS;
+            console.log("🚀 ~ updateBalance ~ usdcAddress:", usdcAddress)
             if (!usdcAddress) {
                 console.error('USDC address not found');
             }
-            const usdcBalance = balances.find((balance: any) => balance.token_address === usdcAddress);
+            const usdcBalance = balances.find((balance: any) => {
+                console.log("🚀 ~ updateBalance ~ balance:", balance.token_address, usdcAddress)
+                return balance.token_address === usdcAddress
+            });
+            console.log("🚀 ~ updateBalance ~ usdcBalance:", usdcBalance)
             if (usdcBalance) {
                 setBalance(parseFloat(parseFloat(usdcBalance.amount_decimal).toFixed(2)));
             }
@@ -134,7 +147,9 @@ function HomeScreenContent() {
     ];
 
     const formatTransfers = (transfers: TransferResponse) => {
-        const transfersToConsider = transfers.filter(transfer => 'Spl' in transfer && transfer.Spl.mint === process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS);
+        // TODO: comment this in
+        const transfersToConsider = transfers.filter(transfer => ('Spl' in transfer && transfer.Spl.mint === process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS && transfer.Spl.confirmation_status === 'confirmed') || ('Bridge' in transfer && transfer.Bridge.state === 'payment_processed'));
+
         const transactions = transfersToConsider.map(transfer => {
             if ('Spl' in transfer) {
                 const splTransfer = transfer.Spl;

@@ -151,34 +151,34 @@ export default function FiatConfirmScreen() {
             const userPublicKey = accountInfo.smart_account_signer_public_key;
 
             const decryptedData = decryptCredentialBundle(credentialsBundle, keypair.privateKey);
-            const stamper = new TurnkeySuborgStamper(
-                decryptedData,
-                {
-                    subOrganizationId: accountInfo.mpc_primary_id,
-                    email: email,
-                    publicKey: keypair.publicKey
-                }
-            );
-            const userOrganizationId = accountInfo.mpc_primary_id;
-            try {
-                const signedTx = await signTransactionWithTurnkey({
-                    encodedTx: res.data.transaction_hash,
-                    stamper,
-                    userOrganizationId,
-                    userPublicKey
-                });
-                const easClient = new EasClient();
-                const response = await easClient.confirmPaymentIntent(accountInfo.smart_account_address, paymentIntentId, signedTx);
+            // const stamper = new TurnkeySuborgStamper(
+            //     decryptedData,
+            //     {
+            //         subOrganizationId: accountInfo.mpc_primary_id,
+            //         email: email,
+            //         publicKey: keypair.publicKey
+            //     }
+            // );
+            // const userOrganizationId = accountInfo.mpc_primary_id;
+            // try {
+            //     const signedTx = await signTransactionWithTurnkey({
+            //         encodedTx: res.data.transaction_hash,
+            //         stamper,
+            //         userOrganizationId,
+            //         userPublicKey
+            //     });
+            //     const easClient = new EasClient();
+            //     const response = await easClient.confirmPaymentIntent(accountInfo.smart_account_address, paymentIntentId, signedTx);
 
 
-            } catch (e: any) {
+            // } catch (e: any) {
 
-                if (e instanceof AppError && e.message === ErrorMessages.SESSION_EXPIRED) {
-                    logout();
-                }
-                console.log("🚀 ~ handleConfirm ~ e:", e)
-                setIsLoading(false);
-            }
+            //     if (e instanceof AppError && e.message === ErrorMessages.SESSION_EXPIRED) {
+            //         logout();
+            //     }
+            //     console.log("🚀 ~ handleConfirm ~ e:", e)
+            //     setIsLoading(false);
+            // }
 
             router.push({
                 pathname: '/success',

@@ -12,7 +12,7 @@ import { Link } from 'expo-router';
 import { ThemedButton, ThemedTextInput } from '@/components/ui/molecules';
 import { useAuth } from '@/contexts/AuthContext';
 import { easClient } from '@/utils/easClient';
-import { KycParams } from '@/types/Kyc';
+import { KycLinkId, KycLinkIds, KycParams } from '@/types/Kyc';
 import * as SecureStore from 'expo-secure-store';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 
@@ -29,7 +29,6 @@ function KYCModal() {
 
     useEffect(() => {
         if (!kycStatus) {
-            console.log("🚀 ~ useEffect ~ kycStatus:", kycStatus)
             setIsLoading(true);
             checkKycStatus();
             setIsLoading(false);
@@ -37,7 +36,6 @@ function KYCModal() {
     }, [kycStatus]);
 
     const checkKycStatus = async () => {
-        console.log("🚀 ~ checkKycStatus ~ checkKycStatus:")
         if (!accountInfo) {
             logout();
             return;
@@ -56,19 +54,21 @@ function KYCModal() {
             }
 
             // For demo purpose only! Save kyc link in db!
-            const bridge_kyc_link_id = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_ID);
+            const bridge_kyc_link_ids = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_IDS) as KycLinkIds | null;
+            let kycLinkId = '';
+            if (bridge_kyc_link_ids) {
+                kycLinkId = bridge_kyc_link_ids.ids.find((id: KycLinkId) => id.grid_user_id === gridUserId)?.kyc_link_id || '';
+            }
 
-            if (!bridge_kyc_link_id) {
+            if (kycLinkId === '') {
                 setKycStatus('not_started');
-
                 return;
             }
 
             const kycResponse = await easClient.getKYCStatus(
                 accountInfo.smart_account_address,
-                bridge_kyc_link_id
+                kycLinkId
             );
-            console.log("🚀 ~ fetchKycStatus ~ kycResponse.data.status:", kycResponse.data.status)
             SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KYC_STATUS, kycResponse.data.status);
             setKycStatus(kycResponse.data.status);
             setIsLoading(false);
@@ -106,6 +106,22 @@ function KYCModal() {
             if (response.data.kyc_link) {
                 setKycUrl(response.data.kyc_link);
                 setKycLinkId(response.data.id);
+                const bridgeKycLinkIds = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_IDS);
+                if (bridgeKycLinkIds) {
+                    const bridgeKycLinkIdsArray = JSON.parse(bridgeKycLinkIds);
+                    bridgeKycLinkIdsArray.push({
+                        grid_user_id: gridUserId,
+                        kyc_link_id: response.data.id
+                    });
+                    SecureStore.setItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_IDS, JSON.stringify({ ids: bridgeKycLinkIdsArray }));
+                } else {
+                    SecureStore.setItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_IDS, JSON.stringify({
+                        ids: [{
+                            grid_user_id: gridUserId,
+                            kyc_link_id: response.data.id
+                        }]
+                    }));
+                }
                 setKycStatus('incomplete');
             }
         } catch (err) {

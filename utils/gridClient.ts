@@ -24,6 +24,7 @@ export class GridClient {
             'Authorization': `Bearer ${process.env.GRID_API_KEY}`,
         };
 
+
     }
 
     private validateEnv() {
@@ -38,7 +39,6 @@ export class GridClient {
     ): Promise<T> {
         try {
             const url = `${this.baseUrl}${endpoint}`;
-
             const response = await fetch(url, {
                 ...options,
                 headers: {
@@ -46,6 +46,7 @@ export class GridClient {
                     ...options.headers,
                 },
             });
+
 
             if (!response.ok) {
                 // Optionally, try to read error text for debugging
@@ -56,10 +57,12 @@ export class GridClient {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.log("🚀 ~ GridClient ~ error:", error)
             throw error;
         }
     }
+
+
+
 
     generateIdempotencyKey(): string {
         return uuidv4();
@@ -69,6 +72,9 @@ export class GridClient {
     async authenticate(request: AuthenticationRequest): Promise<AuthenticationResponse> {
         return this.request<AuthenticationResponse>('/auth', {
             method: 'POST',
+            headers: {
+                ...this.defaultHeaders,
+            },
             body: JSON.stringify(request),
         });
     }
@@ -76,6 +82,9 @@ export class GridClient {
     async verifyOtp(data: OTPData): Promise<VerifyOtpResponse> {
         return this.request<VerifyOtpResponse>('/verify-otp', {
             method: 'POST',
+            headers: {
+                ...this.defaultHeaders,
+            },
             body: JSON.stringify(data),
         });
     }
@@ -84,13 +93,17 @@ export class GridClient {
     async createSmartAccount(request: CreateSmartAccountRequest): Promise<CreateSmartAccountResponse> {
         return this.request<CreateSmartAccountResponse>('', {
             method: 'POST',
+            headers: {
+                ...this.defaultHeaders,
+            },
             body: JSON.stringify(request),
         });
     }
 
     // Prepares a transaction.
-    async preparePaymentIntent(request: PreparePaymentIntentParams, smartAccountAddress: string): Promise<any> {
-        return this.request<UserResponse>(`/${smartAccountAddress}/payment-intents`, {
+    async preparePaymentIntent(request: PreparePaymentIntentParams, smartAccountAddress: string, useMpcProvider: boolean = false): Promise<any> {
+        const endpoint = useMpcProvider ? `/${smartAccountAddress}/payment-intents?use-mpc-provider=true` : `/${smartAccountAddress}/payment-intents`;
+        return this.request<UserResponse>(endpoint, {
             method: 'POST',
             headers: {
                 ...this.defaultHeaders,
@@ -159,16 +172,16 @@ export class GridClient {
         });
     }
 
-    async confirmPaymentIntent(smartAccountAddress: string, paymentIntentId: string, transaction: string): Promise<any> {
-        console.log("🚀 ~ GridClient ~ confirmPaymentIntent ~ paymentIntentId:", paymentIntentId)
-        return this.request<any>(`/${smartAccountAddress}/payment-intents/${paymentIntentId}/confirm`, {
+    async confirmPaymentIntent(smartAccountAddress: string, paymentIntentId: string, payload: string, useMpcProvider: boolean = false): Promise<any> {
+        const endpoint = useMpcProvider ? `/${smartAccountAddress}/payment-intents/${paymentIntentId}/confirm?use-mpc-provider=true` : `/${smartAccountAddress}/payment-intents/${paymentIntentId}/confirm`;
+
+        return this.request<any>(endpoint, {
             method: 'POST',
             headers: {
                 ...this.defaultHeaders,
             },
-            body: JSON.stringify({
-                "transaction": transaction
-            })
+            body: JSON.stringify(payload)
+
         });
     }
 }

@@ -2,8 +2,9 @@ import { gridClient } from "@/utils/gridClient";
 
 export async function POST(request: Request) {
     try {
-        const { smartAccountAddress, paymentIntentId, transaction } = await request.json();
-        const response = await gridClient.confirmPaymentIntent(smartAccountAddress, paymentIntentId, transaction);
+        const { smartAccountAddress, paymentIntentId, payload, useMpcProvider } = await request.json();
+        const response = await gridClient.confirmPaymentIntent(smartAccountAddress, paymentIntentId, payload, useMpcProvider);
+
 
         return new Response(JSON.stringify(response), {
             status: 200,

@@ -38,7 +38,7 @@ export function TransactionItem({ type, date, amount, isLast, onPress, address, 
                         {formattedAddress}
                     </ThemedText>
                     <ThemedText type="tiny" style={styles.date}> • {date}</ThemedText>
-                    <Chip
+                    {/* <Chip
                         style={{
                             backgroundColor: `#000000` + 40,
                             ...styles.chip
@@ -46,7 +46,7 @@ export function TransactionItem({ type, date, amount, isLast, onPress, address, 
                         textStyle={styles.chipText}
                     >
                         {status}
-                    </Chip>
+                    </Chip> */}
                 </View>
             </View>
 

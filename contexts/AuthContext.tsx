@@ -83,11 +83,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             // Helper for kyc
             const emailFromStorage = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.PERSISTENT_EMAIL);
-            console.log("🚀 ~ verifyCode ~ emailFromStorage:", emailFromStorage)
-            console.log("🚀 ~ verifyCode ~ email:", email)
 
             if (emailFromStorage !== email) {
-                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_ID);
                 SecureStore.setItemAsync(AUTH_STORAGE_KEYS.PERSISTENT_EMAIL, email ?? '');
             }
 

@@ -119,10 +119,10 @@ export class EasClient {
     }
 
     // Prepares a transaction.
-    async preparePaymentIntent(request: any, smartAccountAddress: string): Promise<any> {
+    async preparePaymentIntent(request: any, smartAccountAddress: string, useMpcProvider: boolean = false): Promise<any> {
         return this.request<[]>('/prepare-payment-intent', {
             method: 'POST',
-            body: JSON.stringify({ payload: request, smartAccountAddress }),
+            body: JSON.stringify({ payload: request, smartAccountAddress, useMpcProvider }),
         });
     }
 
@@ -162,11 +162,11 @@ export class EasClient {
         });
     }
 
-    async confirmPaymentIntent(smartAccountAddress: string, paymentIntentId: string, transaction: string): Promise<any> {
+    async confirmPaymentIntent(smartAccountAddress: string, paymentIntentId: string, payload?: string, useMpcProvider: boolean = false): Promise<any> {
 
         return this.request<any>(`/confirm`, {
             method: 'POST',
-            body: JSON.stringify({ smartAccountAddress, paymentIntentId, transaction }),
+            body: JSON.stringify({ smartAccountAddress, paymentIntentId, payload, useMpcProvider }),
         });
     }
 }

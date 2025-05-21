@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { KycStatus } from '@/types/Kyc';
+import { KycStatus, KycLinkIds, KycLinkId } from '@/types/Kyc';
 import { easClient } from '@/utils/easClient';
 import { useAuth } from './AuthContext';
 import { Currency } from '@/types/Transaction';
@@ -112,19 +112,22 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
         setError(null);
 
         try {
-            const bridge_kyc_link_id = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_ID);
-
-            if (!bridge_kyc_link_id) {
+            const bridge_kyc_link_ids = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_IDS);
+            if (!bridge_kyc_link_ids) {
                 setKycStatus('not_started');
-
                 return;
             }
 
+            const parsedIds = JSON.parse(bridge_kyc_link_ids) as KycLinkIds;
+            const kycLinkId = parsedIds.ids.find((id: KycLinkId) => id.grid_user_id === accountInfo.grid_user_id)?.kyc_link_id;
+            if (!kycLinkId) {
+                setKycStatus('not_started');
+                return;
+            }
             const kycResponse = await easClient.getKYCStatus(
                 accountInfo.smart_account_address,
-                bridge_kyc_link_id
+                kycLinkId
             );
-            console.log("🚀 ~ fetchKycStatus ~ kycResponse.data.status:", kycResponse.data.status)
             SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KYC_STATUS, kycResponse.data.status);
             setKycStatus(kycResponse.data.status);
         } catch (err) {

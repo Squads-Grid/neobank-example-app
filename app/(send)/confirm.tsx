@@ -9,16 +9,15 @@ import { formatAmount } from '@/utils/helper';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ButtonGroup } from '@/components/ui/molecules';
 import { Height, Size, Weight } from '@/constants/Typography';
-import { signTransactionWithTurnkey } from '@/utils/turnkey';
 import { useAuth } from '@/contexts/AuthContext';
-import { TurnkeySuborgStamper } from '@/utils/turnkey';
-import { VersionedTransaction, Connection } from '@solana/web3.js';
 import { decryptCredentialBundle } from '@turnkey/crypto';
 import { EasClient } from '@/utils/easClient';
 import { Currency, PreparePaymentIntentParams, SmartAccount, SolanaAddress } from '@/types/Transaction';
-import { v4 as uuidv4 } from 'uuid';
 import { ErrorCode, ErrorMessages, handleError } from '@/utils/errors';
 import { AppError } from '@/utils/errors';
+import { GridStamper } from '@/utils/stamper';
+import Toast from 'react-native-toast-message';
+
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
@@ -44,10 +43,9 @@ export default function ConfirmScreen() {
                 router.push({
                     pathname: '/(auth)/login',
                 });
+
                 return;
             }
-
-            const connection = new Connection("https://api.devnet.solana.com");
 
             const source: SmartAccount = {
                 smart_account_address: accountInfo.smart_account_address,
@@ -59,7 +57,6 @@ export default function ConfirmScreen() {
                 address: recipient,
                 currency: 'usdc',
             }
-
             // Convert amount to USDC base units (multiply by 10^6)
             const amountInBaseUnits = Math.round(parseFloat(amount) * Math.pow(10, USDC_DECIMALS)).toString();
 
@@ -69,11 +66,13 @@ export default function ConfirmScreen() {
                 source: source,
                 destination: destination
             };
-
             const easClient = new EasClient();
 
-            const res = await easClient.preparePaymentIntent(prepareTransactionParams, accountInfo.smart_account_address);
+            const res = await easClient.preparePaymentIntent(prepareTransactionParams, accountInfo.smart_account_address, true);
+            console.log("🚀 ~ handleConfirm ~ res:", res)
 
+            const receivedPayload = res.data;
+            const mpcPayload = receivedPayload.mpc_payload;
             if (!email) {
                 logout();
                 router.push({
@@ -82,51 +81,69 @@ export default function ConfirmScreen() {
 
                 return;
             }
-            const userPublicKey = accountInfo.smart_account_signer_public_key;
-
             const decryptedData = decryptCredentialBundle(credentialsBundle, keypair.privateKey);
-            const stamper = new TurnkeySuborgStamper(
-                decryptedData,
-                {
-                    subOrganizationId: accountInfo.mpc_primary_id,
-                    email: email,
-                    publicKey: keypair.publicKey
-                }
+            const stamper = new GridStamper(
+                decryptedData
             );
+            const stamp = await stamper.stamp(JSON.parse(mpcPayload));
 
-            const userOrganizationId = accountInfo.mpc_primary_id;
+            fetch(`http://172.20.10.2:50001/api/v0/grid/smart-accounts/${accountInfo.smart_account_address}/payment-intents/${res.data.id}/confirm?use-mpc-provider=true`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-grid-environment': 'sandbox',
+                    'Authorization': 'Bearer dc9589c7-d3cb-4bf2-b45a-b68b9f3bb2bf'
+                },
+                body: JSON.stringify({
+                    transaction: receivedPayload.transaction_hash,
+                    mpcPayload: JSON.stringify({
+                        requestParameters: JSON.parse(mpcPayload),
+                        stamp,
+                    }),
+                })
+            })
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
 
-            try {
-                const signedTx = await signTransactionWithTurnkey({
-                    encodedTx: res.data.transaction_hash,
-                    stamper,
-                    userOrganizationId,
-                    userPublicKey
+                    if (data?.details[0].message?.includes('expired api key')) {
+                        handleError(ErrorCode.SESSION_EXPIRED, true, true);
+                        logout();
+
+                    } else {
+                        console.log("🚀 ~ error when confirming payment intent", data)
+                        throw new Error('Failed to confirm payment intent');
+                    }
+                    // }
+                    router.push({
+
+                        pathname: '/success',
+                        params: { amount, type, title },
+                    })
+                })
+
+
+                .catch(error => {
+                    if (error?.message?.includes('expired api key')) {
+                        Toast.show({
+                            text1: 'API key expired',
+                            type: 'error',
+                            visibilityTime: 5000,
+                        });
+                        logout();
+
+
+                    } else {
+                        throw error;
+                    }
                 });
 
-                if (!signedTx) {
-                    throw new Error('No signed transaction returned');
-                }
 
-                const tx = VersionedTransaction.deserialize(Buffer.from(signedTx, 'base64'));
-                await connection.sendTransaction(tx);
 
-            } catch (e: any) {
-
-                if (e instanceof AppError && e.message === ErrorMessages.SESSION_EXPIRED) {
-                    logout();
-                }
-                console.log("🚀 ~ handleConfirm ~ e:", e)
-                setIsLoading(false);
-            }
-
-            router.push({
-                pathname: '/success',
-                params: { amount, type, title },
-            });
-        } catch (err) {
-            console.error("Failed to sign transaction:", err);
+        } catch (error: any) {
             setIsLoading(false);
+            throw error;
         }
     };
 

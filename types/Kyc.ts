@@ -31,6 +31,15 @@ export interface KycRequest {
     redirect_uri: string | null;
 }
 
+export interface KycLinkIds {
+    ids: KycLinkId[]
+}
+
+export interface KycLinkId {
+    grid_user_id: string,
+    kyc_link_id: string
+}
+
 export interface KycParams {
     grid_user_id: string;
     smart_account_address: string;
