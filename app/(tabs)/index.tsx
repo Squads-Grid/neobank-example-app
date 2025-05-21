@@ -81,20 +81,16 @@ function HomeScreenContent() {
 
         const result = await easClient.getBalance({ smartAccountAddress: accountInfoToUse.smart_account_address });
         const balances = result.data.balances;
-        console.log("🚀 ~ updateBalance ~ balances:", balances)
         if (balances.length === 0) {
             setBalance(0);
         } else {
             const usdcAddress = process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS;
-            console.log("🚀 ~ updateBalance ~ usdcAddress:", usdcAddress)
             if (!usdcAddress) {
                 console.error('USDC address not found');
             }
             const usdcBalance = balances.find((balance: any) => {
-                console.log("🚀 ~ updateBalance ~ balance:", balance.token_address, usdcAddress)
                 return balance.token_address === usdcAddress
             });
-            console.log("🚀 ~ updateBalance ~ usdcBalance:", usdcBalance)
             if (usdcBalance) {
                 setBalance(parseFloat(parseFloat(usdcBalance.amount_decimal).toFixed(2)));
             }
