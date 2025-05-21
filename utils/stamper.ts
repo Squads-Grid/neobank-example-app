@@ -1,7 +1,6 @@
 // import { signWithApiKey } from "@turnkey/api-key-stamper";
 import { getPublicKey } from "@turnkey/crypto";
 import {
-    stringToBase64urlString,
     uint8ArrayFromHexString,
     uint8ArrayToHexString,
 } from "@turnkey/encoding";

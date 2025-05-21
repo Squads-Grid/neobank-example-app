@@ -1,7 +1,6 @@
 import { AuthenticationRequest, AuthenticationResponse, Keypair, OTPData, VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
-import { PreparePaymentIntentParams } from '@/types/Transaction';
-import { handleError, AppError, ErrorCode } from './errors';
+import { handleError, ErrorCode } from './errors';
 import { KycResponse, KycParams } from '@/types/Kyc';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 
