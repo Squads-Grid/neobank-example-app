@@ -69,7 +69,6 @@ export default function ConfirmScreen() {
             const easClient = new EasClient();
 
             const res = await easClient.preparePaymentIntent(prepareTransactionParams, accountInfo.smart_account_address, true);
-            console.log("🚀 ~ handleConfirm ~ res:", res)
 
             const receivedPayload = res.data;
             const mpcPayload = receivedPayload.mpc_payload;
@@ -105,23 +104,24 @@ export default function ConfirmScreen() {
                 .then(response => {
                     return response.json();
                 })
-                .then(data => {
+                .then(data => { // TODO: Improve error handling
 
-                    if (data?.details[0].message?.includes('expired api key')) {
+                    if (data.details && data?.details[0].message?.includes('expired api key')) {
                         handleError(ErrorCode.SESSION_EXPIRED, true, true);
                         logout();
 
-                    } else {
-                        console.log("🚀 ~ error when confirming payment intent", data)
+                    } else if (data.details) {
+                        setIsLoading(false);
                         throw new Error('Failed to confirm payment intent');
-                    }
-                    // }
-                    router.push({
 
+                    }
+                    setIsLoading(false);
+                    router.push({
                         pathname: '/success',
                         params: { amount, type, title },
                     })
                 })
+
 
 
                 .catch(error => {
@@ -135,6 +135,8 @@ export default function ConfirmScreen() {
 
 
                     } else {
+                        setIsLoading(false);
+                        console.log("🚀 ~ handleConfirm ~ error:", error)
                         throw error;
                     }
                 });
