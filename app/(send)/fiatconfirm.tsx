@@ -126,7 +126,7 @@ export default function FiatConfirmScreen() {
             };
 
             const easClient = new EasClient();
-            const res = await easClient.preparePaymentIntent(payload, accountInfo.smart_account_address);
+            const res = await easClient.preparePaymentIntent(payload, accountInfo.smart_account_address, true);
             console.log("🚀 ~ handleConfirm ~ res:", res)
 
             if (!email) {
@@ -137,22 +137,33 @@ export default function FiatConfirmScreen() {
                 return;
             }
 
+            const receivedPayload = res.data;
+            const mpcPayload = receivedPayload.mpc_payload;
+            if (!email) {
+                logout();
+                router.push({
+                    pathname: '/(auth)/login',
+                });
+
+                return;
+            }
+
             const decryptedData = decryptCredentialBundle(credentialsBundle, keypair.privateKey);
             const stamper = new GridStamper(decryptedData);
-            const stamp = await stamper.stamp(JSON.parse(res.data.mpc_payload));
+            const stamp = await stamper.stamp(JSON.parse(mpcPayload));
 
             const confirmPayload = {
                 transaction: res.data.transaction_hash,
-                mpcPayload: {
-                    requestParameters: JSON.parse(res.data.mpc_payload),
+                mpcPayload: JSON.stringify({
+                    requestParameters: JSON.parse(mpcPayload),
                     stamp,
-                }
+                }),
             };
 
-            const response = await easClient.confirmPaymentIntent(
+            await easClient.confirmPaymentIntent(
                 accountInfo.smart_account_address,
                 res.data.id,
-                JSON.stringify(confirmPayload),
+                confirmPayload,
                 true
             );
 
