@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ActionModal } from '../ActionModal';
 import { ModalOptionsList } from '../../molecules/ModalOptionsList';
 import { ActionOption } from '../../molecules/ModalOptionsList';
 import { router } from 'expo-router';
+import { useModalFlow } from '@/contexts/ModalFlowContext';
 
 const bankIcon = require('@/assets/icons/bank.png');
 const walletIcon = require('@/assets/icons/wallet.png');
@@ -13,6 +14,17 @@ interface SendModalProps {
 }
 
 export function SendModal({ visible, onClose }: SendModalProps) {
+    const [isBankLoading, setIsBankLoading] = useState(false);
+    const { kycStatus, fetchKycStatus } = useModalFlow();
+
+    // Fetch latest KYC status when modal becomes visible
+    React.useEffect(() => {
+        setIsBankLoading(true);
+        fetchKycStatus().finally(() => {
+            setIsBankLoading(false);
+        });
+    }, []);
+
     const handleSendToWallet = () => {
         onClose();
         router.push({
@@ -35,6 +47,27 @@ export function SendModal({ visible, onClose }: SendModalProps) {
         });
     };
 
+    const isKycPending = kycStatus === 'under_review' || kycStatus === 'incomplete';
+    const isKycRejected = kycStatus === 'rejected';
+
+    const getBankDescription = () => {
+        if (isBankLoading || !kycStatus) {
+            return 'Loading...';
+        }
+        else if (isKycPending) {
+            return 'KYC verification in progress';
+        }
+        else if (isKycRejected) {
+            return 'KYC verification failed. Please try again';
+        }
+        else if (kycStatus === 'not_started') {
+            return 'Complete KYC to send via bank transfer';
+        }
+        else {
+            return 'Send USDC to your Bank Account';
+        }
+    };
+
     const sendOptions: ActionOption[] = [
         {
             key: 'wallet',
@@ -46,9 +79,10 @@ export function SendModal({ visible, onClose }: SendModalProps) {
         {
             key: 'bank',
             title: 'To Bank Account',
-            description: 'Send USDC to Bank Account',
+            description: getBankDescription(),
             icon: bankIcon,
-            onPress: handleSendToBank
+            onPress: handleSendToBank,
+            disabled: isBankLoading || !kycStatus || kycStatus !== 'approved'
         }
     ];
 

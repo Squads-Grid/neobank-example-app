@@ -3,7 +3,6 @@ import { ActionModal } from '../ActionModal';
 import { ModalOptionsList } from '../../molecules/ModalOptionsList';
 import { ActionOption } from '../../molecules/ModalOptionsList';
 import { useModalFlow } from '@/contexts/ModalFlowContext';
-import { KycStatus } from '@/types/Kyc';
 import { router } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 
