@@ -104,10 +104,19 @@ function HomeScreenContent() {
             return;
         }
 
-        if (accountInfo?.smart_account_address) {
-            await Promise.all([updateBalance(), fetchTransactions()]);
+        // Add timeout to prevent refresh from getting stuck
+        const timeoutId = setTimeout(() => {
+            setRefreshing(false);
+        }, 10000); // 10 second timeout
+
+        try {
+            if (accountInfo?.smart_account_address) {
+                await Promise.all([updateBalance(), fetchTransactions()]);
+            }
+        } finally {
+            clearTimeout(timeoutId);
+            setRefreshing(false);
         }
-        setRefreshing(false);
     }, [accountInfo]);
 
     const fetchTransactions = async () => {
@@ -216,6 +225,7 @@ function HomeScreenContent() {
                     refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                     }
+                    showsVerticalScrollIndicator={false}
                 >
                     <View style={styles.header}>
 

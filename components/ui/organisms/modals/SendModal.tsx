@@ -8,7 +8,7 @@ import { useModalFlow } from '@/contexts/ModalFlowContext';
 const bankIcon = require('@/assets/icons/bank.png');
 const walletIcon = require('@/assets/icons/wallet.png');
 
-const DISABLE_OFFRAMP = false;
+const DISABLE_OFFRAMP = true;
 
 interface SendModalProps {
     visible: boolean;

@@ -21,7 +21,7 @@ export const authenticateUser = async (email: string): Promise<{ otpId: string; 
     const request: AuthenticationRequest = {
         email,
         app_name: "Bright",
-        app_icon_url: "https://images.pexels.com/photos/57416/cat-sweet-kitty-animals-57416.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", // TODO: Change this
+        app_icon_url: "https://i.imgur.com/WeyHBEn.png",
         expiration: 3600
     };
 
