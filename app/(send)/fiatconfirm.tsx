@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TextInput } from 'react-native';
 import { ThemedScreen } from '@/components/ui/layout';
 import { ThemedText, IconSymbol, LoadingSpinner } from '@/components/ui/atoms';
 import { IconSymbolName } from '@/components/ui/atoms/IconSymbol';
@@ -15,9 +15,19 @@ import { EasClient } from '@/utils/easClient';
 import { SmartAccount, UsAccountType, CountryCode } from '@/types/Transaction';
 import { v4 as uuidv4 } from 'uuid';
 import { GridStamper } from '@/utils/stamper';
+import { storeExternalAccount } from '@/utils/externalAccount';
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
+
+interface Address {
+    street_line_1: string;
+    street_line_2?: string;
+    city: string;
+    state: string;
+    postal_code?: string;
+    country: string;
+}
 
 export default function FiatConfirmScreen() {
     const textColor = useThemeColor({}, 'text');
@@ -30,21 +40,30 @@ export default function FiatConfirmScreen() {
         routingNumber,
         firstName,
         lastName,
-        accountType,
-        country,
         type,
-        title
+        title,
+        address,
+        label
     } = useLocalSearchParams<{
         amount: string;
         accountNumber: string;
         routingNumber: string;
         firstName: string;
         lastName: string;
-        accountType: UsAccountType;
-        country: CountryCode;
         type: string;
         title: string;
+        address: string;
+        label: string;
     }>();
+
+    const parsedAddress: Address = address ? JSON.parse(address) : {
+        street_line_1: '',
+        street_line_2: '',
+        city: '',
+        state: '',
+        postal_code: '',
+        country: ''
+    };
 
     const handleConfirm = async () => {
         setIsLoading(true);
@@ -63,37 +82,8 @@ export default function FiatConfirmScreen() {
                 authorities: [accountInfo.smart_account_signer_public_key],
             }
 
-
-
-            // {
-            //     type: 'ach',
-            //     currency: 'usd',
-            //     details: {
-            //         currency: 'usd',
-            //         account_owner_name: `${firstName} ${lastName}`,
-            //         account_number: accountNumber,
-            //         routing_number: routingNumber,
-            //         bank_name: 'Test Bank',
-            //         account_type: 'us',//countType,
-            //         account: {
-            //             checking_or_savings: 'checking',
-            //             last_4: accountNumber.slice(-4),
-            //             routing_number: routingNumber
-            //         },
-            //         address: {
-            //             street_line_1: "123 Main St", // TODO: Add address fields
-            //             city: "New York",
-            //             state: "NY",
-            //             postal_code: "10001",
-            //             country: country
-            //         },
-            //         idempotency_key: uuidv4()
-            //     }
-            // }
-
             // Convert amount to USDC base units (multiply by 10^6)
             const amountInBaseUnits = Math.round(parseFloat(amount) * Math.pow(10, USDC_DECIMALS)).toString();
-
 
             const payload = {
                 amount: amountInBaseUnits,
@@ -108,26 +98,33 @@ export default function FiatConfirmScreen() {
                     currency: "usd",
                     details: {
                         currency: "usd",
-                        bank_name: "Bank of Nowhere",
-                        account_owner_name: "Fred Feuerstein",
-                        account_number: "900808588430",
-                        routing_number: "021000021",
+                        account_owner_name: `${firstName} ${lastName}`,
+                        account_number: accountNumber, //900808588430
+                        routing_number: routingNumber, //021000021
                         account_type: "us",
                         address: {
-                            street_line_1: "1800 North Pole St.",
-                            city: "Orlando",
-                            state: "FL",
-                            postal_code: "32801",
-                            country: "USA"
+                            street_line_1: parsedAddress.street_line_1,
+                            // street_line_2: parsedAddress.street_line_2,
+                            city: parsedAddress.city,
+                            state: parsedAddress.state,
+                            postal_code: parsedAddress.postal_code,
+                            country: parsedAddress.country
                         },
                         idempotency_key: uuidv4()
                     }
                 }
             };
 
+
             const easClient = new EasClient();
             const res = await easClient.preparePaymentIntent(payload, accountInfo.smart_account_address, true);
-            console.log("🚀 ~ handleConfirm ~ res:", res)
+            console.log("🚀 ~ handleConfirm ~ res:", res.data.external_account_id)
+
+            // Store the external account ID with label
+            if (res.data.external_account_id && accountInfo.grid_user_id) {
+                const accountLabel = label || `${firstName} ${lastName}'s Account`;
+                await storeExternalAccount(accountInfo.grid_user_id, res.data.external_account_id, accountLabel);
+            }
 
             if (!email) {
                 logout();
@@ -197,6 +194,24 @@ export default function FiatConfirmScreen() {
         )
     }
 
+    const renderAddress = () => {
+        return (
+            <View style={styles.addressContainer}>
+                <ThemedText type="regular" style={{ color: textColor + '40', marginBottom: Spacing.sm }}>Address</ThemedText>
+                <View style={styles.addressContent}>
+                    <ThemedText type="default" style={styles.infoText}>{parsedAddress.street_line_1}</ThemedText>
+                    {parsedAddress.street_line_2 && (
+                        <ThemedText type="default" style={styles.infoText}>{parsedAddress.street_line_2}</ThemedText>
+                    )}
+                    <ThemedText type="default" style={styles.infoText}>
+                        {`${parsedAddress.city}, ${parsedAddress.state} ${parsedAddress.postal_code || ''}`}
+                    </ThemedText>
+                    <ThemedText type="default" style={styles.infoText}>{parsedAddress.country}</ThemedText>
+                </View>
+            </View>
+        );
+    };
+
     return (
         <ThemedScreen useSafeArea={true} safeAreaEdges={['bottom', 'left', 'right']}>
             {isLoading ? (
@@ -211,6 +226,7 @@ export default function FiatConfirmScreen() {
                         {renderInfo('person', 'Recipient', `${firstName} ${lastName}`)}
                         {renderInfo('creditcard', 'Account', `****${accountNumber.slice(-4)}`)}
                         {renderInfo('building.columns', 'Bank', `Routing: ${routingNumber}`)}
+                        {renderAddress()}
                         {renderInfo('network', 'Network fee', '0.0004 SOL')}
                     </View>
 
@@ -250,4 +266,11 @@ const styles = StyleSheet.create({
         fontWeight: Weight.semiBoldWeight,
         lineHeight: Size.mediumLarge * Height.lineHeightMedium,
     },
+    addressContainer: {
+        marginTop: Spacing.sm,
+    },
+    addressContent: {
+        gap: Spacing.xs,
+    },
+
 }); 

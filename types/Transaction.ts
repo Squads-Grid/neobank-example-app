@@ -260,3 +260,13 @@ export type Transfer = {
 }
 
 export type TransferResponse = Transfer[];
+
+export interface ExternalAccountMapping {
+    grid_user_id: string;
+    external_account_id: string;
+    label: string;
+}
+
+export interface ExternalAccountStorage {
+    accounts: ExternalAccountMapping[];
+}
