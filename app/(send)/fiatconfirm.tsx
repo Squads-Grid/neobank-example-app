@@ -16,6 +16,8 @@ import { SmartAccount, UsAccountType, CountryCode } from '@/types/Transaction';
 import { v4 as uuidv4 } from 'uuid';
 import { GridStamper } from '@/utils/stamper';
 import { storeExternalAccount } from '@/utils/externalAccount';
+import Toast from 'react-native-toast-message';
+import { ErrorCode } from '@/types/Error';
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
@@ -117,59 +119,79 @@ export default function FiatConfirmScreen() {
 
 
             const easClient = new EasClient();
-            const res = await easClient.preparePaymentIntent(payload, accountInfo.smart_account_address, true);
-            console.log("🚀 ~ handleConfirm ~ res:", res.data.external_account_id)
+            try {
+                const res = await easClient.preparePaymentIntent(payload, accountInfo.smart_account_address, true);
+                console.log("🚀 ~ handleConfirm ~ res:", res.data.external_account_id)
 
-            // Store the external account ID with label
-            if (res.data.external_account_id && accountInfo.grid_user_id) {
-                const accountLabel = label || `${firstName} ${lastName}'s Account`;
-                await storeExternalAccount(accountInfo.grid_user_id, res.data.external_account_id, accountLabel);
-            }
+                // Store the external account ID with label
+                if (res.data.external_account_id && accountInfo.grid_user_id) {
+                    const accountLabel = label || `${firstName} ${lastName}'s Account`;
+                    await storeExternalAccount(accountInfo.grid_user_id, res.data.external_account_id, accountLabel);
+                }
 
-            if (!email) {
-                logout();
+                if (!email) {
+                    logout();
+                    router.push({
+                        pathname: '/(auth)/login',
+                    });
+                    return;
+                }
+
+                const receivedPayload = res.data;
+                const mpcPayload = receivedPayload.mpc_payload;
+                if (!email) {
+                    logout();
+                    router.push({
+                        pathname: '/(auth)/login',
+                    });
+                    return;
+                }
+
+                const decryptedData = decryptCredentialBundle(credentialsBundle, keypair.privateKey);
+                const stamper = new GridStamper(decryptedData);
+                const stamp = await stamper.stamp(JSON.parse(mpcPayload));
+
+                const confirmPayload = {
+                    transaction: res.data.transaction_hash,
+                    mpcPayload: JSON.stringify({
+                        requestParameters: JSON.parse(mpcPayload),
+                        stamp,
+                    }),
+                };
+
+                await easClient.confirmPaymentIntent(
+                    accountInfo.smart_account_address,
+                    res.data.id,
+                    confirmPayload,
+                    true
+                );
+
                 router.push({
-                    pathname: '/(auth)/login',
+                    pathname: '/success',
+                    params: { amount, type, title },
                 });
-                return;
+            } catch (error: any) {
+                console.error("API Error:", error);
+                if (error?.data?.code === ErrorCode.SESSION_EXPIRED ||
+                    error?.data?.details?.some((detail: any) => detail.code === 'API_KEY_EXPIRED')) {
+                    Toast.show({
+                        text1: 'Session expired, please log in again',
+                        type: 'error',
+                        visibilityTime: 5000,
+                    });
+                    logout();
+                    return;
+                }
+                throw error;
             }
-
-            const receivedPayload = res.data;
-            const mpcPayload = receivedPayload.mpc_payload;
-            if (!email) {
-                logout();
-                router.push({
-                    pathname: '/(auth)/login',
-                });
-
-                return;
-            }
-
-            const decryptedData = decryptCredentialBundle(credentialsBundle, keypair.privateKey);
-            const stamper = new GridStamper(decryptedData);
-            const stamp = await stamper.stamp(JSON.parse(mpcPayload));
-
-            const confirmPayload = {
-                transaction: res.data.transaction_hash,
-                mpcPayload: JSON.stringify({
-                    requestParameters: JSON.parse(mpcPayload),
-                    stamp,
-                }),
-            };
-
-            await easClient.confirmPaymentIntent(
-                accountInfo.smart_account_address,
-                res.data.id,
-                confirmPayload,
-                true
-            );
-
-            router.push({
-                pathname: '/success',
-                params: { amount, type, title },
-            });
         } catch (err) {
             console.error("Failed to sign transaction:", err);
+            Toast.show({
+                text1: 'An error occurred while processing your transaction. Please try again.',
+                type: 'error',
+                visibilityTime: 5000,
+            });
+        } finally {
             setIsLoading(false);
         }
     };

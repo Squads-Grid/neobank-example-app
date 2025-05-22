@@ -1,0 +1,4 @@
+export enum ErrorCode {
+    SESSION_EXPIRED = 'SESSION_EXPIRED',
+    API_KEY_EXPIRED = 'API_KEY_EXPIRED'
+} 
