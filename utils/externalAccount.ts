@@ -45,6 +45,19 @@ export const getExternalAccountId = async (gridUserId: string): Promise<string |
     }
 };
 
+export const getExternalAccountIds = async (): Promise<ExternalAccountStorage | null> => {
+    try {
+        const storage = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
+        if (!storage) return null;
+
+        const parsedStorage: ExternalAccountStorage = JSON.parse(storage);
+        return parsedStorage;
+    } catch (error) {
+        console.error('Error getting external account:', error);
+        return null;
+    }
+};
+
 export const clearExternalAccounts = async () => {
     try {
         await SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);

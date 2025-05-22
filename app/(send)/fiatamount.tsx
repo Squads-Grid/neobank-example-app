@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { ThemedScreen } from '@/components/ui/layout';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -8,6 +8,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Chip, IconSymbol, ThemedText } from '@/components/ui/atoms';
 import { formatAmount } from '@/utils/helper';
 import { CountryCode, UsAccountType } from '@/types/Transaction';
+import { getExternalAccountIds } from '@/utils/externalAccount';
 
 interface Address {
     street_line_1: string;
@@ -28,6 +29,7 @@ export default function AmountScreen() {
     const [accountType, setAccountType] = useState<UsAccountType>('checking');
     const [country, setCountry] = useState<CountryCode>('USA');
     const [label, setLabel] = useState('');
+    const [bankName, setBankName] = useState('');
 
     const [address, setAddress] = useState<Address>({
         street_line_1: '',
@@ -51,6 +53,20 @@ export default function AmountScreen() {
             render: () => renderBankDetails(),
         }
     ]
+
+    async function getExtAccount() {
+        console.log("🚀🚀🚀")
+        const ext = await getExternalAccountIds();
+        console.log("🚀 ~ ext:", ext)
+
+    }
+
+    useEffect(() => {
+        console.log("🚀 hi");
+
+
+        getExtAccount();
+    }, []);
 
     // Get params from the router
     const { type, title } = useLocalSearchParams<{ type: string; title: string }>();
@@ -98,7 +114,9 @@ export default function AmountScreen() {
                     country,
                     type,
                     title,
-                    address: JSON.stringify(address)
+                    address: JSON.stringify(address),
+                    bankName,
+                    label
                 }
             });
         }
@@ -212,6 +230,13 @@ export default function AmountScreen() {
                     <View style={{ marginBottom: Spacing.lg }} />
 
                     <ThemedText type="regular" style={styles.sectionTitle}>Bank Account</ThemedText>
+                    <ThemedTextInput
+                        style={styles.input}
+                        value={bankName}
+                        onChangeText={setBankName}
+                        placeholder="Bank Name"
+                    />
+                    <View style={{ marginBottom: Spacing.sm }} />
                     <ThemedTextInput
                         style={styles.input}
                         value={accountNumber}

@@ -45,7 +45,8 @@ export default function FiatConfirmScreen() {
         type,
         title,
         address,
-        label
+        label,
+        bankName
     } = useLocalSearchParams<{
         amount: string;
         accountNumber: string;
@@ -56,6 +57,7 @@ export default function FiatConfirmScreen() {
         title: string;
         address: string;
         label: string;
+        bankName: string;
     }>();
 
     const parsedAddress: Address = address ? JSON.parse(address) : {
@@ -103,6 +105,7 @@ export default function FiatConfirmScreen() {
                         account_owner_name: `${firstName} ${lastName}`,
                         account_number: accountNumber, //900808588430
                         routing_number: routingNumber, //021000021
+                        bank_name: bankName,
                         account_type: "us",
                         address: {
                             street_line_1: parsedAddress.street_line_1,
@@ -125,6 +128,8 @@ export default function FiatConfirmScreen() {
 
                 // Store the external account ID with label
                 if (res.data.external_account_id && accountInfo.grid_user_id) {
+                    console.log("🚀 ~ handleConfirm ~ (res.data.external_account_id saving::::::", (res.data.external_account_id))
+
                     const accountLabel = label || `${firstName} ${lastName}'s Account`;
                     await storeExternalAccount(accountInfo.grid_user_id, res.data.external_account_id, accountLabel);
                 }
