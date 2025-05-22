@@ -37,16 +37,7 @@ function HomeScreenContent() {
             return;
         }
 
-        console.log("🚀 ~ useEffect ~ accountInfo:", accountInfo)
-        // SecureStore.setItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_IDS, JSON.stringify({
-        //     ids: [{
-        //         grid_user_id: '3723e3c6-74e7-4845-a27c-c6956dbcfea1',
-        //         kyc_link_id: 'c139d1c3-9a53-495e-a264-789351bcac85'
-        //     }, {
-        //         grid_user_id: 'd691d46c-a3f2-49bc-a8f6-745e2063be08',
-        //         kyc_link_id: '2676a44a-c1ad-44a9-9909-c172ca58a68b'
-        //     }]
-        // }));
+        // SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_IDS);
 
         // Load grid user ID and check if smart account creation is needed
         const loadDataAndCreateAccount = async () => {

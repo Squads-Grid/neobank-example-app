@@ -5,6 +5,7 @@ import { useAuth } from './AuthContext';
 import { Currency } from '@/types/Transaction';
 import * as SecureStore from 'expo-secure-store';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
+import { getKycLinkId } from '@/utils/helper';
 
 interface BankAccountDetails {
     currency: Currency;
@@ -112,23 +113,19 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
         setError(null);
 
         try {
-            const bridge_kyc_link_ids = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_IDS);
-            if (!bridge_kyc_link_ids) {
+            const kycLinkId = await getKycLinkId(accountInfo.grid_user_id);
+            if (!kycLinkId) {
                 setKycStatus('not_started');
+
                 return;
             }
 
-            const parsedIds = JSON.parse(bridge_kyc_link_ids) as KycLinkIds;
-            const kycLinkId = parsedIds.ids.find((id: KycLinkId) => id.grid_user_id === accountInfo.grid_user_id)?.kyc_link_id;
-            if (!kycLinkId) {
-                setKycStatus('not_started');
-                return;
-            }
             const kycResponse = await easClient.getKYCStatus(
                 accountInfo.smart_account_address,
                 kycLinkId
             );
             SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KYC_STATUS, kycResponse.data.status);
+            SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KYC_LINK, kycResponse.data.kyc_continuation_link);
             setKycStatus(kycResponse.data.status);
         } catch (err) {
             setError('Failed to fetch KYC status');

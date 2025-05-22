@@ -124,11 +124,9 @@ export default function FiatConfirmScreen() {
             const easClient = new EasClient();
             try {
                 const res = await easClient.preparePaymentIntent(payload, accountInfo.smart_account_address, true);
-                console.log("🚀 ~ handleConfirm ~ res:", res.data.external_account_id)
 
                 // Store the external account ID with label
                 if (res.data.external_account_id && accountInfo.grid_user_id) {
-                    console.log("🚀 ~ handleConfirm ~ (res.data.external_account_id saving::::::", (res.data.external_account_id))
 
                     const accountLabel = label || `${firstName} ${lastName}'s Account`;
                     await storeExternalAccount(accountInfo.grid_user_id, res.data.external_account_id, accountLabel);

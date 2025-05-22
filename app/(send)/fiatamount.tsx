@@ -55,14 +55,11 @@ export default function AmountScreen() {
     ]
 
     async function getExtAccount() {
-        console.log("🚀🚀🚀")
         const ext = await getExternalAccountIds();
-        console.log("🚀 ~ ext:", ext)
 
     }
 
     useEffect(() => {
-        console.log("🚀 hi");
 
 
         getExtAccount();

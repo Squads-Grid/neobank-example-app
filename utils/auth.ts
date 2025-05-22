@@ -1,6 +1,7 @@
 import { Keypair, AuthenticationRequest, OTPData, AccountInfo } from '@/types/Auth';
 import { easClient } from '@/utils/easClient';
-import { generateKeyPairP256 } from '@/utils/helper';
+import { setupCryptoPolyfill } from '@/polyfills';
+
 
 export const validateEnv = () => {
     if (!process.env.EXPO_PUBLIC_API_ENDPOINT) {
@@ -15,6 +16,18 @@ export const generateKeyPairForAuth = async (): Promise<Keypair> => {
         privateKey: keypair.privateKey,
         publicKeyUncompressed: keypair.publicKeyUncompressed
     };
+};
+
+export const generateKeyPairP256 = async (): Promise<{ publicKey: string; privateKey: string, publicKeyUncompressed: string }> => {
+    setupCryptoPolyfill();
+    const { generateP256KeyPair } = await import("@turnkey/crypto");
+    try {
+        const keyPair = generateP256KeyPair();
+
+        return keyPair;
+    } catch (e) {
+        throw e;
+    }
 };
 
 export const authenticateUser = async (email: string): Promise<{ otpId: string; mpcPrimaryId: string }> => {
@@ -70,4 +83,5 @@ export const AUTH_STORAGE_KEYS = {
     BRIDGE_KYC_LINK_IDS: 'auth_bridge_kyc_link_id',
     PERSISTENT_EMAIL: 'auth_persistent_email',
     EXTERNAL_ACCOUNTS: 'auth_external_accounts',
+    KYC_LINK: 'auth_kyc_link',
 };
