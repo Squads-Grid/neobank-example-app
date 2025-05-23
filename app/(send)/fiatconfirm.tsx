@@ -79,6 +79,7 @@ export default function FiatConfirmScreen() {
                 router.push({
                     pathname: '/(auth)/login',
                 });
+
                 return;
             }
 
@@ -90,7 +91,7 @@ export default function FiatConfirmScreen() {
 
             // Convert amount to USDC base units (multiply by 10^6)
             const amountInBaseUnits = Math.round(parseFloat(amount) * Math.pow(10, USDC_DECIMALS)).toString();
-
+            console.log("🚀 ~ handleConfirm ~ externalAccountId:", externalAccountId)
             const payload = externalAccountId ? {
                 amount: amountInBaseUnits,
                 grid_user_id: accountInfo.grid_user_id,
@@ -149,6 +150,7 @@ export default function FiatConfirmScreen() {
                 if (res.data.destination.external_account_id && accountInfo.grid_user_id) {
 
                     const accountLabel = label || `${firstName} ${lastName}'s Account`;
+
                     await storeExternalAccount(accountInfo.grid_user_id, res.data.destination.external_account_id, accountLabel);
                 }
 

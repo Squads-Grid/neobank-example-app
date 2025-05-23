@@ -102,7 +102,7 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
             description: getBankDescription(),
             icon: bankIcon,
             onPress: handleReceiveFromBank,
-            disabled: isBankLoading || !kycStatus
+            disabled: isBankLoading || !kycStatus || kycStatus !== 'approved'
         }
     ];
 

@@ -8,22 +8,26 @@ export const storeExternalAccount = async (gridUserId: string, externalAccountId
         const existingStorage = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
         console.log("🚀 ~ storeExternalAccount ~ existingStorage:", existingStorage)
         let storage: ExternalAccountStorage;
+        let alreadyExists = false;
 
         if (existingStorage) {
             storage = JSON.parse(existingStorage);
             console.log("🚀 ~ storeExternalAccount ~ storage:", storage)
             // Remove any existing mapping for this grid_user_id
             storage.accounts = storage.accounts.filter(acc => acc.grid_user_id !== gridUserId);
+            alreadyExists = storage.accounts.some(acc => acc.external_account_id === externalAccountId);
         } else {
             storage = { accounts: [] };
         }
 
-        // Add new mapping
-        storage.accounts.push({
-            grid_user_id: gridUserId,
-            external_account_id: externalAccountId,
-            label
-        });
+        if (!alreadyExists) {
+            // Add new mapping
+            storage.accounts.push({
+                grid_user_id: gridUserId,
+                external_account_id: externalAccountId,
+                label
+            });
+        }
 
         // Save updated storage
         await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS, JSON.stringify(storage));

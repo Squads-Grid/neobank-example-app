@@ -104,6 +104,7 @@ export default function AmountScreen() {
     };
 
     const handleContinue = () => {
+        console.log("🚀 ~ handleContinue ~ externalAccountId:", externalAccountId)
         if (step === 1) {
             setStep(2);
         } else {
@@ -155,7 +156,7 @@ export default function AmountScreen() {
 
     const renderExternalAccounts = (label: string, id: string) => {
         return (
-            <View style={{ marginBottom: Spacing.sm }}>
+            <View key="id" style={{ marginBottom: Spacing.sm }}>
                 <ThemedButton
                     title={label}
                     variant="outline"
@@ -163,7 +164,6 @@ export default function AmountScreen() {
                     onPress={() => {
                         setExternalAccountId(id);
                         handleContinue();
-                        // setStep(3);
                     }} />
             </View>
         )
@@ -301,6 +301,7 @@ export default function AmountScreen() {
                     textStyle={{ color: textColor }}
                     title="Add new account"
                     onPress={() => {
+                        setStep(3);
                         // console.log("🚀 ~ renderExternalAccounts ~ id:", id)
                     }} />
             </ScrollView>
