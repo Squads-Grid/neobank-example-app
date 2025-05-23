@@ -12,7 +12,7 @@ import { Height, Size, Weight } from '@/constants/Typography';
 import { useAuth } from '@/contexts/AuthContext';
 import { decryptCredentialBundle } from '@turnkey/crypto';
 import { EasClient } from '@/utils/easClient';
-import { SmartAccount, UsAccountType, CountryCode } from '@/types/Transaction';
+import { SmartAccount } from '@/types/Transaction';
 import { v4 as uuidv4 } from 'uuid';
 import { GridStamper } from '@/utils/stamper';
 import { storeExternalAccount } from '@/utils/externalAccount';
@@ -46,7 +46,8 @@ export default function FiatConfirmScreen() {
         title,
         address,
         label,
-        bankName
+        bankName,
+        externalAccountId
     } = useLocalSearchParams<{
         amount: string;
         accountNumber: string;
@@ -58,6 +59,7 @@ export default function FiatConfirmScreen() {
         address: string;
         label: string;
         bankName: string;
+        externalAccountId: string;
     }>();
 
     const parsedAddress: Address = address ? JSON.parse(address) : {
@@ -89,7 +91,7 @@ export default function FiatConfirmScreen() {
             // Convert amount to USDC base units (multiply by 10^6)
             const amountInBaseUnits = Math.round(parseFloat(amount) * Math.pow(10, USDC_DECIMALS)).toString();
 
-            const payload = {
+            const payload = externalAccountId ? {
                 amount: amountInBaseUnits,
                 grid_user_id: accountInfo.grid_user_id,
                 source: {
@@ -100,36 +102,54 @@ export default function FiatConfirmScreen() {
                 destination: {
                     payment_rail: "ach_push",
                     currency: "usd",
-                    details: {
-                        currency: "usd",
-                        account_owner_name: `${firstName} ${lastName}`,
-                        account_number: accountNumber, //900808588430
-                        routing_number: routingNumber, //021000021
-                        bank_name: bankName,
-                        account_type: "us",
-                        address: {
-                            street_line_1: parsedAddress.street_line_1,
-                            // street_line_2: parsedAddress.street_line_2,
-                            city: parsedAddress.city,
-                            state: parsedAddress.state,
-                            postal_code: parsedAddress.postal_code,
-                            country: parsedAddress.country
-                        },
-                        idempotency_key: uuidv4()
-                    }
+                    external_account_id: externalAccountId
                 }
-            };
+
+            }
+                : {
+                    amount: amountInBaseUnits,
+                    grid_user_id: accountInfo.grid_user_id,
+                    source: {
+                        smart_account_address: accountInfo.smart_account_address,
+                        currency: "usdc",
+                        authorities: [accountInfo.smart_account_signer_public_key]
+                    },
+                    destination: {
+                        payment_rail: "ach_push",
+                        currency: "usd",
+                        details: {
+                            currency: "usd",
+                            account_owner_name: `${firstName} ${lastName}`,
+                            account_number: accountNumber, //900808588430
+                            routing_number: routingNumber, //021000021
+                            bank_name: bankName,
+                            account_type: "us",
+                            address: {
+                                street_line_1: parsedAddress.street_line_1,
+                                // street_line_2: parsedAddress.street_line_2,
+                                city: parsedAddress.city,
+                                state: parsedAddress.state,
+                                postal_code: parsedAddress.postal_code,
+                                country: parsedAddress.country
+                            },
+                            idempotency_key: uuidv4()
+                        }
+                    }
+                };
 
 
             const easClient = new EasClient();
             try {
                 const res = await easClient.preparePaymentIntent(payload, accountInfo.smart_account_address, true);
+                console.log("🚀 ~ handleConfirm ~ res.data.destination:", res.data.destination)
+                console.log("🚀 ~ handleConfirm ~ res.data.destination.external_account_id:", res.data.destination.external_account_id)
+                console.log("🚀 ~ handleConfirm ~ accountInfo.grid_user_id:", accountInfo.grid_user_id)
 
                 // Store the external account ID with label
-                if (res.data.external_account_id && accountInfo.grid_user_id) {
+                if (res.data.destination.external_account_id && accountInfo.grid_user_id) {
 
                     const accountLabel = label || `${firstName} ${lastName}'s Account`;
-                    await storeExternalAccount(accountInfo.grid_user_id, res.data.external_account_id, accountLabel);
+                    await storeExternalAccount(accountInfo.grid_user_id, res.data.destination.external_account_id, accountLabel);
                 }
 
                 if (!email) {
@@ -208,6 +228,7 @@ export default function FiatConfirmScreen() {
 
     const renderInfo = (icon: IconSymbolName, label: string, value: string) => {
         const iconColor = textColor + '40';
+        console.log("🚀🚀🚀 externaaaaaaal : ", externalAccountId)
         return (
             <View>
                 <View style={styles.labelContainer}>
@@ -239,6 +260,7 @@ export default function FiatConfirmScreen() {
 
     return (
         <ThemedScreen useSafeArea={true} safeAreaEdges={['bottom', 'left', 'right']}>
+
             {isLoading ? (
                 <LoadingSpinner />
             ) : (
@@ -248,11 +270,11 @@ export default function FiatConfirmScreen() {
                             <ThemedText type="regular">Amount</ThemedText>
                             <ThemedText type="jumbo" >{formatAmount(amount)}</ThemedText>
                         </View>
-                        {renderInfo('person', 'Recipient', `${firstName} ${lastName}`)}
-                        {renderInfo('creditcard', 'Account', `****${accountNumber.slice(-4)}`)}
-                        {renderInfo('building.columns', 'Bank', `Routing: ${routingNumber}`)}
-                        {renderAddress()}
-                        {renderInfo('network', 'Network fee', '0.0004 SOL')}
+                        {externalAccountId === null && renderInfo('person', 'Recipient', `${firstName} ${lastName}`)}
+                        {externalAccountId === null && renderInfo('creditcard', 'Account', `****${accountNumber.slice(-4)}`)}
+                        {externalAccountId === null && renderInfo('building.columns', 'Bank', `Routing: ${routingNumber}`)}
+                        {externalAccountId === null && renderAddress()}
+                        {/* {renderInfo('network', 'Network fee', '0.0004 SOL')} */}
                     </View>
 
                     <ButtonGroup

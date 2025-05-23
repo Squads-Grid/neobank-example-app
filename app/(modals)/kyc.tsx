@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
         width: '100%',
         paddingHorizontal: Spacing.xl,
         paddingBottom: Platform.OS === 'ios' ? Spacing.xl : Spacing.md
-    }
+    },
 });
 
 export default withScreenTheme(KYCModal, {

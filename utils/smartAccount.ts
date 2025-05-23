@@ -22,7 +22,6 @@ export const createSmartAccount = async (accountInfo: AccountInfo) => {
             threshold: 1,
             timelock: null,
         },
-        memo: '',
         grid_user_id: null,
         grid_customer_id: null,
         mpc_provider_info: mpcProviderInfo

@@ -6,10 +6,12 @@ export const storeExternalAccount = async (gridUserId: string, externalAccountId
     try {
         // Get existing storage
         const existingStorage = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
+        console.log("🚀 ~ storeExternalAccount ~ existingStorage:", existingStorage)
         let storage: ExternalAccountStorage;
 
         if (existingStorage) {
             storage = JSON.parse(existingStorage);
+            console.log("🚀 ~ storeExternalAccount ~ storage:", storage)
             // Remove any existing mapping for this grid_user_id
             storage.accounts = storage.accounts.filter(acc => acc.grid_user_id !== gridUserId);
         } else {
@@ -34,6 +36,7 @@ export const storeExternalAccount = async (gridUserId: string, externalAccountId
 export const getExternalAccountId = async (gridUserId: string): Promise<string | null> => {
     try {
         const storage = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
+        console.log("🚀 ~ getExternalAccountId ~ storage:", storage)
         if (!storage) return null;
 
         const parsedStorage: ExternalAccountStorage = JSON.parse(storage);
@@ -48,9 +51,11 @@ export const getExternalAccountId = async (gridUserId: string): Promise<string |
 export const getExternalAccountIds = async (): Promise<ExternalAccountStorage | null> => {
     try {
         const storage = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
+        console.log("🚀 ~ getExternalAccountIds ~ storage:", storage)
         if (!storage) return null;
 
         const parsedStorage: ExternalAccountStorage = JSON.parse(storage);
+        console.log("🚀 ~ getExternalAccountIds ~ parsedStorage:", parsedStorage)
         return parsedStorage;
     } catch (error) {
         console.error('Error getting external account:', error);

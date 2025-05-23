@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from 'react-native';
 import { ThemedScreen } from '@/components/ui/layout';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
@@ -7,8 +7,8 @@ import { Keypad, ThemedButton, ThemedTextInput } from '@/components/ui/molecules
 import { router, useLocalSearchParams } from 'expo-router';
 import { Chip, IconSymbol, ThemedText } from '@/components/ui/atoms';
 import { formatAmount } from '@/utils/helper';
-import { CountryCode, UsAccountType } from '@/types/Transaction';
-import { getExternalAccountIds } from '@/utils/externalAccount';
+import { CountryCode, ExternalAccountMapping, ExternalAccountStorage, UsAccountType } from '@/types/Transaction';
+import { getExternalAccountId, getExternalAccountIds } from '@/utils/externalAccount';
 
 interface Address {
     street_line_1: string;
@@ -30,6 +30,8 @@ export default function AmountScreen() {
     const [country, setCountry] = useState<CountryCode>('USA');
     const [label, setLabel] = useState('');
     const [bankName, setBankName] = useState('');
+    const [externalAccounts, setExternalAccounts] = useState<ExternalAccountMapping[]>([]);
+    const [externalAccountId, setExternalAccountId] = useState<string>('');
 
     const [address, setAddress] = useState<Address>({
         street_line_1: '',
@@ -49,6 +51,11 @@ export default function AmountScreen() {
         },
         {
             index: 2,
+            label: 'Select account',
+            render: () => renderAccountList(),
+        },
+        {
+            index: 3,
             label: 'Enter your details',
             render: () => renderBankDetails(),
         }
@@ -56,6 +63,8 @@ export default function AmountScreen() {
 
     async function getExtAccount() {
         const ext = await getExternalAccountIds();
+        setExternalAccounts(ext?.accounts ?? []);
+        console.log("🚀 ~ getExtAccount ~ ext:", ext)
 
     }
 
@@ -113,7 +122,8 @@ export default function AmountScreen() {
                     title,
                     address: JSON.stringify(address),
                     bankName,
-                    label
+                    label,
+                    externalAccountId
                 }
             });
         }
@@ -140,6 +150,22 @@ export default function AmountScreen() {
             <ThemedText type="highlight" style={{ color: textColor }}>
                 {formatAmount(amount)}
             </ThemedText>
+        )
+    }
+
+    const renderExternalAccounts = (label: string, id: string) => {
+        return (
+            <View style={{ marginBottom: Spacing.sm }}>
+                <ThemedButton
+                    title={label}
+                    variant="outline"
+                    textStyle={{ color: textColor }}
+                    onPress={() => {
+                        setExternalAccountId(id);
+                        handleContinue();
+                        // setStep(3);
+                    }} />
+            </View>
         )
     }
 
@@ -265,6 +291,22 @@ export default function AmountScreen() {
         );
     };
 
+    const renderAccountList = () => {
+        console.log("🚀 ~ renderAccountList ~ externalAccounts::::::", externalAccounts)
+        return (
+            <ScrollView>
+                {externalAccounts?.map((account) => renderExternalAccounts(account.label, account.external_account_id))}
+                <ThemedButton
+                    variant="outline"
+                    textStyle={{ color: textColor }}
+                    title="Add new account"
+                    onPress={() => {
+                        // console.log("🚀 ~ renderExternalAccounts ~ id:", id)
+                    }} />
+            </ScrollView>
+        )
+    }
+
     return (
         <ThemedScreen useSafeArea={true} safeAreaEdges={['bottom', 'left', 'right']}>
             <KeyboardAvoidingView
@@ -275,7 +317,7 @@ export default function AmountScreen() {
                 <View style={styles.header}>
                     <View style={styles.headerContent}>
                         <ThemedText type="defaultSemiBold" style={[styles.label, { paddingVertical: 4 }]}>{steps[step - 1].label}</ThemedText>
-                        {step === 2 &&
+                        {step === 3 &&
                             <Chip style={{ paddingHorizontal: Spacing.sm, paddingVertical: Spacing.xs }}>
                                 <View style={{ flexDirection: 'row' }}>
                                     <ThemedText type="tiny">
@@ -289,16 +331,16 @@ export default function AmountScreen() {
                 </View>
 
                 <View style={styles.content}>
-                    {step === 1 ? (
+                    {step === 1 &&
                         <>
                             <View style={styles.amountContainer}>
                                 {renderAmount()}
                             </View>
                             {renderKeypad()}
                         </>
-                    ) : (
-                        renderBankDetails()
-                    )}
+                    }
+                    {step === 2 && renderAccountList()}
+                    {step === 3 && renderBankDetails()}
                 </View>
 
                 <View style={styles.buttonContainer}>
@@ -313,6 +355,11 @@ export default function AmountScreen() {
 }
 
 const styles = StyleSheet.create({
+    // externalAccountContainer: {
+    //     padding: Spacing.md,
+    //     borderWidth: 1,
+    //     borderRadius: 10,
+    // },
     container: {
         flex: 1,
     },

@@ -37,6 +37,9 @@ function HomeScreenContent() {
             return;
         }
 
+        console.log("🚀 ~ useEffect ~ accountInfo:", accountInfo)
+
+
         // SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_IDS);
 
         // Load grid user ID and check if smart account creation is needed

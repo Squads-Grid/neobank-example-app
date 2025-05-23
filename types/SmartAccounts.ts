@@ -14,7 +14,7 @@ export interface Policies {
 
 export interface CreateSmartAccountRequest {
     policies: Policies;
-    memo: string;
+    memo?: string;
     grid_user_id: string | null;
     grid_customer_id: string | null;
     mpc_provider_info: MpcProviderInfo;
