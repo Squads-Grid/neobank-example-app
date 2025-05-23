@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import { Modal, StyleSheet, View, TouchableOpacity, Text, TouchableWithoutFeedback } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { ThemedText } from '@/components/ui/atoms';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -40,25 +40,26 @@ export function ActionModal({
             transparent={true}
             animationType="fade"
             onRequestClose={onClose}
-        >
-            <BlurView intensity={30} style={[styles.overlay, { backgroundColor: overlayBackgroundColor }]} tint={blurTint}>
-                <View style={[styles.modalContainer, { backgroundColor: useStarburstModal ? '#000' : backgroundColor }]}>
-                    {useStarburstModal && (
-                        <View style={styles.backgroundContainer}>
-                            <StarburstModalBackground primaryColor={primaryColor} />
+        ><TouchableWithoutFeedback onPress={onClose}>
+                <BlurView intensity={30} style={[styles.overlay, { backgroundColor: overlayBackgroundColor }]} tint={blurTint}>
+                    <View style={[styles.modalContainer, { backgroundColor: useStarburstModal ? '#000' : backgroundColor }]}>
+                        {useStarburstModal && (
+                            <View style={styles.backgroundContainer}>
+                                <StarburstModalBackground primaryColor={primaryColor} />
+                            </View>
+                        )}
+                        <View style={styles.header}>
+                            <ThemedText type="subtitle" style={{ color: useStarburstModal ? 'white' : textColor }}>{title}</ThemedText>
+                            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                                <Text style={[styles.closeText, { color: useStarburstModal ? 'white' : textColor }]}>×</Text>
+                            </TouchableOpacity>
                         </View>
-                    )}
-                    <View style={styles.header}>
-                        <ThemedText type="subtitle" style={{ color: useStarburstModal ? 'white' : textColor }}>{title}</ThemedText>
-                        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                            <Text style={[styles.closeText, { color: useStarburstModal ? 'white' : textColor }]}>×</Text>
-                        </TouchableOpacity>
+                        <View style={styles.contentContainer}>
+                            {children}
+                        </View>
                     </View>
-                    <View style={styles.contentContainer}>
-                        {children}
-                    </View>
-                </View>
-            </BlurView>
+                </BlurView>
+            </TouchableWithoutFeedback>
         </Modal>
     );
 }
