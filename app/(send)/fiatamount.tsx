@@ -64,6 +64,7 @@ export default function AmountScreen() {
     async function getExtAccount() {
         const ext = await getExternalAccountIds();
         setExternalAccounts(ext?.accounts ?? []);
+
         console.log("🚀 ~ getExtAccount ~ ext:", ext)
 
     }
@@ -103,7 +104,7 @@ export default function AmountScreen() {
         }
     };
 
-    const handleContinue = () => {
+    const handleContinue = (label?: string) => {
         console.log("🚀 ~ handleContinue ~ externalAccountId:", externalAccountId)
         if (step === 1) {
             setStep(2);
@@ -163,7 +164,7 @@ export default function AmountScreen() {
                     textStyle={{ color: textColor }}
                     onPress={() => {
                         setExternalAccountId(id);
-                        handleContinue();
+                        handleContinue(label);
                     }} />
             </View>
         )

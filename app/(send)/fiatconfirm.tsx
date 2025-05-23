@@ -47,7 +47,7 @@ export default function FiatConfirmScreen() {
         address,
         label,
         bankName,
-        externalAccountId
+        externalAccountId,
     } = useLocalSearchParams<{
         amount: string;
         accountNumber: string;
@@ -272,11 +272,17 @@ export default function FiatConfirmScreen() {
                             <ThemedText type="regular">Amount</ThemedText>
                             <ThemedText type="jumbo" >{formatAmount(amount)}</ThemedText>
                         </View>
-                        {externalAccountId === null && renderInfo('person', 'Recipient', `${firstName} ${lastName}`)}
-                        {externalAccountId === null && renderInfo('creditcard', 'Account', `****${accountNumber.slice(-4)}`)}
-                        {externalAccountId === null && renderInfo('building.columns', 'Bank', `Routing: ${routingNumber}`)}
-                        {externalAccountId === null && renderAddress()}
-                        {/* {renderInfo('network', 'Network fee', '0.0004 SOL')} */}
+                        {externalAccountId ? (
+                            renderInfo('creditcard', 'Account', label || 'External Account')
+                        ) : (
+                            <>
+                                {renderInfo('person', 'Recipient', `${firstName} ${lastName}`)}
+                                {renderInfo('creditcard', 'Account', `****${accountNumber.slice(-4)}`)}
+                                {renderInfo('building.columns', 'Bank', bankName)}
+                                {renderInfo('building.columns', 'Routing', routingNumber)}
+                                {renderAddress()}
+                            </>
+                        )}
                     </View>
 
                     <ButtonGroup
