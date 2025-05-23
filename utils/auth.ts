@@ -84,4 +84,5 @@ export const AUTH_STORAGE_KEYS = {
     PERSISTENT_EMAIL: 'auth_persistent_email',
     EXTERNAL_ACCOUNTS: 'auth_external_accounts',
     KYC_LINK: 'auth_kyc_link',
+    CACHED_BALANCE: 'auth_cached_balance',
 };

@@ -37,10 +37,15 @@ function HomeScreenContent() {
             return;
         }
 
-        console.log("🚀 ~ useEffect ~ accountInfo:", accountInfo)
+        // Load cached balance first
+        const loadCachedBalance = async () => {
+            const cachedBalance = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.CACHED_BALANCE);
+            if (cachedBalance) {
+                setBalance(parseFloat(cachedBalance));
+            }
+        };
 
-
-        // SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_IDS);
+        loadCachedBalance();
 
         // Load grid user ID and check if smart account creation is needed
         const loadDataAndCreateAccount = async () => {
@@ -77,6 +82,7 @@ function HomeScreenContent() {
         const balances = result.data.balances;
         if (balances.length === 0) {
             setBalance(0);
+            await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.CACHED_BALANCE, '0');
         } else {
             const usdcAddress = process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS;
             if (!usdcAddress) {
@@ -86,7 +92,9 @@ function HomeScreenContent() {
                 return balance.token_address === usdcAddress
             });
             if (usdcBalance) {
-                setBalance(parseFloat(parseFloat(usdcBalance.amount_decimal).toFixed(2)));
+                const newBalance = parseFloat(parseFloat(usdcBalance.amount_decimal).toFixed(2));
+                setBalance(newBalance);
+                await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.CACHED_BALANCE, newBalance.toString());
             }
         }
     }
