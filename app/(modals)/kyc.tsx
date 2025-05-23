@@ -27,6 +27,7 @@ function KYCModal() {
     const [showNameInputs, setShowNameInputs] = useState(false);
     const [kycUrl, setKycUrl] = useState<string | null>(null);
     const [localKycLinkId, setLocalKycLinkId] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (!kycStatus) {
@@ -85,6 +86,7 @@ function KYCModal() {
 
     const handleSubmit = async () => {
         Keyboard.dismiss();
+        setIsSubmitting(true);
 
         const gridUserId = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID);
         if (!gridUserId || !accountInfo || !email) {
@@ -109,6 +111,8 @@ function KYCModal() {
             }
         } catch (err) {
             console.error('Error getting KYC link:', err);
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
@@ -241,9 +245,9 @@ function KYCModal() {
         <ThemedScreen>
             <SwipeableModal onDismiss={handleClose}>
                 <StarburstBank primaryColor={"#0080FF"} />
-                {isLoading ?
+                {isLoading || isSubmitting ?
                     <View style={styles.loadingContainer}>
-                        <ActivityIndicator />
+                        <ActivityIndicator size="large" color={textColor} />
                     </View>
                     : renderContent()}
             </SwipeableModal>
