@@ -114,6 +114,7 @@ export class GridClient {
     }
 
     async getKYCLink(request: KycRequest, idempotencyKey: string): Promise<KycResponse> {
+
         return this.request<KycResponse>(`/${request.smart_account_address}/kyc`, {
             method: 'POST',
             headers: {

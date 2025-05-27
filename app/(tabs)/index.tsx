@@ -18,6 +18,7 @@ import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import { TransactionList } from '@/components/ui/organisms/TransactionList';
 import { StorageService } from '@/utils/storage';
 import { useWalletData } from '@/hooks/useWalletData';
+import { MockDatabase } from '@/utils/mockDatabase';
 
 const placeholder = require('@/assets/images/no-txn.png');
 
@@ -41,6 +42,8 @@ function HomeScreenContent() {
                 const account = await createSmartAccount(accountInfo);
                 await StorageService.setItem(AUTH_STORAGE_KEYS.GRID_USER_ID, account.grid_user_id);
                 await StorageService.setItem(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, account.smart_account_address);
+
+                await MockDatabase.createUser(account.grid_user_id);
 
                 const updatedAccountInfo = {
                     ...accountInfo,

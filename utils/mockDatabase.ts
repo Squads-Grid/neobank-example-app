@@ -24,13 +24,14 @@ export class MockDatabase {
      * @param gridUserId - The Grid user ID
      * @param kycLinkId - The KYC link ID
      */
-    static async createUser(gridUserId: string, kycLinkId: string): Promise<User> {
+    static async createUser(gridUserId: string, kycLinkId: string | null = null): Promise<User> {
         const db = await this.getDatabase();
 
         // Check if user already exists
         const existingUser = db.users.find(u => u.grid_user_id === gridUserId);
         if (existingUser) {
-            throw new Error('User already exists');
+            // if user already exists, update it
+            return this.updateUserKycLinkID(gridUserId, kycLinkId || null);
         }
 
         const now = new Date().toISOString();
@@ -60,7 +61,7 @@ export class MockDatabase {
      * @param gridUserId - The Grid user ID
      * @param kycLinkId - The new KYC link ID
      */
-    static async updateUserKycLinkID(gridUserId: string, kycLinkId: string): Promise<User> {
+    static async updateUserKycLinkID(gridUserId: string, kycLinkId: string | null): Promise<User> {
         const db = await this.getDatabase();
         const userIndex = db.users.findIndex(u => u.grid_user_id === gridUserId);
 

@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ActionModal } from '../ActionModal';
 import { ModalOptionsList } from '../../molecules/ModalOptionsList';
 import { ActionOption } from '../../molecules/ModalOptionsList';
 import { router } from 'expo-router';
 import { useModalFlow } from '@/contexts/ModalFlowContext';
+import { useKyc } from '@/hooks/useKyc';
 
 const bankIcon = require('@/assets/icons/bank.png');
 const walletIcon = require('@/assets/icons/wallet.png');
-
-const DISABLE_OFFRAMP = false;
 
 interface SendModalProps {
     visible: boolean;
@@ -17,15 +16,20 @@ interface SendModalProps {
 
 export function SendModal({ visible, onClose }: SendModalProps) {
     const [isBankLoading, setIsBankLoading] = useState(false);
-    const { kycStatus, fetchKycStatus } = useModalFlow();
+    const { status: kycStatus, checkStatus } = useKyc();
 
     // Fetch latest KYC status when modal becomes visible
-    React.useEffect(() => {
-        setIsBankLoading(true);
-        fetchKycStatus().finally(() => {
-            setIsBankLoading(false);
-        });
-    }, []);
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsBankLoading(true);
+            try {
+                await checkStatus();
+            } finally {
+                setIsBankLoading(false);
+            }
+        };
+        fetchData();
+    }, [checkStatus]);
 
     const handleSendToWallet = () => {
         onClose();
@@ -66,9 +70,7 @@ export function SendModal({ visible, onClose }: SendModalProps) {
             return 'Complete KYC to send via bank transfer';
         }
         else {
-            if (DISABLE_OFFRAMP) {
-                return 'Offramp is currently not available';
-            }
+
             return 'Send USDC to your Bank Account';
         }
     };
@@ -87,7 +89,7 @@ export function SendModal({ visible, onClose }: SendModalProps) {
             description: getBankDescription(),
             icon: bankIcon,
             onPress: handleSendToBank,
-            disabled: isBankLoading || !kycStatus || kycStatus !== 'approved' || DISABLE_OFFRAMP
+            disabled: isBankLoading || !kycStatus || (kycStatus !== 'approved' && kycStatus !== 'not_started' && kycStatus !== 'incomplete')
         }
     ];
 

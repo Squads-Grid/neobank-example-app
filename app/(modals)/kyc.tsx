@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, View, Keyboard } from 'react-native';
 import { router } from 'expo-router';
-import { useModalFlow } from '@/contexts/ModalFlowContext';
 import { withScreenTheme } from '@/components/withScreenTheme';
 import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
 import { Spacing } from '@/constants/Spacing';
@@ -11,70 +10,18 @@ import { ThemedText } from '@/components/ui/atoms';
 import { Link } from 'expo-router';
 import { ThemedButton, ThemedTextInput } from '@/components/ui/molecules';
 import { useAuth } from '@/contexts/AuthContext';
-import { easClient } from '@/utils/easClient';
+import { useKyc } from '@/hooks/useKyc';
 import { KycParams } from '@/types/Kyc';
-import { AUTH_STORAGE_KEYS } from '@/utils/auth';
-import { getKycLinkId, setKycLinkId } from '@/utils/helper';
-import { StorageService } from '@/utils/storage';
 
 function KYCModal() {
     const { textColor } = useScreenTheme();
-    const { accountInfo, logout, email } = useAuth();
-    const { kycStatus, setKycStatus } = useModalFlow();
-    const [isLoading, setIsLoading] = useState(false);
+    const { accountInfo, email } = useAuth();
+    const { status, isLoading, startKyc } = useKyc();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [showNameInputs, setShowNameInputs] = useState(false);
     const [kycUrl, setKycUrl] = useState<string | null>(null);
-    const [localKycLinkId, setLocalKycLinkId] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    useEffect(() => {
-        if (!kycStatus) {
-            setIsLoading(true);
-            checkKycStatus();
-            setIsLoading(false);
-        }
-    }, [kycStatus]);
-
-    const checkKycStatus = async () => {
-        if (!accountInfo) {
-            logout();
-            return;
-        }
-
-        try {
-            const gridUserId = await StorageService.getItem(AUTH_STORAGE_KEYS.GRID_USER_ID);
-            if (!gridUserId) {
-                logout();
-                return;
-            }
-
-            if (!email) {
-                console.error('Email not found');
-                logout();
-            }
-
-            // For demo purpose only! Save kyc link in db!
-            const kycLinkId = await getKycLinkId(gridUserId as string);
-
-            if (!kycLinkId) {
-                setKycStatus('not_started');
-                return;
-            }
-
-            const kycResponse = await easClient.getKYCStatus(
-                accountInfo.smart_account_address,
-                kycLinkId
-            );
-            StorageService.setItem(AUTH_STORAGE_KEYS.KYC_STATUS, kycResponse.data.status);
-            setKycStatus(kycResponse.data.status);
-            setIsLoading(false);
-
-        } catch (err) {
-            console.error('Error checking KYC status:', err);
-        }
-    };
 
     const handleClose = () => {
         router.back();
@@ -88,33 +35,27 @@ function KYCModal() {
         Keyboard.dismiss();
         setIsSubmitting(true);
 
-        const gridUserId = await StorageService.getItem(AUTH_STORAGE_KEYS.GRID_USER_ID) as string;
-        if (!gridUserId || !accountInfo || !email) {
-            logout();
+        if (!accountInfo || !email) {
             return;
         }
 
         try {
-            const response = await easClient.getKYCLink({
-                grid_user_id: gridUserId,
-                smart_account_address: accountInfo?.smart_account_address,
+            const params: KycParams = {
+                grid_user_id: accountInfo.grid_user_id,
+                smart_account_address: accountInfo.smart_account_address,
                 email: email,
-                full_name: `${firstName} ${lastName}`.trim()
-            } as KycParams);
+                full_name: `${firstName} ${lastName}`.trim(),
+                redirect_uri: null
+            };
 
-            if (response.data.kyc_link) {
-                setKycUrl(response.data.kyc_link);
-                setLocalKycLinkId(response.data.id);
-
-                setKycLinkId(gridUserId, response.data.id);
-                setKycStatus('incomplete');
-            }
+            const kycLink = await startKyc(params);
+            setKycUrl(kycLink);
         } catch (err) {
-            console.error('Error getting KYC link:', err);
+            console.error('Error starting KYC:', err);
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
 
     const handleNavigationStateChange = async (navState: any) => {
         // Check if we're on the completion or success page
@@ -122,29 +63,10 @@ function KYCModal() {
             navState.url.includes('/success') ||
             navState.url.includes('status=complete');
 
-        if (isCompletionPage && localKycLinkId && accountInfo?.smart_account_address) {
-
-
-            try {
-                // Poll for KYC status
-                const response = await easClient.getKYCStatus(
-                    accountInfo.smart_account_address,
-                    localKycLinkId
-                );
-
-                const newStatus = response.data.status;
-                if (newStatus !== kycStatus) {
-                    setKycStatus(newStatus);
-                    if (newStatus === 'approved' || newStatus === 'rejected') {
-                        // Close the WebView and modal if KYC is complete
-                        setKycUrl(null);
-                        handleClose();
-                    }
-                }
-            } catch (err) {
-                console.error('Error checking KYC status:', err);
-            }
+        if (isCompletionPage) {
+            handleClose();
         }
+
     };
 
     const renderContent = () => {
@@ -197,59 +119,26 @@ function KYCModal() {
                         By pressing continue, you agree to the <Link href="https://bridge.xyz/terms-of-service">Terms and conditions</Link>.
                     </ThemedText>
                     <ThemedButton
-                        onPress={getButtonAction()}
-                        title={getButtonTitle()}
-                        disabled={disableButton()}
+                        onPress={showNameInputs ? handleSubmit : handleInitialContinue}
+                        title={showNameInputs ? "Submit" : "Continue"}
+                        disabled={showNameInputs && (!firstName.trim() || !lastName.trim())}
                     />
                 </View>
             </KeyboardAvoidingView>
         );
-    }
-
-    const handleContinue = async () => {
-        const kycLink = await StorageService.getItem(AUTH_STORAGE_KEYS.KYC_LINK) as string;
-        if (kycLink) {
-            setKycUrl(kycLink);
-        }
-    }
-
-    const getButtonAction = () => {
-        if (showNameInputs) {
-            return handleSubmit
-        }
-        else if (kycStatus === 'incomplete') {
-            return handleContinue
-        }
-
-        return handleInitialContinue
-    }
-
-    const getButtonTitle = () => {
-        if (kycStatus === 'incomplete') {
-            return `Complete KYC`
-        }
-        return showNameInputs ? "Submit" : "Continue"
-    }
-
-    const disableButton = () => {
-        if (!kycStatus || (kycStatus !== 'approved' && kycStatus !== 'not_started' && kycStatus !== 'incomplete')) {
-            return true
-        }
-        if (showNameInputs && ((!firstName.trim() || !lastName.trim()))) {
-            return true
-        }
-        return false
-    }
+    };
 
     return (
         <ThemedScreen>
             <SwipeableModal onDismiss={handleClose}>
                 <StarburstBank primaryColor={"#0080FF"} />
-                {isLoading || isSubmitting ?
+                {isLoading || isSubmitting ? (
                     <View style={styles.loadingContainer}>
                         <ActivityIndicator size="large" color={textColor} />
                     </View>
-                    : renderContent()}
+                ) : (
+                    renderContent()
+                )}
             </SwipeableModal>
             <InAppBrowser
                 visible={!!kycUrl}

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ActionModal } from '../ActionModal';
 import { ModalOptionsList } from '../../molecules/ModalOptionsList';
 import { ActionOption } from '../../molecules/ModalOptionsList';
 import { useModalFlow } from '@/contexts/ModalFlowContext';
 import { router } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
+import { useKyc } from '@/hooks/useKyc';
 
 const bankIcon = require('@/assets/icons/bank.png');
 const walletIcon = require('@/assets/icons/wallet.png');
@@ -18,28 +19,28 @@ interface ReceiveModalProps {
 export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalProps) {
     const [isBankLoading, setIsBankLoading] = useState(false);
     const { accountInfo } = useAuth();
+    const { status: kycStatus, checkStatus } = useKyc();
 
     const {
         hideAllModals,
-        fetchKycStatus,
         fetchBankDetails,
-        kycStatus,
     } = useModalFlow();
 
-
     // Fetch latest KYC and bank details when modal becomes visible
-    React.useEffect(() => {
-
-        setIsBankLoading(true);
-
-        if (kycStatus === 'approved') {
-            fetchBankDetails();
-        } else {
-            fetchKycStatus();
-        }
-        setIsBankLoading(false);
-
-    }, []);
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsBankLoading(true);
+            try {
+                await checkStatus();
+                if (kycStatus === 'approved') {
+                    await fetchBankDetails();
+                }
+            } finally {
+                setIsBankLoading(false);
+            }
+        };
+        fetchData();
+    }, [checkStatus, kycStatus, fetchBankDetails]);
 
     const handleReceiveToWallet = () => {
         hideAllModals();
@@ -102,7 +103,7 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
             description: getBankDescription(),
             icon: bankIcon,
             onPress: handleReceiveFromBank,
-            disabled: isBankLoading || !kycStatus || kycStatus !== 'approved'
+            disabled: isBankLoading || !kycStatus || (kycStatus !== 'approved' && kycStatus !== 'not_started' && kycStatus !== 'incomplete')
         }
     ];
 

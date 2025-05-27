@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Modal, StyleSheet, View, TouchableOpacity, Text, TouchableWithoutFeedback } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { ThemedText } from '@/components/ui/atoms';
@@ -7,8 +7,17 @@ import { Spacing } from '@/constants/Spacing';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { StarburstModalBackground } from '@/components/ui/layout';
 
-// Main component props
-interface ActionModalProps {
+/**
+ * Props for the ActionModal component
+ * @interface ActionModalProps
+ * @property {boolean} visible - Controls the visibility of the modal
+ * @property {() => void} onClose - Callback function when the modal is closed
+ * @property {string} [title] - Optional title displayed at the top of the modal
+ * @property {React.ReactNode} children - Content to be displayed in the modal
+ * @property {boolean} [useStarburstModal] - Whether to use the starburst background style
+ * @property {string} [primaryColor] - Primary color for the starburst background
+ */
+export interface ActionModalProps {
     visible: boolean;
     onClose: () => void;
     title?: string;
@@ -17,6 +26,11 @@ interface ActionModalProps {
     primaryColor?: string;
 }
 
+/**
+ * A reusable modal component with customizable styling and content
+ * @param {ActionModalProps} props - The component props
+ * @returns {ReactElement} The rendered modal component
+ */
 export function ActionModal({
     visible,
     onClose,
@@ -24,7 +38,7 @@ export function ActionModal({
     children,
     useStarburstModal = false,
     primaryColor = '#0080FF'
-}: ActionModalProps) {
+}: ActionModalProps): ReactElement {
     const backgroundColor = useThemeColor({}, 'background');
     const textColor = useThemeColor({}, 'text');
     const colorScheme = useColorScheme() || 'light';
@@ -40,7 +54,8 @@ export function ActionModal({
             transparent={true}
             animationType="fade"
             onRequestClose={onClose}
-        ><TouchableWithoutFeedback onPress={onClose}>
+        >
+            <TouchableWithoutFeedback onPress={onClose}>
                 <BlurView intensity={30} style={[styles.overlay, { backgroundColor: overlayBackgroundColor }]} tint={blurTint}>
                     <View style={[styles.modalContainer, { backgroundColor: useStarburstModal ? '#000' : backgroundColor }]}>
                         {useStarburstModal && (
