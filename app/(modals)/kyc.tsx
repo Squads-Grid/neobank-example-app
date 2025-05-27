@@ -16,7 +16,7 @@ import { KycParams } from '@/types/Kyc';
 function KYCModal() {
     const { textColor } = useScreenTheme();
     const { accountInfo, email } = useAuth();
-    const { status, isLoading, startKyc } = useKyc();
+    const { status, isLoading, startKyc, checkStatus } = useKyc();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [showNameInputs, setShowNameInputs] = useState(false);
@@ -66,7 +66,6 @@ function KYCModal() {
         if (isCompletionPage) {
             handleClose();
         }
-
     };
 
     const renderContent = () => {

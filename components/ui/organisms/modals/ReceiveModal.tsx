@@ -19,7 +19,7 @@ interface ReceiveModalProps {
 export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalProps) {
     const [isBankLoading, setIsBankLoading] = useState(false);
     const { accountInfo } = useAuth();
-    const { status: kycStatus, checkStatus } = useKyc();
+    const { status, checkStatus } = useKyc();
 
     const {
         hideAllModals,
@@ -32,7 +32,8 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
             setIsBankLoading(true);
             try {
                 await checkStatus();
-                if (kycStatus === 'approved') {
+
+                if (status === 'approved') {
                     await fetchBankDetails();
                 }
             } finally {
@@ -40,7 +41,7 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
             }
         };
         fetchData();
-    }, [checkStatus, kycStatus, fetchBankDetails]);
+    }, [checkStatus, status, fetchBankDetails]);
 
     const handleReceiveToWallet = () => {
         hideAllModals();
@@ -52,12 +53,12 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
 
         setIsBankLoading(true);
         try {
-            if (kycStatus === 'approved') {
+            if (status === 'approved') {
                 await fetchBankDetails();
             }
 
             hideAllModals();
-            if (kycStatus === 'approved') {
+            if (status === 'approved') {
                 router.push('/bankdetails');
             } else {
                 router.push('/kyc');
@@ -67,11 +68,11 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
         }
     };
 
-    const isKycPending = kycStatus === 'under_review' || kycStatus === 'incomplete';
-    const isKycRejected = kycStatus === 'rejected';
+    const isKycPending = status === 'under_review' || status === 'incomplete';
+    const isKycRejected = status === 'rejected';
 
     const getBankDescription = () => {
-        if (isBankLoading || !kycStatus) {
+        if (isBankLoading || !status) {
             return 'Loading...';
         }
         else if (isKycPending) {
@@ -80,7 +81,7 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
         else if (isKycRejected) {
             return 'KYC verification failed. Please try again';
         }
-        else if (kycStatus === 'not_started') {
+        else if (status === 'not_started') {
             return 'Complete KYC to receive via bank transfer';
         }
         else {
@@ -103,7 +104,7 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
             description: getBankDescription(),
             icon: bankIcon,
             onPress: handleReceiveFromBank,
-            disabled: isBankLoading || !kycStatus || (kycStatus !== 'approved' && kycStatus !== 'not_started' && kycStatus !== 'incomplete')
+            disabled: isBankLoading || !status || (status !== 'approved' && status !== 'not_started' && status !== 'incomplete')
         }
     ];
 

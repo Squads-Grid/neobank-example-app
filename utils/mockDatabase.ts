@@ -62,6 +62,7 @@ export class MockDatabase {
      * @param kycLinkId - The new KYC link ID
      */
     static async updateUserKycLinkID(gridUserId: string, kycLinkId: string | null): Promise<User> {
+
         const db = await this.getDatabase();
         const userIndex = db.users.findIndex(u => u.grid_user_id === gridUserId);
 

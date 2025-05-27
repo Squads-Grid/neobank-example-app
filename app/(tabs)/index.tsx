@@ -43,7 +43,11 @@ function HomeScreenContent() {
                 await StorageService.setItem(AUTH_STORAGE_KEYS.GRID_USER_ID, account.grid_user_id);
                 await StorageService.setItem(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, account.smart_account_address);
 
-                await MockDatabase.createUser(account.grid_user_id);
+                // Only create user if they don't exist
+                const existingUser = await MockDatabase.getUser(account.grid_user_id);
+                if (!existingUser) {
+                    await MockDatabase.createUser(account.grid_user_id);
+                }
 
                 const updatedAccountInfo = {
                     ...accountInfo,

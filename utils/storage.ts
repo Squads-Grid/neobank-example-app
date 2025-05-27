@@ -10,6 +10,7 @@ export class StorageService {
      * @param value - The value to store (can be string, number, boolean, array, or object)
      */
     static async setItem(key: string, value: string | number | boolean | any[] | object): Promise<void> {
+
         try {
             const stringValue = JSON.stringify(value);
             await SecureStore.setItemAsync(key, stringValue);

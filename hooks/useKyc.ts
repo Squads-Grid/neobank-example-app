@@ -29,10 +29,10 @@ export function useKyc(): UseKycReturn {
             if (!accountInfo?.grid_user_id) {
                 throw new Error('Account information not found');
             }
+
             // Store the KYC link ID in the mock database
             await MockDatabase.updateUserKycLinkID(accountInfo.grid_user_id, response.data.id);
-            await StorageService.setItem(AUTH_STORAGE_KEYS.KYC_STATUS, 'incomplete');
-            setStatus('incomplete');
+            const user = await MockDatabase.getUser(accountInfo.grid_user_id);
             return response.data.kyc_link;
         } catch (err) {
             setError('Failed to start KYC process');
@@ -54,6 +54,12 @@ export function useKyc(): UseKycReturn {
             }
 
             const user = await MockDatabase.getUser(accountInfo.grid_user_id);
+
+            if (!user) {
+                console.log("🚀 ~ checkStatus ~ user not found")
+                return;
+            }
+
             if (!user?.kyc_link_id) {
                 setStatus('not_started');
                 return;
@@ -66,8 +72,12 @@ export function useKyc(): UseKycReturn {
 
             const response = await easClient.getKYCStatus(accountInfo.smart_account_address, user.kyc_link_id);
             const newStatus = response.data.status as KycStatus;
-            await StorageService.setItem(AUTH_STORAGE_KEYS.KYC_STATUS, newStatus);
-            setStatus(newStatus);
+            if (newStatus) {
+                await StorageService.setItem(AUTH_STORAGE_KEYS.KYC_STATUS, newStatus);
+                setStatus(newStatus);
+            }
+
+
         } catch (err) {
             setError('Failed to check KYC status');
         } finally {

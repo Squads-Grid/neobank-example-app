@@ -70,7 +70,6 @@ export function SendModal({ visible, onClose }: SendModalProps) {
             return 'Complete KYC to send via bank transfer';
         }
         else {
-
             return 'Send USDC to your Bank Account';
         }
     };
