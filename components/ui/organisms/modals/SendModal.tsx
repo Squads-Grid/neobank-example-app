@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { ActionModal } from '../ActionModal';
 import { ModalOptionsList } from '../../molecules/ModalOptionsList';
 import { ActionOption } from '../../molecules/ModalOptionsList';
 import { router } from 'expo-router';
-import { useModalFlow } from '@/contexts/ModalFlowContext';
 import { useKyc } from '@/hooks/useKyc';
 
 const bankIcon = require('@/assets/icons/bank.png');
@@ -15,21 +14,7 @@ interface SendModalProps {
 }
 
 export function SendModal({ visible, onClose }: SendModalProps) {
-    const [isBankLoading, setIsBankLoading] = useState(false);
-    const { status: kycStatus, checkStatus } = useKyc();
-
-    // Fetch latest KYC status when modal becomes visible
-    useEffect(() => {
-        const fetchData = async () => {
-            setIsBankLoading(true);
-            try {
-                await checkStatus();
-            } finally {
-                setIsBankLoading(false);
-            }
-        };
-        fetchData();
-    }, [checkStatus]);
+    const { isBankLoading, getBankDescription, isBankDisabled } = useKyc();
 
     const handleSendToWallet = () => {
         onClose();
@@ -53,27 +38,6 @@ export function SendModal({ visible, onClose }: SendModalProps) {
         });
     };
 
-    const isKycPending = kycStatus === 'under_review' || kycStatus === 'incomplete';
-    const isKycRejected = kycStatus === 'rejected';
-
-    const getBankDescription = () => {
-        if (isBankLoading || !kycStatus) {
-            return 'Loading...';
-        }
-        else if (isKycPending) {
-            return 'KYC verification in progress';
-        }
-        else if (isKycRejected) {
-            return 'KYC verification failed. Please try again';
-        }
-        else if (kycStatus === 'not_started') {
-            return 'Complete KYC to send via bank transfer';
-        }
-        else {
-            return 'Send USDC to your Bank Account';
-        }
-    };
-
     const sendOptions: ActionOption[] = [
         {
             key: 'wallet',
@@ -85,10 +49,10 @@ export function SendModal({ visible, onClose }: SendModalProps) {
         {
             key: 'bank',
             title: 'To Bank Account',
-            description: getBankDescription(),
+            description: getBankDescription('send'),
             icon: bankIcon,
             onPress: handleSendToBank,
-            disabled: isBankLoading || !kycStatus || (kycStatus !== 'approved' && kycStatus !== 'not_started' && kycStatus !== 'incomplete')
+            disabled: isBankDisabled
         }
     ];
 

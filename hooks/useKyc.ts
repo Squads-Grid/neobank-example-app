@@ -1,10 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { KycStatus, KycParams } from '@/types/Kyc';
 import { easClient } from '@/utils/easClient';
 import { StorageService } from '@/utils/storage';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import { useAuth } from '@/contexts/AuthContext';
 import { MockDatabase } from '@/utils/mockDatabase';
+import { useModalFlow } from '@/contexts/ModalFlowContext';
 
 interface UseKycReturn {
     status: KycStatus | null;
@@ -13,6 +14,12 @@ interface UseKycReturn {
     startKyc: (params: KycParams) => Promise<string>;
     checkStatus: () => Promise<void>;
     resetKyc: () => Promise<void>;
+    // Bank-specific functionality
+    isBankLoading: boolean;
+    isKycPending: boolean;
+    isKycRejected: boolean;
+    getBankDescription: (type: 'send' | 'receive') => string;
+    isBankDisabled: boolean;
 }
 
 export function useKyc(): UseKycReturn {
@@ -20,6 +27,21 @@ export function useKyc(): UseKycReturn {
     const [status, setStatus] = useState<KycStatus | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isBankLoading, setIsBankLoading] = useState(false);
+    const { fetchBankDetails } = useModalFlow();
+
+    // Initialize status from storage when hook mounts
+    useEffect(() => {
+        const initStatus = async () => {
+            const storedStatus = await StorageService.getItem<KycStatus>(AUTH_STORAGE_KEYS.KYC_STATUS);
+            if (storedStatus) {
+                setStatus(storedStatus);
+            } else {
+                setStatus('not_started');
+            }
+        };
+        initStatus();
+    }, []);
 
     const startKyc = useCallback(async (params: KycParams) => {
         setIsLoading(true);
@@ -41,21 +63,20 @@ export function useKyc(): UseKycReturn {
         }
     }, [accountInfo]);
 
-
     const checkStatus = useCallback(async () => {
+        if (!accountInfo?.grid_user_id) {
+            setError('Account information not found');
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         try {
-            if (!accountInfo?.grid_user_id) {
-                setError('Account information not found');
-
-
-                return;
-            }
-
             const user = await MockDatabase.getUser(accountInfo.grid_user_id);
 
             if (!user) {
+                console.log("🚀 ~ checkStatus ~ user not found")
+                setStatus('not_started');
                 return;
             }
 
@@ -66,7 +87,6 @@ export function useKyc(): UseKycReturn {
 
             if (!accountInfo.smart_account_address) {
                 setError('Account information not found');
-
                 return;
             }
 
@@ -75,15 +95,23 @@ export function useKyc(): UseKycReturn {
             if (newStatus) {
                 await StorageService.setItem(AUTH_STORAGE_KEYS.KYC_STATUS, newStatus);
                 setStatus(newStatus);
+
+                // If KYC is approved, fetch bank details
+                if (newStatus === 'approved') {
+                    setIsBankLoading(true);
+                    try {
+                        await fetchBankDetails();
+                    } finally {
+                        setIsBankLoading(false);
+                    }
+                }
             }
-
-
         } catch (err) {
             setError('Failed to check KYC status');
         } finally {
             setIsLoading(false);
         }
-    }, [accountInfo]);
+    }, [accountInfo, fetchBankDetails]);
 
     const resetKyc = useCallback(async () => {
         if (accountInfo?.grid_user_id) {
@@ -93,12 +121,40 @@ export function useKyc(): UseKycReturn {
         setStatus('not_started');
     }, [accountInfo]);
 
+    const isKycPending = status === 'under_review' || status === 'incomplete';
+    const isKycRejected = status === 'rejected';
+
+    const getBankDescription = (type: 'send' | 'receive') => {
+        if (isLoading || isBankLoading || !status) {
+            return 'Loading...';
+        }
+        else if (isKycPending) {
+            return 'KYC verification in progress';
+        }
+        else if (isKycRejected) {
+            return 'KYC verification failed. Please try again';
+        }
+        else if (status === 'not_started') {
+            return `Complete KYC to ${type} via bank transfer`;
+        }
+        else {
+            return type === 'send' ? 'Send USDC to your Bank Account' : 'Receive via bank transfer';
+        }
+    };
+
+    const isBankDisabled = isLoading || isBankLoading || !status || (status !== 'approved' && status !== 'not_started' && status !== 'incomplete');
+
     return {
         status,
         isLoading,
         error,
         startKyc,
         checkStatus,
-        resetKyc
+        resetKyc,
+        isBankLoading,
+        isKycPending,
+        isKycRejected,
+        getBankDescription,
+        isBankDisabled
     };
 }
