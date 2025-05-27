@@ -64,6 +64,7 @@ function KYCModal() {
             navState.url.includes('status=complete');
 
         if (isCompletionPage) {
+            await checkStatus(); // This will update the status in the hook
             handleClose();
         }
     };

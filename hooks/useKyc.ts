@@ -32,7 +32,6 @@ export function useKyc(): UseKycReturn {
 
             // Store the KYC link ID in the mock database
             await MockDatabase.updateUserKycLinkID(accountInfo.grid_user_id, response.data.id);
-            const user = await MockDatabase.getUser(accountInfo.grid_user_id);
             return response.data.kyc_link;
         } catch (err) {
             setError('Failed to start KYC process');
@@ -50,13 +49,13 @@ export function useKyc(): UseKycReturn {
             if (!accountInfo?.grid_user_id) {
                 setError('Account information not found');
 
+
                 return;
             }
 
             const user = await MockDatabase.getUser(accountInfo.grid_user_id);
 
             if (!user) {
-                console.log("🚀 ~ checkStatus ~ user not found")
                 return;
             }
 
@@ -67,6 +66,7 @@ export function useKyc(): UseKycReturn {
 
             if (!accountInfo.smart_account_address) {
                 setError('Account information not found');
+
                 return;
             }
 

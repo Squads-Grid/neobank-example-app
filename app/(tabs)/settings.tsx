@@ -5,26 +5,27 @@ import { ScreenLayout } from '@/components/ui/layout';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Spacing } from '@/constants/Spacing';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { useModalFlow } from '@/contexts/ModalFlowContext';
 import * as SecureStore from 'expo-secure-store';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
+import { useKyc } from '@/hooks/useKyc';
 
 export default function SettingsScreen() {
     const { logout, email } = useAuth();
-    const { kycStatus } = useModalFlow();
+    const { status: kycStatus, checkStatus } = useKyc();
     const textColor = useThemeColor({}, 'text');
     const [gridUserId, setGridUserId] = useState<string>('');
 
     useEffect(() => {
-        const loadGridUserId = async () => {
+        const loadData = async () => {
             const id = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID);
             if (id) setGridUserId(id);
+            await checkStatus();
         };
-        loadGridUserId();
-    }, []);
+        loadData();
+    }, [checkStatus]);
 
     const formatKycStatus = (status: string | null) => {
         if (!status) return 'Not Started';
@@ -34,7 +35,7 @@ export default function SettingsScreen() {
     const formatGridUserId = (id: string) => {
         if (!id) return '-';
         if (id.length <= 8) return id;
-        return `${id.slice(0, 4)}...${id.slice(-4)}`;
+        return `${id.slice(1, 5)}...${id.slice(-5)}`;
     };
 
     const copyToClipboard = async () => {
@@ -62,7 +63,7 @@ export default function SettingsScreen() {
                     <View style={styles.accountInfo}>
                         <ThemedText type="regular">Grid User ID:</ThemedText>
                         <View style={styles.idContainer}>
-                            <ThemedText type="regular" style={styles.infoText}>{formatGridUserId(gridUserId)}</ThemedText>
+                            <ThemedText type="regular" style={styles.infoText}>{formatGridUserId(gridUserId).replaceAll('\"', '')}</ThemedText>
                             <TouchableOpacity onPress={copyToClipboard} style={styles.copyButton}>
                                 <Ionicons name="copy-outline" size={20} color={textColor} style={{ opacity: 0.6 }} />
                             </TouchableOpacity>
