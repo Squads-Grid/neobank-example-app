@@ -23,7 +23,6 @@ export const formatAmount = (amount: string) => {
 
 export const getKycLinkId = async (gridUserId: string): Promise<string | null> => {
     const bridge_kyc_link_ids = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.BRIDGE_KYC_LINK_IDS);
-    console.log("🚀 ~ getKycLinkId ~ bridge_kyc_link_ids:", bridge_kyc_link_ids)
 
     if (!bridge_kyc_link_ids) {
         return null;

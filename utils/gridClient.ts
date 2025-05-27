@@ -47,7 +47,6 @@ export class GridClient {
                 },
             });
 
-
             if (!response.ok) {
                 // Optionally, try to read error text for debugging
                 const errorText = await response.text();
@@ -57,7 +56,6 @@ export class GridClient {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.log("🚀 ~ GridClient ~ error:", error)
             throw error;
         }
     }

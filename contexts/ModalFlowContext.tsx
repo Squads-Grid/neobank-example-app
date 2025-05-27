@@ -5,7 +5,7 @@ import { useAuth } from './AuthContext';
 import { Currency } from '@/types/Transaction';
 import * as SecureStore from 'expo-secure-store';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
-import { getKycLinkId } from '@/utils/helper';
+import { MockDatabase } from '@/utils/mockDatabase';
 
 interface BankAccountDetails {
     currency: Currency;
@@ -113,10 +113,10 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
         setError(null);
 
         try {
-            const kycLinkId = await getKycLinkId(accountInfo.grid_user_id);
+            const user = await MockDatabase.getUser(accountInfo.grid_user_id);
+            const kycLinkId = user?.kyc_link_id;
             if (!kycLinkId) {
                 setKycStatus('not_started');
-
                 return;
             }
 
@@ -124,6 +124,7 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
                 accountInfo.smart_account_address,
                 kycLinkId
             );
+
             SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KYC_STATUS, kycResponse.data.status);
             SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KYC_LINK, kycResponse.data.kyc_continuation_link);
             setKycStatus(kycResponse.data.status);
@@ -134,6 +135,7 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
             setIsLoading(false);
         }
     }, [accountInfo?.smart_account_address, accountInfo?.grid_user_id]);
+
 
     const value = {
         // Modal visibility states

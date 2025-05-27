@@ -17,7 +17,7 @@ import { easClient } from '@/utils/easClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
-import * as SecureStore from 'expo-secure-store';
+import { StorageService } from '@/utils/storage';
 import { Currency } from '@/types/Transaction';
 
 interface BankDetail {
@@ -128,7 +128,7 @@ function BankDetailsModal() {
             return;
         }
 
-        const gridUserId = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID);
+        const gridUserId = await StorageService.getItem<string>(AUTH_STORAGE_KEYS.GRID_USER_ID);
         if (!gridUserId) {
             logout();
             return;

@@ -64,9 +64,6 @@ export default function AmountScreen() {
     async function getExtAccount() {
         const ext = await getExternalAccountIds();
         setExternalAccounts(ext?.accounts ?? []);
-
-        console.log("🚀 ~ getExtAccount ~ ext:", ext)
-
     }
 
     useEffect(() => {
@@ -105,7 +102,6 @@ export default function AmountScreen() {
     };
 
     const handleContinue = (label?: string) => {
-        console.log("🚀 ~ handleContinue ~ externalAccountId:", externalAccountId)
         if (step === 1) {
             setStep(2);
         } else {
@@ -293,7 +289,6 @@ export default function AmountScreen() {
     };
 
     const renderAccountList = () => {
-        console.log("🚀 ~ renderAccountList ~ externalAccounts::::::", externalAccounts)
         return (
             <ScrollView>
                 {externalAccounts?.map((account) => renderExternalAccounts(account.label, account.external_account_id))}
@@ -303,7 +298,6 @@ export default function AmountScreen() {
                     title="Add new account"
                     onPress={() => {
                         setStep(3);
-                        // console.log("🚀 ~ renderExternalAccounts ~ id:", id)
                     }} />
             </ScrollView>
         )

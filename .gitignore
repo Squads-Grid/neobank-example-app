@@ -38,3 +38,9 @@ yarn-error.*
 
 app-example
 docs**
+
+# credentials
+credentials**
+
+android**
+ios**

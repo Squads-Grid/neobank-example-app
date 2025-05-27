@@ -91,7 +91,6 @@ export default function FiatConfirmScreen() {
 
             // Convert amount to USDC base units (multiply by 10^6)
             const amountInBaseUnits = Math.round(parseFloat(amount) * Math.pow(10, USDC_DECIMALS)).toString();
-            console.log("🚀 ~ handleConfirm ~ externalAccountId:", externalAccountId)
             const payload = externalAccountId ? {
                 amount: amountInBaseUnits,
                 grid_user_id: accountInfo.grid_user_id,
@@ -142,9 +141,6 @@ export default function FiatConfirmScreen() {
             const easClient = new EasClient();
             try {
                 const res = await easClient.preparePaymentIntent(payload, accountInfo.smart_account_address, true);
-                console.log("🚀 ~ handleConfirm ~ res.data.destination:", res.data.destination)
-                console.log("🚀 ~ handleConfirm ~ res.data.destination.external_account_id:", res.data.destination.external_account_id)
-                console.log("🚀 ~ handleConfirm ~ accountInfo.grid_user_id:", accountInfo.grid_user_id)
 
                 // Store the external account ID with label
                 if (res.data.destination.external_account_id && accountInfo.grid_user_id) {
@@ -230,7 +226,7 @@ export default function FiatConfirmScreen() {
 
     const renderInfo = (icon: IconSymbolName, label: string, value: string) => {
         const iconColor = textColor + '40';
-        console.log("🚀🚀🚀 externaaaaaaal : ", externalAccountId)
+
         return (
             <View>
                 <View style={styles.labelContainer}>

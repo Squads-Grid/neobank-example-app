@@ -12,6 +12,7 @@ interface FaceIDScreenProps {
     show2FA: boolean;
 }
 
+/** NOT USED */
 export function FaceIDScreen({ show2FA }: FaceIDScreenProps) {
     const { textColor } = useScreenTheme();
 

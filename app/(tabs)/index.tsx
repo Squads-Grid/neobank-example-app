@@ -18,6 +18,7 @@ import { useComingSoonToast } from '@/hooks/useComingSoonToast';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import * as SecureStore from 'expo-secure-store';
 import { TransactionList } from '@/components/ui/organisms/TransactionList';
+import { MockDatabase } from '@/utils/mockDatabase';
 
 const placeholder = require('@/assets/images/no-txn.png');
 

@@ -1,77 +1,96 @@
-import * as SecureStore from 'expo-secure-store';
 import { AUTH_STORAGE_KEYS } from './auth';
 import { ExternalAccountMapping, ExternalAccountStorage } from '@/types/Transaction';
+import { StorageService } from './storage';
 
-export const storeExternalAccount = async (gridUserId: string, externalAccountId: string, label: string) => {
-    try {
-        // Get existing storage
-        const existingStorage = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
-        console.log("🚀 ~ storeExternalAccount ~ existingStorage:", existingStorage)
-        let storage: ExternalAccountStorage;
-        let alreadyExists = false;
+/**
+ * Service for managing external account mappings
+ */
+export class ExternalAccountService {
+    /**
+     * Store an external account mapping
+     * @param gridUserId - The Grid user ID
+     * @param externalAccountId - The external account ID
+     * @param label - The label for the account
+     */
+    static async storeAccount(gridUserId: string, externalAccountId: string, label: string): Promise<void> {
+        try {
+            // Get existing storage
+            const existingStorage = await StorageService.getItem<ExternalAccountStorage>(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
+            let storage: ExternalAccountStorage;
+            let alreadyExists = false;
 
-        if (existingStorage) {
-            storage = JSON.parse(existingStorage);
-            console.log("🚀 ~ storeExternalAccount ~ storage:", storage)
-            // Remove any existing mapping for this grid_user_id
-            storage.accounts = storage.accounts.filter(acc => acc.grid_user_id !== gridUserId);
-            alreadyExists = storage.accounts.some(acc => acc.external_account_id === externalAccountId);
-        } else {
-            storage = { accounts: [] };
+            if (existingStorage) {
+                storage = existingStorage;
+                // Remove any existing mapping for this grid_user_id
+                storage.accounts = storage.accounts.filter(acc => acc.grid_user_id !== gridUserId);
+                alreadyExists = storage.accounts.some(acc => acc.external_account_id === externalAccountId);
+            } else {
+                storage = { accounts: [] };
+            }
+
+            if (!alreadyExists) {
+                // Add new mapping
+                storage.accounts.push({
+                    grid_user_id: gridUserId,
+                    external_account_id: externalAccountId,
+                    label
+                });
+            }
+
+            // Save updated storage
+            await StorageService.setItem(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS, storage);
+        } catch (error) {
+            console.error('Error storing external account:', error);
+            throw error;
         }
+    }
 
-        if (!alreadyExists) {
-            // Add new mapping
-            storage.accounts.push({
-                grid_user_id: gridUserId,
-                external_account_id: externalAccountId,
-                label
-            });
+    /**
+     * Get an external account ID for a given Grid user ID
+     * @param gridUserId - The Grid user ID to look up
+     * @returns The external account ID if found, null otherwise
+     */
+    static async getAccountId(gridUserId: string): Promise<string | null> {
+        try {
+            const storage = await StorageService.getItem<ExternalAccountStorage>(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
+            if (!storage) return null;
+
+            const mapping = storage.accounts.find(acc => acc.grid_user_id === gridUserId);
+            return mapping?.external_account_id || null;
+        } catch (error) {
+            console.error('Error getting external account:', error);
+            return null;
         }
-
-        // Save updated storage
-        await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS, JSON.stringify(storage));
-    } catch (error) {
-        console.error('Error storing external account:', error);
-        throw error;
     }
-};
 
-export const getExternalAccountId = async (gridUserId: string): Promise<string | null> => {
-    try {
-        const storage = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
-        console.log("🚀 ~ getExternalAccountId ~ storage:", storage)
-        if (!storage) return null;
-
-        const parsedStorage: ExternalAccountStorage = JSON.parse(storage);
-        const mapping = parsedStorage.accounts.find(acc => acc.grid_user_id === gridUserId);
-        return mapping?.external_account_id || null;
-    } catch (error) {
-        console.error('Error getting external account:', error);
-        return null;
+    /**
+     * Get all external account mappings
+     * @returns All external account mappings or null if none exist
+     */
+    static async getAllAccounts(): Promise<ExternalAccountStorage | null> {
+        try {
+            return await StorageService.getItem<ExternalAccountStorage>(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
+        } catch (error) {
+            console.error('Error getting external accounts:', error);
+            return null;
+        }
     }
-};
 
-export const getExternalAccountIds = async (): Promise<ExternalAccountStorage | null> => {
-    try {
-        const storage = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
-        console.log("🚀 ~ getExternalAccountIds ~ storage:", storage)
-        if (!storage) return null;
-
-        const parsedStorage: ExternalAccountStorage = JSON.parse(storage);
-        console.log("🚀 ~ getExternalAccountIds ~ parsedStorage:", parsedStorage)
-        return parsedStorage;
-    } catch (error) {
-        console.error('Error getting external account:', error);
-        return null;
+    /**
+     * Clear all external account mappings
+     */
+    static async clearAll(): Promise<void> {
+        try {
+            await StorageService.deleteItem(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
+        } catch (error) {
+            console.error('Error clearing external accounts:', error);
+            throw error;
+        }
     }
-};
+}
 
-export const clearExternalAccounts = async () => {
-    try {
-        await SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
-    } catch (error) {
-        console.error('Error clearing external accounts:', error);
-        throw error;
-    }
-}; 
+// For backward compatibility, export the old function names
+export const storeExternalAccount = ExternalAccountService.storeAccount;
+export const getExternalAccountId = ExternalAccountService.getAccountId;
+export const getExternalAccountIds = ExternalAccountService.getAllAccounts;
+export const clearExternalAccounts = ExternalAccountService.clearAll; 
