@@ -10,7 +10,7 @@ export function useResendTimer({ initialSeconds = 30, onResend }: UseResendTimer
     const [isDisabled, setIsDisabled] = useState(false);
 
     useEffect(() => {
-        let timer: NodeJS.Timeout;
+        let timer: number;
 
         if (countdown > 0) {
             timer = setInterval(() => {
