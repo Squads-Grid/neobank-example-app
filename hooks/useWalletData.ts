@@ -3,14 +3,15 @@ import { TransferResponse } from '@/types/Transaction';
 import { easClient } from '@/utils/easClient';
 import { StorageService } from '@/utils/storage';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
+import { AccountInfo } from '@/types/Auth';
 
-export function useWalletData(accountInfo: any) {
+export function useWalletData(accountInfo: AccountInfo | null) {
     const [isLoading, setIsLoading] = useState(false);
     const [balance, setBalance] = useState(0);
     const [transfers, setTransfers] = useState<TransferResponse>([]);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchWalletData = async (accountInfoOverride?: any) => {
+    const fetchWalletData = async (accountInfoOverride?: AccountInfo) => {
         const accountInfoToUse = accountInfoOverride || accountInfo;
         if (!accountInfoToUse?.smart_account_address) {
             setError('Account info not found');
