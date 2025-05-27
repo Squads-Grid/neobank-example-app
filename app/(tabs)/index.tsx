@@ -11,14 +11,13 @@ import { createSmartAccount } from '@/utils/smartAccount';
 import { SendModal } from '@/components/ui/organisms/modals/SendModal';
 import { ReceiveModal } from '@/components/ui/organisms/modals/ReceiveModal';
 import { QRCodeModal } from '@/components/ui/organisms/modals/QRCodeModal';
-import { easClient } from '@/utils/easClient';
 import { useModalFlow } from '@/contexts/ModalFlowContext';
 import { ComingSoonToast } from '@/components/ui/organisms/ComingSoonToast';
 import { useComingSoonToast } from '@/hooks/useComingSoonToast';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
-import * as SecureStore from 'expo-secure-store';
 import { TransactionList } from '@/components/ui/organisms/TransactionList';
-import { MockDatabase } from '@/utils/mockDatabase';
+import { StorageService } from '@/utils/storage';
+import { useWalletData } from '@/hooks/useWalletData';
 
 const placeholder = require('@/assets/images/no-txn.png');
 
@@ -26,11 +25,10 @@ function HomeScreenContent() {
     const { accountInfo, setAccountInfo, logout } = useAuth();
     const { showReceiveModal, isReceiveModalVisible, hideAllModals } = useModalFlow();
     const [refreshing, setRefreshing] = useState(false);
-    const [balance, setBalance] = useState(0);
-    const [transfers, setTransfers] = useState<TransferResponse>([]);
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
     const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false);
     const { isVisible, message, showToast, hideToast } = useComingSoonToast();
+    const { balance, transfers, isLoading, error, fetchWalletData } = useWalletData(accountInfo);
 
     useEffect(() => {
         if (!accountInfo || !accountInfo.smart_account_signer_public_key) {
@@ -38,98 +36,39 @@ function HomeScreenContent() {
             return;
         }
 
-        // Load cached balance first
-        const loadCachedBalance = async () => {
-            const cachedBalance = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.CACHED_BALANCE);
-            if (cachedBalance) {
-                setBalance(parseFloat(cachedBalance));
+        const initializeAccount = async () => {
+            try {
+                const account = await createSmartAccount(accountInfo);
+                await StorageService.setItem(AUTH_STORAGE_KEYS.GRID_USER_ID, account.grid_user_id);
+                await StorageService.setItem(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, account.smart_account_address);
+
+                const updatedAccountInfo = {
+                    ...accountInfo,
+                    smart_account_address: account.smart_account_address,
+                    grid_user_id: account.grid_user_id
+                };
+
+                setAccountInfo(updatedAccountInfo);
+                await fetchWalletData(updatedAccountInfo);
+            } catch (err) {
+                console.error('Error initializing account:', err);
             }
         };
 
-        loadCachedBalance();
-
-        // Load grid user ID and check if smart account creation is needed
-        const loadDataAndCreateAccount = async () => {
-            let account = await createSmartAccount(accountInfo);
-            await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID, account.grid_user_id);
-            await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, account.smart_account_address);
-
-            // Create the updated account info
-            const updatedAccountInfo = {
-                ...accountInfo,
-                smart_account_address: account.smart_account_address,
-                grid_user_id: account.grid_user_id
-            };
-
-            // Update the state
-            setAccountInfo(updatedAccountInfo);
-
-            // Pass the updated account info directly to updateBalance
-            await updateBalance(updatedAccountInfo);
-            await fetchTransactions();
-        };
-
-        loadDataAndCreateAccount();
+        initializeAccount();
     }, []);
-
-    const updateBalance = async (accountInfoOverride?: any) => {
-        const accountInfoToUse = accountInfoOverride || accountInfo;
-        if (!accountInfoToUse) {
-            console.error('Account info not found');
-            return;
-        }
-
-        const result = await easClient.getBalance({ smartAccountAddress: accountInfoToUse.smart_account_address });
-        const balances = result.data.balances;
-        if (balances.length === 0) {
-            setBalance(0);
-            await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.CACHED_BALANCE, '0');
-        } else {
-            const usdcAddress = process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS;
-            if (!usdcAddress) {
-                console.error('USDC address not found');
-            }
-            const usdcBalance = balances.find((balance: any) => {
-                return balance.token_address === usdcAddress
-            });
-            if (usdcBalance) {
-                const newBalance = parseFloat(parseFloat(usdcBalance.amount_decimal).toFixed(2));
-                setBalance(newBalance);
-                await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.CACHED_BALANCE, newBalance.toString());
-            }
-        }
-    }
 
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
-        if (!accountInfo?.smart_account_address) {
-            setRefreshing(false);
-            return;
-        }
-
-        // Add timeout to prevent refresh from getting stuck
-        const timeoutId = setTimeout(() => {
-            setRefreshing(false);
-        }, 10000); // 10 second timeout
+        const timeoutId = setTimeout(() => setRefreshing(false), 10000);
 
         try {
-            if (accountInfo?.smart_account_address) {
-                await Promise.all([updateBalance(), fetchTransactions()]);
-            }
+            await fetchWalletData();
         } finally {
             clearTimeout(timeoutId);
             setRefreshing(false);
         }
-    }, [accountInfo]);
-
-    const fetchTransactions = async () => {
-        if (accountInfo?.smart_account_address) {
-            const result = await easClient.getTransfers(accountInfo.smart_account_address);
-            if (result.data) {
-                setTransfers(result.data);
-            }
-        }
-    }
+    }, [fetchWalletData]);
 
     const actions: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void }[] = [
         {
