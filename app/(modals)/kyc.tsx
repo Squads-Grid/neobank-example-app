@@ -12,10 +12,10 @@ import { Link } from 'expo-router';
 import { ThemedButton, ThemedTextInput } from '@/components/ui/molecules';
 import { useAuth } from '@/contexts/AuthContext';
 import { easClient } from '@/utils/easClient';
-import { KycLinkId, KycLinkIds, KycParams } from '@/types/Kyc';
-import * as SecureStore from 'expo-secure-store';
+import { KycParams } from '@/types/Kyc';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import { getKycLinkId, setKycLinkId } from '@/utils/helper';
+import { StorageService } from '@/utils/storage';
 
 function KYCModal() {
     const { textColor } = useScreenTheme();
@@ -44,7 +44,7 @@ function KYCModal() {
         }
 
         try {
-            const gridUserId = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID);
+            const gridUserId = await StorageService.getItem(AUTH_STORAGE_KEYS.GRID_USER_ID);
             if (!gridUserId) {
                 logout();
                 return;
@@ -56,7 +56,7 @@ function KYCModal() {
             }
 
             // For demo purpose only! Save kyc link in db!
-            const kycLinkId = await getKycLinkId(gridUserId);
+            const kycLinkId = await getKycLinkId(gridUserId as string);
 
             if (!kycLinkId) {
                 setKycStatus('not_started');
@@ -67,7 +67,7 @@ function KYCModal() {
                 accountInfo.smart_account_address,
                 kycLinkId
             );
-            SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KYC_STATUS, kycResponse.data.status);
+            StorageService.setItem(AUTH_STORAGE_KEYS.KYC_STATUS, kycResponse.data.status);
             setKycStatus(kycResponse.data.status);
             setIsLoading(false);
 
@@ -88,7 +88,7 @@ function KYCModal() {
         Keyboard.dismiss();
         setIsSubmitting(true);
 
-        const gridUserId = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID);
+        const gridUserId = await StorageService.getItem(AUTH_STORAGE_KEYS.GRID_USER_ID) as string;
         if (!gridUserId || !accountInfo || !email) {
             logout();
             return;
@@ -207,7 +207,7 @@ function KYCModal() {
     }
 
     const handleContinue = async () => {
-        const kycLink = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.KYC_LINK);
+        const kycLink = await StorageService.getItem(AUTH_STORAGE_KEYS.KYC_LINK) as string;
         if (kycLink) {
             setKycUrl(kycLink);
         }
