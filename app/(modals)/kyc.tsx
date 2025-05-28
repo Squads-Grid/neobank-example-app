@@ -16,12 +16,15 @@ import { KycParams } from '@/types/Kyc';
 function KYCModal() {
     const { textColor } = useScreenTheme();
     const { accountInfo, email } = useAuth();
-    const { status, isLoading, startKyc, checkStatus } = useKyc();
+    const { status, isLoading, startKyc, checkStatus, tosStatus } = useKyc();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [showNameInputs, setShowNameInputs] = useState(false);
     const [kycUrl, setKycUrl] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showChecklist, setShowChecklist] = useState(false);
+    const [tosUrl, setTosUrl] = useState<string | null>(null);
+    const [currentUrl, setCurrentUrl] = useState<string | null>(null);
 
     const handleClose = () => {
         router.back();
@@ -34,6 +37,7 @@ function KYCModal() {
     const handleSubmit = async () => {
         Keyboard.dismiss();
         setIsSubmitting(true);
+        setShowChecklist(true);
 
         if (!accountInfo || !email) {
             return;
@@ -48,8 +52,10 @@ function KYCModal() {
                 redirect_uri: null
             };
 
-            const kycLink = await startKyc(params);
+            const { kycLink, tosLink } = await startKyc(params);
             setKycUrl(kycLink);
+            setTosUrl(tosLink);
+
         } catch (err) {
             console.error('Error starting KYC:', err);
         } finally {
@@ -70,14 +76,19 @@ function KYCModal() {
     };
 
     const renderContent = () => {
-        return (
+        return showChecklist ? (
+            <View style={styles.contentContainer}>
+                <ThemedButton title={tosStatus === 'pending' ? `Accept Terms of Service` : `✅ Terms of Service Accepted`} disabled={tosStatus === 'approved'} onPress={() => setCurrentUrl(tosUrl)} />
+                <ThemedButton title={status === 'approved' ? `✅ Kyc Completed. Status: ${status}` : `Complete Kyc`} disabled={status !== 'not_started' && status !== 'incomplete'} onPress={() => setCurrentUrl(kycUrl)} />
+            </View>
+        ) : (
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={{ flex: 1 }}
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
             >
                 <View style={styles.contentContainer}>
-                    {!showNameInputs ? (
+                    {!showNameInputs && !showChecklist ? (
                         <>
                             <View style={styles.flagContainer}>
                                 <OverlappingImages
@@ -113,6 +124,7 @@ function KYCModal() {
                             />
                         </View>
                     )}
+
                 </View>
                 <View style={styles.bottomContainer}>
                     <ThemedText type="tiny" style={[styles.footerText, { color: textColor + 40 }]}>
@@ -141,9 +153,13 @@ function KYCModal() {
                 )}
             </SwipeableModal>
             <InAppBrowser
-                visible={!!kycUrl}
-                onClose={handleClose}
-                url={kycUrl || ''}
+                visible={!!currentUrl}
+                onClose={() => {
+                    setCurrentUrl(null);
+                    checkStatus();
+                }
+                }
+                url={currentUrl || ''}
                 onNavigationStateChange={handleNavigationStateChange}
             />
         </ThemedScreen>
@@ -151,6 +167,13 @@ function KYCModal() {
 }
 
 const styles = StyleSheet.create({
+    checklistContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: Spacing.xl,
+        gap: Spacing.md
+    },
     loadingContainer: {
         flex: 1,
         alignItems: 'center',

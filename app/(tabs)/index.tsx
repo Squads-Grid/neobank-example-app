@@ -101,7 +101,6 @@ function HomeScreenContent() {
     ];
 
     const formatTransfers = (transfers: TransferResponse) => {
-        // TODO: comment this in
         const transfersToConsider = transfers.filter(transfer => ('Spl' in transfer && transfer.Spl.mint === process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS && transfer.Spl.confirmation_status === 'confirmed') || ('Bridge' in transfer && transfer.Bridge.state === 'payment_processed'));
 
         const transactions = transfersToConsider.map(transfer => {

@@ -47,3 +47,5 @@ export interface KycParams {
     full_name: string;
     redirect_uri: string | null;
 }
+
+export type TosStatus = 'pending' | 'approved';

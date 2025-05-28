@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { KycStatus, KycParams } from '@/types/Kyc';
+import { KycStatus, KycParams, TosStatus } from '@/types/Kyc';
 import { easClient } from '@/utils/easClient';
 import { StorageService } from '@/utils/storage';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
@@ -9,9 +9,10 @@ import { useModalFlow } from '@/contexts/ModalFlowContext';
 
 interface UseKycReturn {
     status: KycStatus | null;
+    tosStatus: TosStatus | null;
     isLoading: boolean;
     error: string | null;
-    startKyc: (params: KycParams) => Promise<string>;
+    startKyc: (params: KycParams) => Promise<{ kycLink: string; tosLink: string }>;
     checkStatus: () => Promise<void>;
     resetKyc: () => Promise<void>;
     // Bank-specific functionality
@@ -25,6 +26,7 @@ interface UseKycReturn {
 export function useKyc(): UseKycReturn {
     const { accountInfo } = useAuth();
     const [status, setStatus] = useState<KycStatus | null>(null);
+    const [tosStatus, setTosStatus] = useState<TosStatus | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isBankLoading, setIsBankLoading] = useState(false);
@@ -50,7 +52,7 @@ export function useKyc(): UseKycReturn {
 
             // Store the KYC link ID in the mock database
             await MockDatabase.updateUserKycLinkID(accountInfo.grid_user_id, response.data.id);
-            return response.data.kyc_link;
+            return { kycLink: response.data.kyc_link, tosLink: response.data.tos_link };
         } catch (err) {
             setError('Failed to start KYC process');
             throw err;
@@ -83,16 +85,18 @@ export function useKyc(): UseKycReturn {
             if (!accountInfo.smart_account_address) {
                 setError('Account information not found');
                 setIsLoading(false);
+
                 return;
             }
             const response = await easClient.getKYCStatus(accountInfo.smart_account_address, user.kyc_link_id);
+            const tosStatus = response.data.tos_status as TosStatus;
             const newStatus = response.data.status as KycStatus;
             if (newStatus) {
                 await StorageService.setItem(AUTH_STORAGE_KEYS.KYC_STATUS, newStatus);
                 setStatus(newStatus);
+                setTosStatus(tosStatus);
 
-                // If KYC is approved, fetch bank details
-                if (newStatus === 'approved') {
+                if (newStatus === 'approved' && tosStatus === 'approved') {
                     setIsBankLoading(true);
                     try {
                         await fetchBankDetails();
@@ -142,6 +146,7 @@ export function useKyc(): UseKycReturn {
 
     return {
         status,
+        tosStatus,
         isLoading,
         error,
         startKyc,
