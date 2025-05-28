@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { router } from 'expo-router';
-import { AccountInfo, AuthContextType, } from '@/types/Auth';
-import { authenticateUser, verifyOtpCode, AUTH_STORAGE_KEYS } from '@/utils/auth';
-import * as SecureStore from 'expo-secure-store';
+import { AccountInfo, AuthContextType } from '@/types/Auth';
+import { authenticateUser, verifyOtpCode } from '@/utils/auth';
 import { KycStatus } from '@/types/Kyc';
+import { AuthStorage } from '@/utils/storage/authStorage';
+import { gridClient } from '@/utils/gridClient';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -21,27 +22,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const initializeAuth = async () => {
             try {
-                const storedAuth = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED);
+                const authData = await AuthStorage.getAuthData();
 
-                if (storedAuth === 'true') {
-                    const accountInfo = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.ACCOUNT_INFO);
-                    const keypair = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.KEYPAIR);
-                    const credentialsBundle = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.CREDENTIALS_BUNDLE);
-                    const email = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.EMAIL);
-                    const wallet = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.WALLET);
-                    const gridUserId = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID);
-                    const smartAccountAddress = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS);
-
-                    if (accountInfo && keypair && credentialsBundle && email) {
-                        setAccountInfo({ ...JSON.parse(accountInfo), grid_user_id: gridUserId, smart_account_address: smartAccountAddress });
-                        setKeypair(JSON.parse(keypair));
-                        setCredentialsBundle(credentialsBundle);
-                        setEmail(email);
-                        setWallet(wallet);
-                        setIsAuthenticated(true);
-                    } else {
-                        setIsAuthenticated(false);
-                    }
+                if (authData.isAuthenticated && authData.accountInfo && authData.keypair && authData.credentialsBundle && authData.email) {
+                    setAccountInfo(authData.accountInfo);
+                    setKeypair(authData.keypair);
+                    setCredentialsBundle(authData.credentialsBundle);
+                    setEmail(authData.email);
+                    setIsAuthenticated(true);
                 } else {
                     setIsAuthenticated(false);
                 }
@@ -68,23 +56,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 return false;
             }
 
-            // Store all auth data in SecureStore
-            // TODO: Check what to do with the keypair
-            await Promise.all([
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KEYPAIR, JSON.stringify(keypair)),
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.CREDENTIALS_BUNDLE, credentialBundle),
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED, 'true'),
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.ACCOUNT_INFO, JSON.stringify(accountInfo)),
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID, accountInfo.grid_user_id ?? ''),
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, accountInfo.smart_account_address ?? ''),
-            ]);
-
-            // Helper for kyc
-            const emailFromStorage = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.PERSISTENT_EMAIL);
-
-            if (emailFromStorage !== email) {
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.PERSISTENT_EMAIL, email ?? '');
-            }
+            await AuthStorage.saveAuthData({
+                keypair,
+                credentialsBundle: credentialBundle,
+                accountInfo,
+                email: email ?? '',
+                gridUserId: accountInfo.grid_user_id,
+                smartAccountAddress: accountInfo.smart_account_address,
+            });
 
             setCredentialsBundle(credentialBundle);
             setKeypair(keypair);
@@ -113,17 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setWallet(null);
 
             // Clear all stored auth data
-            await Promise.all([
-                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.ACCOUNT_INFO),
-                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.KEYPAIR),
-                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.CREDENTIALS_BUNDLE),
-                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.WALLET),
-                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED),
-                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID),
-                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS),
-                SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.KYC_STATUS),
-            ]);
-
+            await AuthStorage.clearAuthData();
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             setAuthError(errorMessage);
@@ -136,10 +105,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const { otpId, mpcPrimaryId } = await authenticateUser(email);
 
             // Store initial auth data
-            await Promise.all([
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.EMAIL, email),
-                SecureStore.setItemAsync(AUTH_STORAGE_KEYS.MPC_PRIMARY_ID, mpcPrimaryId)
-            ]);
+            await AuthStorage.saveAuthData({
+                keypair: null,
+                credentialsBundle: '',
+                accountInfo: {} as AccountInfo,
+                email,
+            });
 
             setMpcPrimaryId(mpcPrimaryId);
             setEmail(email);
