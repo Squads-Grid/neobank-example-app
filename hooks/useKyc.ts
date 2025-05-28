@@ -64,6 +64,7 @@ export function useKyc(): UseKycReturn {
     const checkStatus = useCallback(async () => {
         if (!accountInfo?.grid_user_id) {
             setError('Account information not found');
+            setIsLoading(false);
             return;
         }
 
