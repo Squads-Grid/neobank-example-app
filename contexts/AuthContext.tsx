@@ -2,9 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import { AccountInfo, AuthContextType } from '@/types/Auth';
 import { authenticateUser, verifyOtpCode } from '@/utils/auth';
-import { KycStatus } from '@/types/Kyc';
 import { AuthStorage } from '@/utils/storage/authStorage';
-import { gridClient } from '@/utils/gridClient';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
