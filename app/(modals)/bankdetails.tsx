@@ -9,6 +9,7 @@ import { Spacing } from '@/constants/Spacing';
 import { CurrencySwitcher, SwipeableModal, OverlappingImages, ComingSoonToast } from '@/components/ui/organisms';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { ThemedText, Chip, IconSymbol, Divider } from '@/components/ui/atoms';
+// TODO: check if this is needed
 import { IconSymbolName } from '@/components/ui/atoms/IconSymbol';
 import { Link } from 'expo-router';
 import { ThemedButton } from '@/components/ui/molecules';

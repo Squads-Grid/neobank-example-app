@@ -4,9 +4,8 @@ import { ThemedText, IconSymbol } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ExternalAccountMapping } from '@/types/Transaction';
-import { getExternalAccountId } from '@/utils/externalAccount';
-import * as SecureStore from 'expo-secure-store';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
+import { StorageService } from '@/utils/storage';
 
 interface SavedAccountsProps {
     onAddNew: () => void;
@@ -24,7 +23,7 @@ export const SavedAccounts: React.FC<SavedAccountsProps> = ({ onAddNew, onSelect
 
     const loadAccounts = async () => {
         try {
-            const storage = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
+            const storage = await StorageService.getItem(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS) as string;
             if (storage) {
                 const parsedStorage = JSON.parse(storage);
                 setAccounts(parsedStorage.accounts || []);

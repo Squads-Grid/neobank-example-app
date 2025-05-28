@@ -1,8 +1,9 @@
-export { Divider } from './Divider';
-export { Chip } from './Chip';
-export { ThemedText } from './ThemedText';
-export { ThemedActionText } from './ThemedActionText';
 export { AppIcon } from './AppIcon';
+export { Chip } from './Chip';
+export { Divider } from './Divider';
+export { HapticTab } from './HapticTab';
 export { IconSymbol } from './IconSymbol';
 export { LoadingSpinner } from './LoadingSpinner';
-export { ThemedView } from './ThemedView'; 
+export { ThemedActionText } from './ThemedActionText';
+export { ThemedText } from './ThemedText';
+export { ThemedView } from './ThemedView';

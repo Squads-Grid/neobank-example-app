@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import { ThemedScreen } from '@/components/ui/layout';
 import { ThemedText, IconSymbol, LoadingSpinner } from '@/components/ui/atoms';
+// TODO: check if this is needed
 import { IconSymbolName } from '@/components/ui/atoms/IconSymbol';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Spacing } from '@/constants/Spacing';

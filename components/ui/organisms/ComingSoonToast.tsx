@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View, Animated } from 'react-native';
-import { ThemedText } from '@/components/ui/atoms';
-import { IconSymbol } from '@/components/ui/atoms';
+import { ThemedText, IconSymbol } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 

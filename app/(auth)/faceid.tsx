@@ -1,9 +1,8 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ThemedScreen } from '@/components/ui/layout';
-import { ThemedText } from '@/components/ui/atoms';
+import { ThemedText, IconSymbol } from '@/components/ui/atoms';
 import { ThemedButton } from '@/components/ui/molecules';
-import { IconSymbol } from '@/components/ui/atoms';
 import { StarburstFull } from '@/components/ui/layout';
 import { WithScreenTheme } from '@/components/WithScreenTheme';
 import { Spacing } from '@/constants/Spacing';

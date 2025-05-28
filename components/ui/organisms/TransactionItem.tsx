@@ -3,7 +3,6 @@ import { StyleSheet, View, Pressable } from 'react-native';
 import { ThemedText, AppIcon, Chip } from '@/components/ui/atoms';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
-// import { StatusChip } from '@/components/ui/atoms/StatusChip';
 interface TransactionItemProps {
     type: 'sent' | 'received' | 'bridge';
     date: string;

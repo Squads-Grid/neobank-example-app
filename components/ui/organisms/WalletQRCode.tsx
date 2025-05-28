@@ -1,9 +1,9 @@
-import { View, StyleSheet, TouchableOpacity, Clipboard } from 'react-native';
-import { ThemedText } from '../atoms/ThemedText';
-import { IconSymbol } from '../atoms/IconSymbol';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { ThemedText, IconSymbol } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import QRCode from 'react-native-qrcode-svg';
 import { useState } from 'react';
+import * as Clipboard from 'expo-clipboard';
 
 interface WalletQRCodeProps {
     walletAddress: string;
