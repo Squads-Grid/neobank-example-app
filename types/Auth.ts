@@ -52,13 +52,6 @@ export interface AuthContextType {
     isLoading: boolean;
 }
 
-export interface AuthResponse {
-    data: {
-        otp_id: string;
-        sub_organization_id: string;
-    };
-}
-
 export interface VerifyOtpResponse {
     data: {
         credential_bundle: string;

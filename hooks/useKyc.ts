@@ -41,6 +41,9 @@ export function useKyc(): UseKycReturn {
         setError(null);
         try {
             const response = await easClient.getKYCLink(params);
+
+            StorageService.setItem(AUTH_STORAGE_KEYS.KYC_STATUS, response.data.kyc_status);
+
             if (!accountInfo?.grid_user_id) {
                 throw new Error('Account information not found');
             }
@@ -67,7 +70,6 @@ export function useKyc(): UseKycReturn {
         try {
             const user = await MockDatabase.getUser(accountInfo.grid_user_id);
             if (!user) {
-                console.log("🚀 ~ checkStatus ~ user not found")
                 setStatus('not_started');
                 return;
             }
@@ -112,7 +114,7 @@ export function useKyc(): UseKycReturn {
         setStatus('not_started');
     }, [accountInfo]);
 
-    const isKycPending = status === 'under_review' || status === 'incomplete';
+    const isKycPending = status === 'under_review';
     const isKycRejected = status === 'rejected';
 
     const getBankDescription = (type: 'send' | 'receive') => {
@@ -125,7 +127,7 @@ export function useKyc(): UseKycReturn {
         else if (isKycRejected) {
             return 'KYC verification failed. Please try again';
         }
-        else if (status === 'not_started') {
+        else if (status === 'not_started' || status === 'incomplete') {
             return `Complete KYC to ${type} via bank transfer`;
         }
         else {

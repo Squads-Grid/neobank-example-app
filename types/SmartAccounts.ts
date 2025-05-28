@@ -44,11 +44,6 @@ export interface CreateSmartAccountResponse {
     metadata: SmartAccountMetadata;
 }
 
-export interface WalletAccount {
-    wallet_id: string;
-    wallet_address: string;
-}
-
 export interface TokenBalance {
     amount: number;
     amount_decimal: string;

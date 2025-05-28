@@ -4,6 +4,7 @@ import { ModalOptionsList } from '../../molecules/ModalOptionsList';
 import { ActionOption } from '../../molecules/ModalOptionsList';
 import { router } from 'expo-router';
 import { useKyc } from '@/hooks/useKyc';
+import { useModalFlow } from '@/contexts/ModalFlowContext';
 
 const bankIcon = require('@/assets/icons/bank.png');
 const walletIcon = require('@/assets/icons/wallet.png');
@@ -14,7 +15,9 @@ interface SendModalProps {
 }
 
 export function SendModal({ visible, onClose }: SendModalProps) {
-    const { isBankLoading, getBankDescription, isBankDisabled } = useKyc();
+    const { isBankLoading, getBankDescription, isBankDisabled, status } = useKyc();
+    const { hideAllModals } = useModalFlow();
+
 
     const handleSendToWallet = () => {
         onClose();
@@ -29,6 +32,13 @@ export function SendModal({ visible, onClose }: SendModalProps) {
 
     const handleSendToBank = () => {
         onClose();
+
+        if (status === 'not_started' || status === 'incomplete') {
+            hideAllModals();
+            router.push('/kyc');
+            return;
+        }
+
         router.push({
             pathname: '/(send)/fiatamount',
             params: {

@@ -19,7 +19,7 @@ interface ReceiveModalProps {
 export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalProps) {
     const { accountInfo } = useAuth();
     const { hideAllModals } = useModalFlow();
-    const { isBankLoading, getBankDescription, isBankDisabled } = useKyc();
+    const { isBankLoading, getBankDescription, isBankDisabled, status } = useKyc();
 
     const handleReceiveToWallet = () => {
         hideAllModals();
@@ -28,6 +28,12 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
 
     const handleReceiveFromBank = async () => {
         if (isBankLoading) return;
+
+        if (status === 'not_started' || status === 'incomplete') {
+            hideAllModals();
+            router.push('/kyc');
+            return;
+        }
 
         hideAllModals();
         router.push('/bankdetails');
