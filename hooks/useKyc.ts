@@ -71,16 +71,18 @@ export function useKyc(): UseKycReturn {
             const user = await MockDatabase.getUser(accountInfo.grid_user_id);
             if (!user) {
                 setStatus('not_started');
+                setIsLoading(false);
                 return;
             }
 
             if (!user?.kyc_link_id) {
                 setStatus('not_started');
+                setIsLoading(false);
                 return;
             }
             if (!accountInfo.smart_account_address) {
                 setError('Account information not found');
-
+                setIsLoading(false);
                 return;
             }
             const response = await easClient.getKYCStatus(accountInfo.smart_account_address, user.kyc_link_id);
@@ -101,6 +103,7 @@ export function useKyc(): UseKycReturn {
             }
         } catch (err) {
             setError('Failed to check KYC status');
+            setIsLoading(false);
         } finally {
             setIsLoading(false);
         }
