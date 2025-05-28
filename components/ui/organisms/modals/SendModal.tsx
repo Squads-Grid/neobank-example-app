@@ -15,7 +15,7 @@ interface SendModalProps {
 }
 
 export function SendModal({ visible, onClose }: SendModalProps) {
-    const { isBankLoading, getBankDescription, isBankDisabled, status } = useKyc();
+    const { isBankLoading, getBankDescription, isBankDisabled, status, tosStatus } = useKyc();
     const { hideAllModals } = useModalFlow();
 
 
@@ -33,7 +33,7 @@ export function SendModal({ visible, onClose }: SendModalProps) {
     const handleSendToBank = () => {
         onClose();
 
-        if (status === 'not_started' || status === 'incomplete') {
+        if (status === 'not_started' || status === 'incomplete' || tosStatus === 'pending') {
             hideAllModals();
             router.push('/kyc');
             return;

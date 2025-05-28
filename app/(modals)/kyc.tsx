@@ -76,10 +76,17 @@ function KYCModal() {
     };
 
     const renderContent = () => {
+
         return showChecklist ? (
             <View style={styles.contentContainer}>
-                <ThemedButton textStyle={{ color: tosStatus === 'approved' ? '#00FF00' : backgroundColor }} title={tosStatus === 'pending' ? `Accept Terms of Service` : `Terms of Service Accepted`} disabled={tosStatus === 'approved'} onPress={() => setCurrentUrl(tosUrl)} />
-                <ThemedButton textStyle={{ color: status === 'not_started' || status === 'incomplete' ? backgroundColor : "#00ff00" }} title={status === 'approved' ? `Kyc Completed` : `Complete Kyc`} disabled={status !== 'not_started' && status !== 'incomplete'} onPress={() => setCurrentUrl(kycUrl)} />
+                <ThemedButton
+                    title={tosStatus === 'approved' ? `Terms of Service Accepted` : `Accept Terms of Service`}
+                    disabled={tosStatus === 'approved'}
+                    onPress={() => setCurrentUrl(tosUrl)} />
+                <ThemedButton
+                    title={status === 'approved' ? `Kyc Completed` : `Complete Kyc`}
+                    disabled={status !== 'not_started' && status !== 'incomplete'}
+                    onPress={() => setCurrentUrl(kycUrl)} />
             </View>
         ) : (
             <KeyboardAvoidingView

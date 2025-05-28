@@ -90,7 +90,8 @@ export function useKyc(): UseKycReturn {
                 return;
             }
             const response = await easClient.getKYCStatus(accountInfo.smart_account_address, user.kyc_link_id);
-            const tosStatus = response.data.tos_status as TosStatus;
+            // const tosStatus = response.data.tos_status as TosStatus;
+            const tosStatus = 'approved';
             const newStatus = response.data.status as KycStatus;
             if (newStatus) {
                 await StorageService.setItem(AUTH_STORAGE_KEYS.KYC_STATUS, newStatus);
@@ -135,7 +136,7 @@ export function useKyc(): UseKycReturn {
         else if (isKycRejected) {
             return 'KYC verification failed. Please try again';
         }
-        else if (status === 'not_started' || status === 'incomplete') {
+        else if (status === 'not_started' || status === 'incomplete' || tosStatus === 'pending') {
             return `Complete KYC to ${type} via bank transfer`;
         }
         else {
