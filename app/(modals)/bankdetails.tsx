@@ -3,7 +3,7 @@ import { StyleSheet, View, TouchableOpacity, ActivityIndicator } from 'react-nat
 import * as Clipboard from 'expo-clipboard';
 import { router } from 'expo-router';
 import { useModalFlow } from '@/contexts/ModalFlowContext';
-import { withScreenTheme } from '@/components/withScreenTheme';
+import { WithScreenTheme } from '@/components/WithScreenTheme';
 import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
 import { Spacing } from '@/constants/Spacing';
 import { CurrencySwitcher, SwipeableModal, OverlappingImages, ComingSoonToast } from '@/components/ui/organisms';
@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
     },
 });
 
-export default withScreenTheme(BankDetailsModal, {
+export default WithScreenTheme(BankDetailsModal, {
     backgroundColor: '#000000',
     textColor: '#FFFFFF',
     primaryColor: '#FFFFFF'

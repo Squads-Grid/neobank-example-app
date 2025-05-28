@@ -7,7 +7,7 @@ interface ThemeOptions {
     primaryColor?: string;
 }
 
-export function withScreenTheme<P extends object>(
+export function WithScreenTheme<P extends object>(
     WrappedComponent: React.ComponentType<P>,
     themeOptions?: ThemeOptions
 ) {

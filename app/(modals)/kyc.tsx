@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, View, Keyboard } from 'react-native';
 import { router } from 'expo-router';
-import { withScreenTheme } from '@/components/withScreenTheme';
+import { WithScreenTheme } from '@/components/WithScreenTheme';
 import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
 import { Spacing } from '@/constants/Spacing';
 import { SwipeableModal, OverlappingImages, InAppBrowser } from '@/components/ui/organisms';
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     },
 });
 
-export default withScreenTheme(KYCModal, {
+export default WithScreenTheme(KYCModal, {
     backgroundColor: '#000000',
     textColor: '#FFFFFF',
     primaryColor: '#FFFFFF'

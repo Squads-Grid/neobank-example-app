@@ -5,7 +5,7 @@ import { ThemedText, IconSymbol } from '@/components/ui/atoms';
 import { StarburstFull, ThemedScreen } from '@/components/ui/layout';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 import { Spacing } from '@/constants/Spacing';
-import { withScreenTheme } from '@/components/withScreenTheme';
+import { WithScreenTheme } from '@/components/WithScreenTheme';
 
 export function SuccessScreen() {
     const { primaryColor } = useScreenTheme();
@@ -34,7 +34,7 @@ export function SuccessScreen() {
     );
 }
 
-export default withScreenTheme(SuccessScreen, {
+export default WithScreenTheme(SuccessScreen, {
     backgroundColor: '#000000',
     textColor: '#FFFFFF',
     primaryColor: '#FFFFFF'

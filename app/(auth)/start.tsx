@@ -1,7 +1,7 @@
 import React from 'react';
 import { router } from 'expo-router';
 import { ScreenHeaderText, ThemedButton } from '@/components/ui/molecules';
-import { withScreenTheme } from '@/components/withScreenTheme';
+import { WithScreenTheme } from '@/components/WithScreenTheme';
 import { ThemedScreen, Starburst } from '@/components/ui/layout';
 
 export function StartScreen() {
@@ -21,7 +21,7 @@ export function StartScreen() {
     );
 }
 
-export default withScreenTheme(StartScreen, {
+export default WithScreenTheme(StartScreen, {
     backgroundColor: '#000000',
     textColor: '#FFFFFF',
     primaryColor: '#FFFFFF'

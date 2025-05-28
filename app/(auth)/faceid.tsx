@@ -5,7 +5,7 @@ import { ThemedText } from '@/components/ui/atoms';
 import { ThemedButton } from '@/components/ui/molecules';
 import { IconSymbol } from '@/components/ui/atoms';
 import { StarburstFull } from '@/components/ui/layout';
-import { withScreenTheme } from '@/components/withScreenTheme';
+import { WithScreenTheme } from '@/components/WithScreenTheme';
 import { Spacing } from '@/constants/Spacing';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 interface FaceIDScreenProps {
@@ -41,7 +41,7 @@ export function FaceIDScreen({ show2FA }: FaceIDScreenProps) {
     );
 }
 
-export default withScreenTheme(FaceIDScreen, {
+export default WithScreenTheme(FaceIDScreen, {
     backgroundColor: '#000000',
     textColor: '#FFFFFF',
     primaryColor: '#FFFFFF'
