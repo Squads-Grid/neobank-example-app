@@ -32,15 +32,8 @@ export function useKyc(): UseKycReturn {
 
     // Initialize status from storage when hook mounts
     useEffect(() => {
-        const initStatus = async () => {
-            const storedStatus = await StorageService.getItem<KycStatus>(AUTH_STORAGE_KEYS.KYC_STATUS);
-            if (storedStatus) {
-                setStatus(storedStatus);
-            } else {
-                setStatus('not_started');
-            }
-        };
-        initStatus();
+
+        checkStatus();
     }, []);
 
     const startKyc = useCallback(async (params: KycParams) => {
@@ -73,7 +66,6 @@ export function useKyc(): UseKycReturn {
         setError(null);
         try {
             const user = await MockDatabase.getUser(accountInfo.grid_user_id);
-
             if (!user) {
                 console.log("🚀 ~ checkStatus ~ user not found")
                 setStatus('not_started');
@@ -84,12 +76,11 @@ export function useKyc(): UseKycReturn {
                 setStatus('not_started');
                 return;
             }
-
             if (!accountInfo.smart_account_address) {
                 setError('Account information not found');
+
                 return;
             }
-
             const response = await easClient.getKYCStatus(accountInfo.smart_account_address, user.kyc_link_id);
             const newStatus = response.data.status as KycStatus;
             if (newStatus) {
