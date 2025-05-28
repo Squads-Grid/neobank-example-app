@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, StyleSheet, View, Keyboard } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { WithScreenTheme } from '@/components/WithScreenTheme';
 import { ThemedScreen, StarburstBank } from '@/components/ui/layout';
 import { Spacing } from '@/constants/Spacing';
@@ -25,6 +25,18 @@ function KYCModal() {
     const [showChecklist, setShowChecklist] = useState(false);
     const [tosUrl, setTosUrl] = useState<string | null>(null);
     const [currentUrl, setCurrentUrl] = useState<string | null>(null);
+    const params = useLocalSearchParams();
+    const source = params.source;
+
+    useEffect(() => {
+        if (status === 'approved' && tosStatus === 'approved') {
+            if (source === 'receive') {
+                router.replace('/bankdetails');
+            } else {
+                router.replace('/(send)/fiatamount');
+            }
+        }
+    }, [status, tosStatus]);
 
     const handleClose = () => {
         router.back();

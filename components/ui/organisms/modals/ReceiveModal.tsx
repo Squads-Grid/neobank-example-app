@@ -31,7 +31,7 @@ export function ReceiveModal({ visible, onClose, onOpenQRCode }: ReceiveModalPro
 
         if (status === 'not_started' || status === 'incomplete' || tosStatus === 'pending') {
             hideAllModals();
-            router.push('/kyc');
+            router.push({ pathname: '/kyc', params: { source: 'receive' } });
             return;
         }
 

@@ -35,7 +35,7 @@ export function SendModal({ visible, onClose }: SendModalProps) {
 
         if (status === 'not_started' || status === 'incomplete' || tosStatus === 'pending') {
             hideAllModals();
-            router.push('/kyc');
+            router.push({ pathname: '/kyc', params: { source: 'send' } });
             return;
         }
 
