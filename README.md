@@ -104,6 +104,9 @@ npx expo start
 ## Project Structure
 
 ```
+grid/                    # Core Grid API integration
+  gridClient.ts         # Grid API client
+  authorization.ts      # Payment authorization
 components/
   ui/
     atoms/
@@ -116,6 +119,7 @@ hooks/
 contexts/
 types/
 utils/
+  easClient.ts         # Backend API client
 app/
   (auth)/
   (modals)/
@@ -123,7 +127,7 @@ app/
   ...
 ```
 
-- **API logic:** See [`utils/gridClient.ts`](grid/gridClient.ts)
+- **Grid Integration:** See [`grid/gridClient.ts`](grid/gridClient.ts) and [`grid/authorization.ts`](grid/authorization.ts)
 - **KYC logic:** See [`hooks/useKyc.ts`](hooks/useKyc.ts)
 - **Modals:** See [`components/ui/organisms/modals/`](components/ui/organisms/modals/)
 
