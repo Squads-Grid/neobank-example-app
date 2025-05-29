@@ -1,6 +1,16 @@
 # Neobank Example App (Grid API Demo)
 
-This is a demo React Native app built with Expo, designed to showcase the [Grid API]. It demonstrates authentication, KYC, virtual account creation, and more, using a modern Expo Router structure.
+This is a demo React Native app built with [Expo](https://expo.dev/), designed to showcase the [Grid API]. It demonstrates authentication, KYC, virtual account creation, and more, using a modern Expo Router structure.
+
+## Table of Contents
+
+- [Grid Features](#grid-features)
+- [Getting Started](#getting-started)
+- [Troubleshooting](#troubleshooting)
+- [App Flow](#app-flow)
+- [Project Structure](#project-structure)
+- [Customization](#customization)
+- [Resources](#resources)
 
 ## Grid Features
 
@@ -81,7 +91,7 @@ npx expo start
 - **API errors or localhost not working?**  
   If `localhost` does not work for your API, update `GRID_ENDPOINT` in your `.env` to your machine's local IP address or a reachable API endpoint.
 - **Expo Go/QR code issues?**  
-  If you can't open the app in Expo Go or scan the QR code, you can open the development server directly by visiting a link like `exp://192.168.2.214:8081` (replace with your machine's IP and port) on your phone. Make sure your development server is running and your phone is on the same network.
+  If you can't open the app in Expo Go or scan the QR code, you can open the development server directly by visiting a link like `exp://192.168.x.x:8081` (replace with your machine's IP and port) on your phone. Make sure your development server is running and your phone is on the same network.
 - **UI issues?**  
   Run `npx expo start -c` to clear cache.
 
@@ -129,5 +139,11 @@ app/
 - **Grid API:** All API calls are centralized in `utils/gridClient.ts`.  
 - **UI:** Built with atomic design for easy extension and theming.
 - **Navigation:** Uses [Expo Router](https://docs.expo.dev/router/introduction/).
+
+## Resources
+
+- [Expo Documentation](https://docs.expo.dev/)
+- [Expo Go App](https://expo.dev/client)
+- [Expo CLI](https://docs.expo.dev/workflow/expo-cli/)
 
 
