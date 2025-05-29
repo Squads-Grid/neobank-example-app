@@ -1,5 +1,5 @@
 import { KycParams, KycRequest } from "@/types/Kyc";
-import { gridClient } from "@/utils/gridClient";
+import { gridClient } from "@/grid/gridClient";
 import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: Request) {

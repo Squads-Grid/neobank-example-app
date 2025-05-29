@@ -1,4 +1,4 @@
-import { gridClient } from "@/utils/gridClient";
+import { gridClient } from "@/grid/gridClient";
 
 export async function POST(request: Request) {
     try {

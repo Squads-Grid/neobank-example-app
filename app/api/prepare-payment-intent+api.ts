@@ -1,5 +1,5 @@
 import { PreparePaymentIntentParams } from "@/types/Transaction";
-import { gridClient } from "@/utils/gridClient";
+import { gridClient } from "@/grid/gridClient";
 
 export async function POST(request: Request) {
     try {

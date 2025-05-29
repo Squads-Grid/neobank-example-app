@@ -32,7 +32,7 @@ This demo app showcases how to integrate Grid API's open banking features into a
 The app communicates with the Grid API through a backend API layer. This architecture ensures that sensitive API keys and secrets are never exposed to the frontend:
 
 - The app uses [easClient.ts](utils/easClient.ts) to make requests to our backend API routes (located in the `api` folder)
-- The backend API uses EAS secrets to securely interact with the Grid API using [gridClient.ts](utils/gridClient.ts)
+- The backend API uses EAS secrets to securely interact with the Grid API using [gridClient.ts](grid/gridClient.ts)
 - This way, all sensitive credentials stay on the backend while the app only needs to know the public API endpoint
 
 ## Grid Features
@@ -123,7 +123,7 @@ app/
   ...
 ```
 
-- **API logic:** See [`utils/gridClient.ts`](utils/gridClient.ts)
+- **API logic:** See [`utils/gridClient.ts`](grid/gridClient.ts)
 - **KYC logic:** See [`hooks/useKyc.ts`](hooks/useKyc.ts)
 - **Modals:** See [`components/ui/organisms/modals/`](components/ui/organisms/modals/)
 
