@@ -32,13 +32,30 @@ When the user enters the OTP code:
    - Create a new keypair for each verification
    - Used to decrypt the credential bundle
 
-2. Send to the `/verify` endpoint:
+2. Send to the `v0/grid/smart-accounts/verify-otp` endpoint:
    - The OTP code
    - The `otp_id` from Step 1
    - The public key from the generated keypair
    - The `mpcPrimaryId` from Step 1
 
-3. The Grid API returns a credential bundle that can be decrypted using the private key from the generated keypair
+3. The Grid API returns a credential bundle that can be decrypted using the private key from the generated keypair. The response includes:
+
+   ```typescript
+   {
+     credentials_bundle: string;      // Encrypted credentials, needs to be decrypted
+     grid_user_id: string;           // Unique identifier for the user in Grid
+     smart_account_address: string;   // User's smart account address if it already exist (new user don't have it when registering)
+     smart_account_signer_public_key: string;  // Public key which is the authority for future payments
+     email: string;                  // User's email address
+   }
+   ```
+
+   Important: Store these values securely:
+   - `grid_user_id`: Required for all API calls
+   - `smart_account_address`: Required for transactions
+   - `smart_account_signer_public_key`: Required for transaction signing
+   - `credentials_bundle`: Required for authentication
+   - `email`: Can be stored for user reference
 
 ## Important Notes
 
@@ -58,7 +75,13 @@ const { mpcPrimaryId, otp_id } = await authenticate(email);
 
 // Step 2: OTP Verification
 const keypair = generateKeyPairP256();
-const credentialBundle = await verifyCode(otp, otp_id, keypair.publicKey, mpcPrimaryId);
+const {
+  credentials_bundle,
+  grid_user_id,
+  smart_account_address,
+  smart_account_signer_public_key,
+  email
+} = await verifyCode(otp, otp_id, keypair.publicKey, mpcPrimaryId);
 ```
 
 ## Security Considerations

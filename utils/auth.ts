@@ -35,7 +35,7 @@ export const authenticateUser = async (email: string): Promise<{ otpId: string; 
         email,
         app_name: "Bright",
         app_icon_url: "https://i.imgur.com/WeyHBEn.png",
-        expiration: 3600
+        expiration: 900
     };
 
     const response = await easClient.authenticate(request);
