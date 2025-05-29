@@ -8,7 +8,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Chip, IconSymbol, ThemedText } from '@/components/ui/atoms';
 import { formatAmount } from '@/utils/helper';
 import { CountryCode, ExternalAccountMapping, ExternalAccountStorage, UsAccountType } from '@/types/Transaction';
-import { getExternalAccountId, getExternalAccountIds } from '@/utils/externalAccount';
+import { clearExternalAccounts, getExternalAccountId, getExternalAccountIds } from '@/utils/externalAccount';
 
 interface Address {
     street_line_1: string;
@@ -28,7 +28,7 @@ export default function AmountScreen() {
     const [lastName, setLastName] = useState('');
     const [accountType, setAccountType] = useState<UsAccountType>('checking');
     const [country, setCountry] = useState<CountryCode>('USA');
-    const [label, setLabel] = useState('');
+    const [accountLabel, setAccountLabel] = useState('');
     const [bankName, setBankName] = useState('');
     const [externalAccounts, setExternalAccounts] = useState<ExternalAccountMapping[]>([]);
     const [externalAccountId, setExternalAccountId] = useState<string>('');
@@ -63,11 +63,12 @@ export default function AmountScreen() {
 
     async function getExtAccount() {
         const ext = await getExternalAccountIds();
+        ext?.accounts.forEach(account => {
+        })
         setExternalAccounts(ext?.accounts ?? []);
     }
 
     useEffect(() => {
-
 
         getExtAccount();
     }, []);
@@ -101,7 +102,7 @@ export default function AmountScreen() {
         }
     };
 
-    const handleContinue = (label?: string) => {
+    const handleContinue = (label?: string, id?: string) => {
         if (step === 1) {
             setStep(2);
         } else {
@@ -120,8 +121,8 @@ export default function AmountScreen() {
                     title,
                     address: JSON.stringify(address),
                     bankName,
-                    label,
-                    externalAccountId
+                    accountLabel: label,
+                    externalAccountId: id
                 }
             });
         }
@@ -151,16 +152,16 @@ export default function AmountScreen() {
         )
     }
 
-    const renderExternalAccounts = (label: string, id: string) => {
+    const renderExternalAccounts = (currentLabel: string, id: string) => {
         return (
-            <View key="id" style={{ marginBottom: Spacing.sm }}>
+            <View key={id} style={{ marginBottom: Spacing.sm }}>
                 <ThemedButton
-                    title={label}
+                    title={currentLabel}
                     variant="outline"
                     textStyle={{ color: textColor }}
                     onPress={() => {
                         setExternalAccountId(id);
-                        handleContinue(label);
+                        handleContinue(currentLabel, id);
                     }} />
             </View>
         )
@@ -279,8 +280,8 @@ export default function AmountScreen() {
                         style={[styles.input]}
                         placeholder="Enter a label for this account"
                         placeholderTextColor={textColor + '40'}
-                        value={label}
-                        onChangeText={setLabel}
+                        value={accountLabel}
+                        onChangeText={setAccountLabel}
                     />
                     <View style={{ marginBottom: Spacing.xxxl }} />
                 </View>

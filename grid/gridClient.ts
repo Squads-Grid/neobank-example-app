@@ -20,7 +20,7 @@ export class GridClient {
         this.baseUrl = `${endpoint}`;
         this.defaultHeaders = {
             'Content-Type': 'application/json',
-            'x-grid-environment': `${process.env.GRID_ENV}`,
+            'x-grid-environment': `${process.env.EXPO_PUBLIC_GRID_ENV}`,
             'Authorization': `Bearer ${process.env.GRID_API_KEY}`,
         };
 
@@ -59,6 +59,7 @@ export class GridClient {
             throw error;
         }
     }
+
 
 
 

@@ -16,7 +16,7 @@ import { EasClient } from '@/utils/easClient';
 import { ConfirmPayload, SmartAccount } from '@/types/Transaction';
 import { v4 as uuidv4 } from 'uuid';
 import { GridStamper } from '@/grid/authorization';
-import { storeExternalAccount } from '@/utils/externalAccount';
+import { clearExternalAccounts, storeExternalAccount } from '@/utils/externalAccount';
 import Toast from 'react-native-toast-message';
 import { ErrorCode } from '@/types/Error';
 
@@ -46,7 +46,7 @@ export default function FiatConfirmScreen() {
         type,
         title,
         address,
-        label,
+        accountLabel,
         bankName,
         externalAccountId,
     } = useLocalSearchParams<{
@@ -58,7 +58,7 @@ export default function FiatConfirmScreen() {
         type: string;
         title: string;
         address: string;
-        label: string;
+        accountLabel: string;
         bankName: string;
         externalAccountId: string;
     }>();
@@ -146,9 +146,8 @@ export default function FiatConfirmScreen() {
                 // Store the external account ID with label
                 if (res.data.destination.external_account_id && accountInfo.grid_user_id) {
 
-                    const accountLabel = label || `${firstName} ${lastName}'s Account`;
-
                     await storeExternalAccount(accountInfo.grid_user_id, res.data.destination.external_account_id, accountLabel);
+
                 }
 
                 if (!email) {
@@ -174,7 +173,7 @@ export default function FiatConfirmScreen() {
                 const stamp = await stamper.stamp(JSON.parse(mpcPayload));
 
                 const confirmPayload: ConfirmPayload = {
-                    intentPayload: receivedPayload.transaction_hash,
+                    intentPayload: receivedPayload.intent_payload,
                     mpcPayload: JSON.stringify({
                         requestParameters: JSON.parse(mpcPayload),
                         stamp,
@@ -270,7 +269,7 @@ export default function FiatConfirmScreen() {
                             <ThemedText type="jumbo" >{formatAmount(amount)}</ThemedText>
                         </View>
                         {externalAccountId ? (
-                            renderInfo('creditcard', 'Account', label || 'External Account')
+                            renderInfo('creditcard', 'Account', accountLabel)
                         ) : (
                             <>
                                 {renderInfo('person', 'Recipient', `${firstName} ${lastName}`)}

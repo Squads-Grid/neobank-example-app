@@ -33,7 +33,7 @@ export class ExternalAccountService {
                 storage.accounts.push({
                     grid_user_id: gridUserId,
                     external_account_id: externalAccountId,
-                    label
+                    label: label || `External Account ${storage.accounts.length + 1}`
                 });
             }
 

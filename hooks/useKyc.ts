@@ -91,7 +91,7 @@ export function useKyc(): UseKycReturn {
             }
             const response = await easClient.getKYCStatus(accountInfo.smart_account_address, user.kyc_link_id);
 
-            const tosStatus = response.data.tos_status as TosStatus;
+            const tosStatus = process.env.EXPO_PUBLIC_GRID_ENV === 'production' ? response.data.tos_status as TosStatus : 'approved';
             const newStatus = response.data.status as KycStatus;
             if (newStatus) {
                 await StorageService.setItem(AUTH_STORAGE_KEYS.KYC_STATUS, newStatus);
