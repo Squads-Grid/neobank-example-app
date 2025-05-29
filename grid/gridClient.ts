@@ -1,6 +1,6 @@
 import { AuthenticationRequest, AuthenticationResponse, OTPData, VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
-import { PreparePaymentIntentParams } from '@/types/Transaction';
+import { ConfirmPayload, PreparePaymentIntentParams } from '@/types/Transaction';
 import { UserResponse } from '@/types/User';
 import { KycRequest, KycResponse } from '@/types/Kyc';
 import { v4 as uuidv4 } from 'uuid';
@@ -173,7 +173,7 @@ export class GridClient {
         });
     }
 
-    async confirmPaymentIntent(smartAccountAddress: string, paymentIntentId: string, payload: any, useMpcProvider: boolean = false): Promise<any> {
+    async confirmPaymentIntent(smartAccountAddress: string, paymentIntentId: string, payload: ConfirmPayload, useMpcProvider: boolean = false): Promise<any> {
         const endpoint = useMpcProvider ? `/${smartAccountAddress}/payment-intents/${paymentIntentId}/confirm?use-mpc-provider=true` : `/${smartAccountAddress}/payment-intents/${paymentIntentId}/confirm`;
 
         return this.request<any>(endpoint, {

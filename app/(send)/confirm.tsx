@@ -15,8 +15,9 @@ import { decryptCredentialBundle } from '@turnkey/crypto';
 import { EasClient } from '@/utils/easClient';
 import { PreparePaymentIntentParams, SmartAccount, SolanaAddress } from '@/types/Transaction';
 import { ErrorCode } from '@/utils/errors';
-import { GridStamper } from '@/utils/stamper';
+import { GridStamper } from '@/grid/authorization';
 import Toast from 'react-native-toast-message';
+import { ConfirmPayload } from '@/types/Transaction';
 
 
 // USDC has 6 decimals
@@ -86,8 +87,8 @@ export default function ConfirmScreen() {
             );
             const stamp = await stamper.stamp(JSON.parse(mpcPayload));
 
-            const confirmPayload = {
-                transaction: receivedPayload.transaction_hash,
+            const confirmPayload: ConfirmPayload = {
+                intentPayload: receivedPayload.intent_payload,
                 mpcPayload: JSON.stringify({
                     requestParameters: JSON.parse(mpcPayload),
                     stamp,

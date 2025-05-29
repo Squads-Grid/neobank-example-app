@@ -3,6 +3,7 @@ import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/S
 import { handleError, ErrorCode } from './errors';
 import { KycResponse, KycParams } from '@/types/Kyc';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
+import { ConfirmPayload } from '@/types/Transaction';
 
 class EasError extends Error {
     constructor(
@@ -161,7 +162,7 @@ export class EasClient {
         });
     }
 
-    async confirmPaymentIntent(smartAccountAddress: string, paymentIntentId: string, payload?: any, useMpcProvider: boolean = false): Promise<any> {
+    async confirmPaymentIntent(smartAccountAddress: string, paymentIntentId: string, payload?: ConfirmPayload, useMpcProvider: boolean = false): Promise<any> {
 
         return this.request<any>(`/confirm`, {
             method: 'POST',

@@ -270,3 +270,8 @@ export interface ExternalAccountMapping {
 export interface ExternalAccountStorage {
     accounts: ExternalAccountMapping[];
 }
+
+export interface ConfirmPayload {
+    intentPayload: string;
+    mpcPayload: string;
+}

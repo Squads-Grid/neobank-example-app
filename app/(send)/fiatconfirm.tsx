@@ -13,9 +13,9 @@ import { Height, Size, Weight } from '@/constants/Typography';
 import { useAuth } from '@/contexts/AuthContext';
 import { decryptCredentialBundle } from '@turnkey/crypto';
 import { EasClient } from '@/utils/easClient';
-import { SmartAccount } from '@/types/Transaction';
+import { ConfirmPayload, SmartAccount } from '@/types/Transaction';
 import { v4 as uuidv4 } from 'uuid';
-import { GridStamper } from '@/utils/stamper';
+import { GridStamper } from '@/grid/authorization';
 import { storeExternalAccount } from '@/utils/externalAccount';
 import Toast from 'react-native-toast-message';
 import { ErrorCode } from '@/types/Error';
@@ -173,8 +173,8 @@ export default function FiatConfirmScreen() {
                 const stamper = new GridStamper(decryptedData);
                 const stamp = await stamper.stamp(JSON.parse(mpcPayload));
 
-                const confirmPayload = {
-                    transaction: res.data.transaction_hash,
+                const confirmPayload: ConfirmPayload = {
+                    intentPayload: receivedPayload.transaction_hash,
                     mpcPayload: JSON.stringify({
                         requestParameters: JSON.parse(mpcPayload),
                         stamp,
