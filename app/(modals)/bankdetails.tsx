@@ -97,11 +97,11 @@ function BankDetailsModal() {
     // Handle copying all fields
     const handleCopyAll = async () => {
         if (!bankAccountDetails) return;
-
         try {
             const details: BankDetail[] = [
                 { label: 'Bank Name', value: bankAccountDetails[0].source_deposit_instructions.bank_name },
                 { label: 'Account Number', value: bankAccountDetails[0].source_deposit_instructions.bank_account_number },
+                { label: 'Routing Number', value: bankAccountDetails[0].source_deposit_instructions.bank_routing_number },
                 { label: 'Beneficiary Name', value: bankAccountDetails[0].source_deposit_instructions.bank_beneficiary_name },
                 { label: 'Bank Address', value: bankAccountDetails[0].source_deposit_instructions.bank_address },
             ];
@@ -117,6 +117,7 @@ function BankDetailsModal() {
             setError('Failed to copy to clipboard');
         }
     };
+
 
     const handleCreateBankAccount = async () => {
         if (selectedCurrency === 'eur') {
@@ -266,6 +267,7 @@ function BankDetailsModal() {
             const bankDetails: BankDetail[] = [
                 { label: 'Bank Name', value: bankAccountDetails[0].source_deposit_instructions.bank_name },
                 { label: 'Account Number', value: bankAccountDetails[0].source_deposit_instructions.bank_account_number },
+                { label: 'Routing Number', value: bankAccountDetails[0].source_deposit_instructions.bank_routing_number },
                 { label: 'Beneficiary Name', value: bankAccountDetails[0].source_deposit_instructions.bank_beneficiary_name },
                 { label: 'Bank Address', value: bankAccountDetails[0].source_deposit_instructions.bank_address },
             ];
