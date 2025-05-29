@@ -145,12 +145,6 @@ app/
 - **UI issues?**  
   Run `npx expo start -c` to clear cache.
 
-## Customization
-
-- **Grid API:** All API calls are centralized in `utils/gridClient.ts`.  
-- **UI:** Built with atomic design for easy extension and theming.
-- **Navigation:** Uses [Expo Router](https://docs.expo.dev/router/introduction/).
-
 ## Resources
 
 - [Expo Documentation](https://docs.expo.dev/)
