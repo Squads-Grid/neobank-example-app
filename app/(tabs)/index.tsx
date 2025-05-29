@@ -1,7 +1,7 @@
 import { Platform, StyleSheet, View, Image, ScrollView, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
-import { ThemedText } from '@/components/ui/atoms';
+import { LoadingSpinner, ThemedText } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { CircleButtonGroup } from '@/components/ui/molecules';
 import { ThemedScreen } from '@/components/ui/layout';
@@ -185,7 +185,7 @@ function HomeScreenContent() {
                     </View>
 
 
-                    {transfers.length > 0 ? (
+                    {isLoading ? <LoadingSpinner /> : (transfers.length > 0 ? (
                         <TransactionList
                             transactions={formatTransfers(transfers)}
                         />
@@ -197,7 +197,7 @@ function HomeScreenContent() {
                             />
                             <ThemedText type="regular">No transactions yet</ThemedText>
                         </View>
-                    )}
+                    ))}
 
                 </ScrollView>
                 <SendModal
