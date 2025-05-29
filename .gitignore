@@ -37,10 +37,11 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
-docs**
 
 # credentials
 credentials**
 
 android**
 ios**
+
+private**
