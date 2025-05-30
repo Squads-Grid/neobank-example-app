@@ -57,7 +57,7 @@ export const verifyOtpCode = async (code: string, otpId: string, suborgId: strin
         otp_code: code,
         otp_id: otpId,
         auth_public_key: keyPair.publicKeyUncompressed,
-        expiration: 900, // 15 minutes
+        expiration: 2700, // 45 minutes
         mpc_primary_id: suborgId
     };
 
