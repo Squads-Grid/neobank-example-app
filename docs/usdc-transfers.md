@@ -2,32 +2,20 @@
 
 The USDC transfer process is implemented in two main screens:
 
-1. [`app/(send)/amount.tsx`](app/(send)/amount.tsx) - Amount entry and recipient details
-2. [`app/(send)/confirm.tsx`](app/(send)/confirm.tsx) - Payment authorization and execution
+1. [`app/(send)/amount.tsx`](../app/(send)/amount.tsx) - Amount entry and recipient details
+2. [`app/(send)/confirm.tsx`](../app/(send)/confirm.tsx) - Payment authorization and execution
 
-### Step 1: Enter Amount
+### Step 1: Payment Intent Preparation
 
-In the amount screen, users provide:
-- Transfer amount in USD
+When the user hits the confirm button, the app will request the payment intent, authorize it and submit it. This step:
 
-The amount is converted to USDC base units (multiplied by 10^6) before submitting it, meaning 1 USDC will be converted into 1_000_000.
+1. Calls the 
+2. Authorizes the payment 
+3. Submits the payment intent for processing using the `v0/grid/smart-accounts/<SMART_ACCOUNT_ADDRESS>/payment-intents?use-mpc-provider=true`
 
-### Step 2: Enter Receipient Details
-- Recipient's Solana address
-- Optional: Name for future reference
+When the user confirms, the app:
 
-### Step 3: Confirm Payment
-
-The confirmation screen displays:
-- Transfer amount
-- Recipient address
-- Recipient name
-
-### Step 4: Submit Payment Intent
-
-When confirmed, the system:
-
-1. Prepares the payment intent with:
+1. Prepares the payment intent using the `v0/grid/smart-accounts/<SMART_ACCOUNT_ADDRESS>/payment-intents?use-mpc-provider=true`:
    ```typescript
    {
      amount: string;          // Amount in USDC base units
@@ -44,12 +32,12 @@ When confirmed, the system:
    }
    ```
 
-2. Authorize the payment using the user's credentials:
+2. Authorize the payment using [`grid/authoriazation.ts`](../grid/authorization.ts):
    - Decrypts the credential bundle
    - Creates a stamp using `GridStamper`
    - Signs the MPC payload
 
-3. Submits the payment intent with:
+3. Submits the payment intent to the `v0/grid/smart-accounts/<SMART_ACCOUNT_ADDRESS>/payment-intents?use-mpc-provider=true` endpoint with:
    ```typescript
    {
      intentPayload: string;

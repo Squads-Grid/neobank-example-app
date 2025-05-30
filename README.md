@@ -38,11 +38,12 @@ The app communicates with the Grid API through a backend API layer. This archite
 ## Grid Features
 
 - [Email authentication and OTP flow](docs/authentication.md)
+- [Smart account creation](docs/smart-account.md)
 - [KYC onboarding](docs/kyc.md)
-- [Virtual bank account creation](docs/virtual-account.md)
-- [Withdraw](docs/withdraw.md)/[Deposit](docs/deposit.md): Send fiat and receive USDC, or convert USDC to fiat and withdraw to your bank account
+- [Virtual bank account creation and deposits](docs/deposit.md)
+- [Withdrawals](docs/withdraw.md)
 - [USDC transfers](docs/usdc-transfers.md)
-- [Displaying / fetching payment history](docs/payments.md)
+- [Balance and transfers](docs/balance-and-transfers.md)
 
 ## Getting Started
 
