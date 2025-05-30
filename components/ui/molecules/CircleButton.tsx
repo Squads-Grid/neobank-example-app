@@ -13,6 +13,7 @@ interface CircleButtonProps {
     backgroundColor?: string;
     iconColor?: string;
     disabled?: boolean;
+    customTextColor?: string;
 }
 
 export function CircleButton({
@@ -23,6 +24,7 @@ export function CircleButton({
     backgroundColor: customBackgroundColor,
     iconColor: customIconColor,
     disabled = false,
+    customTextColor,
 }: CircleButtonProps) {
     const themeBackgroundColor = useThemeColor({}, 'primary');
     const themeIconColor = useThemeColor({}, 'background');
@@ -55,7 +57,7 @@ export function CircleButton({
                     color={buttonTextColor}
                 />
             </TouchableOpacity>
-            {label && <Text style={[styles.label, { color: textColor }]}>
+            {label && <Text style={[styles.label, { color: customTextColor || textColor }]}>
                 {label}
             </Text>}
         </View>

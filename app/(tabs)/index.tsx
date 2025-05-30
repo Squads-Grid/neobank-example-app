@@ -20,6 +20,7 @@ import { StorageService } from '@/utils/storage';
 import { useWalletData } from '@/hooks/useWalletData';
 import { MockDatabase } from '@/utils/mockDatabase';
 import * as Sentry from '@sentry/react-native';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 const placeholder = require('@/assets/images/no-txn.png');
 
@@ -31,6 +32,7 @@ function HomeScreenContent() {
     const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false);
     const { isVisible, message, showToast, hideToast } = useComingSoonToast();
     const { balance, transfers, isLoading, error, fetchWalletData } = useWalletData(accountInfo);
+    const textColor = useThemeColor({}, 'text');
 
     useEffect(() => {
         if (!accountInfo || !accountInfo.smart_account_signer_public_key) {
@@ -79,7 +81,7 @@ function HomeScreenContent() {
         }
     }, [fetchWalletData]);
 
-    const actions: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void }[] = [
+    const actions: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void; color?: string; textColor?: string }[] = [
         {
             icon: 'add-outline',
             label: 'Add',
@@ -94,11 +96,15 @@ function HomeScreenContent() {
             icon: 'calendar-outline',
             label: 'Scheduled',
             onPress: () => showToast("Scheduled payments coming soon!"),
+            color: textColor + 40,
+            textColor: textColor + 40
         },
         {
             icon: 'cash-outline',
             label: 'Invest',
             onPress: () => showToast("Investment features coming soon!"),
+            color: textColor + 40,
+            textColor: textColor + 40
         }
     ];
 

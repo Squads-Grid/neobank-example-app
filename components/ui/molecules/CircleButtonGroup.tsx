@@ -7,6 +7,8 @@ interface ButtonItem {
     icon: React.ComponentProps<typeof CircleButton>['icon'];
     label: string;
     onPress: () => void;
+    color?: string;
+    textColor?: string;
 }
 
 interface CircleButtonGroupProps {
@@ -22,6 +24,8 @@ export function CircleButtonGroup({ buttons }: CircleButtonGroupProps) {
                         icon={button.icon}
                         label={button.label}
                         onPress={button.onPress}
+                        backgroundColor={button.color}
+                        customTextColor={button.textColor}
                     />
                 </View>
             ))}
