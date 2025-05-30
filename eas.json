@@ -9,13 +9,22 @@
             "distribution": "internal",
             "ios": {
                 "simulator": true
+            },
+            "env": {
+                "SENTRY_DISABLE_AUTO_UPLOAD": "true"
             }
         },
         "preview": {
-            "distribution": "internal"
+            "distribution": "internal",
+            "env": {
+                "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+            }
         },
         "production": {
-            "autoIncrement": true
+            "autoIncrement": true,
+            "env": {
+                "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+            }
         }
     },
     "submit": {

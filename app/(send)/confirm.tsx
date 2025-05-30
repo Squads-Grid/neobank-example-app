@@ -162,7 +162,7 @@ export default function ConfirmScreen() {
                         </View>
                         {renderInfo('arrow.forward', 'To', recipient)}
                         {renderInfo('person', 'Name', name)}
-                        {renderInfo('network', 'Network fee', '0.0004 SOL')}
+                        {/* {renderInfo('network', 'Network fee', '0.0004 SOL')} */}
                     </View>
 
                     <ButtonGroup
