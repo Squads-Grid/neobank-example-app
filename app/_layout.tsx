@@ -14,7 +14,8 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { ModalFlowProvider } from '@/contexts/ModalFlowContext';
 import * as Sentry from '@sentry/react-native';
 
-if (process.env.EXPO_PUBLIC_GRID_ENV === 'sandbox') {
+if (process.env.EXPO_PUBLIC_GRID_ENV === 'production') {
+    console.log('Initializing Sentry for production environment');
     Sentry.init({
         dsn: 'https://45bf667b41c7be362e40a5b99c33e36a@o1065299.ingest.us.sentry.io/4509412854333441',
 
@@ -94,7 +95,7 @@ const toastConfig = {
     )
 };
 
-export default process.env.EXPO_PUBLIC_GRID_ENV === 'sandbox'
+export default process.env.EXPO_PUBLIC_GRID_ENV === 'production'
     ? Sentry.wrap(function RootLayout() {
         return (
             <AuthProvider>
