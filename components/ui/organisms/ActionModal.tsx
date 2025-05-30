@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { Modal, StyleSheet, View, TouchableOpacity, Text, TouchableWithoutFeedback } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { ThemedText } from '@/components/ui/atoms';
@@ -48,6 +48,25 @@ export function ActionModal({
         : 'rgba(177, 177, 177, 0.40)';
     const blurTint = colorScheme === 'dark' ? 'dark' : 'light';
 
+    // Memoize the starburst background to prevent re-renders
+    const starburstBackground = useMemo(() => (
+        useStarburstModal && (
+            <View style={styles.backgroundContainer}>
+                <StarburstModalBackground primaryColor={primaryColor} />
+            </View>
+        )
+    ), [useStarburstModal, primaryColor]);
+
+    // Memoize the header to prevent re-renders
+    const header = useMemo(() => (
+        <View style={styles.header}>
+            <ThemedText type="subtitle" style={{ color: useStarburstModal ? 'white' : textColor }}>{title}</ThemedText>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <Text style={[styles.closeText, { color: useStarburstModal ? 'white' : textColor }]}>×</Text>
+            </TouchableOpacity>
+        </View>
+    ), [title, useStarburstModal, textColor, onClose]);
+
     return (
         <Modal
             visible={visible}
@@ -56,19 +75,10 @@ export function ActionModal({
             onRequestClose={onClose}
         >
             <TouchableWithoutFeedback onPress={onClose}>
-                <BlurView intensity={30} style={[styles.overlay, { backgroundColor: overlayBackgroundColor }]} tint={blurTint}>
+                <BlurView intensity={20} style={[styles.overlay, { backgroundColor: overlayBackgroundColor }]} tint={blurTint}>
                     <View style={[styles.modalContainer, { backgroundColor: useStarburstModal ? '#000' : backgroundColor }]}>
-                        {useStarburstModal && (
-                            <View style={styles.backgroundContainer}>
-                                <StarburstModalBackground primaryColor={primaryColor} />
-                            </View>
-                        )}
-                        <View style={styles.header}>
-                            <ThemedText type="subtitle" style={{ color: useStarburstModal ? 'white' : textColor }}>{title}</ThemedText>
-                            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                                <Text style={[styles.closeText, { color: useStarburstModal ? 'white' : textColor }]}>×</Text>
-                            </TouchableOpacity>
-                        </View>
+                        {starburstBackground}
+                        {header}
                         <View style={styles.contentContainer}>
                             {children}
                         </View>

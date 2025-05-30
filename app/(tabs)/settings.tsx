@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
     },
     groupTitle: {
         opacity: 0.23,
+        marginBottom: Spacing.sm,
     },
     emptyText: {
         textAlign: 'center',

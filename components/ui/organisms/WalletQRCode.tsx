@@ -2,7 +2,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { ThemedText, IconSymbol } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import QRCode from 'react-native-qrcode-svg';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import * as Clipboard from 'expo-clipboard';
 
 interface WalletQRCodeProps {
@@ -18,22 +18,21 @@ export default function WalletQRCode({ walletAddress }: WalletQRCodeProps) {
         setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
     };
 
-    const renderQRCode = () => {
-        return (
-            <QRCode
-                value={walletAddress}
-                size={250}
-                color="white"
-                backgroundColor="#000033"
-                ecl="H" // Error correction level - H is highest
-            />
-        );
-    }
+    // Memoize the QR code to prevent regeneration on every render
+    const qrCode = useMemo(() => (
+        <QRCode
+            value={walletAddress}
+            size={200} // Reduced size for better performance
+            color="white"
+            backgroundColor="#000033"
+            ecl="L" // Lower error correction for better performance
+        />
+    ), [walletAddress]);
 
     return (
         <View style={styles.qrCodeContainer}>
             <ThemedText type="large" style={[styles.qrCodeHeadline, { color: 'white' }]}>Bright</ThemedText>
-            {renderQRCode()}
+            {qrCode}
             <ThemedText type="default" style={styles.qrCodeAddress}>{walletAddress}</ThemedText>
             <View style={styles.qrCodeSupportContainer}>
                 <IconSymbol name="info.circle" size={16} color="white" />
@@ -59,34 +58,27 @@ export default function WalletQRCode({ walletAddress }: WalletQRCodeProps) {
 const styles = StyleSheet.create({
     qrCodeContainer: {
         alignItems: 'center',
-        marginBottom: Spacing.md,
-        paddingHorizontal: Spacing.xl,
+        flex: 1,
+        justifyContent: 'space-evenly',
     },
     qrCodeHeadline: {
-        marginBottom: Spacing.lg
     },
     qrCodeCopyText: {
         color: 'white',
-        marginLeft: Spacing.xs
     },
     qrCodeCopyContainer: {
         flexDirection: 'row',
-        marginTop: Spacing.xl,
         alignItems: 'center',
     },
     qrCodeSupportContainer: {
         flexDirection: 'row',
-        marginTop: Spacing.md,
         opacity: 0.4
     },
     qrCodeSupportText: {
         color: 'white',
-        marginLeft: Spacing.xxs,
-        paddingVertical: Spacing.xxs
     },
     qrCodeAddress: {
         color: 'white',
-        marginTop: Spacing.lg,
         textAlign: 'center'
     },
 })
