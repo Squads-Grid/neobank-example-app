@@ -16,6 +16,7 @@ export default function SettingsScreen() {
     const { logout, email } = useAuth();
     const { status: kycStatus, checkStatus } = useKyc();
     const textColor = useThemeColor({}, 'text');
+    const backgroundColor = useThemeColor({}, 'background');
     const [gridUserId, setGridUserId] = useState<string>('');
 
     useEffect(() => {
@@ -46,28 +47,28 @@ export default function SettingsScreen() {
 
     return (
         <ScreenLayout>
-            <View style={styles.header}>
-                <ThemedText type="highlight">Settings</ThemedText>
-            </View>
-            <View style={styles.section}>
-                <ThemedText type="regularSemiBold" style={styles.sectionTitle}>Account:</ThemedText>
-                <View style={styles.accountContainer}>
-                    <View style={styles.accountInfo}>
-                        <ThemedText type="regular">Email:</ThemedText>
-                        <ThemedText type="regular" style={styles.infoText}>{email}</ThemedText>
-                    </View>
-                    <View style={styles.accountInfo}>
-                        <ThemedText type="regular">KYC Status:</ThemedText>
-                        <ThemedText type="regular" style={styles.infoText}>{formatKycStatus(kycStatus)}</ThemedText>
-                    </View>
-                    <View style={styles.accountInfo}>
-                        <ThemedText type="regular">Grid User ID:</ThemedText>
-                        <View style={styles.idContainer}>
-                            <ThemedText type="regular" style={styles.infoText}>{formatGridUserId(gridUserId).replaceAll('\"', '')}</ThemedText>
-                            <TouchableOpacity onPress={copyToClipboard} style={styles.copyButton}>
-                                <Ionicons name="copy-outline" size={20} color={textColor} style={{ opacity: 0.6 }} />
-                            </TouchableOpacity>
-                        </View>
+
+            <View style={{ borderRadius: 12, overflow: 'hidden', backgroundColor: textColor + 10, padding: Spacing.sm }}>
+                <View style={[styles.sectionHeaderContainer]}>
+                    <ThemedText type="defaultSemiBold" style={styles.groupTitle}>
+                        Account Details
+                    </ThemedText>
+                </View>
+                <View style={styles.accountInfo}>
+                    <ThemedText type="regular">Email:</ThemedText>
+                    <ThemedText type="regular" style={styles.infoText}>{email}</ThemedText>
+                </View>
+                <View style={styles.accountInfo}>
+                    <ThemedText type="regular">KYC Status:</ThemedText>
+                    <ThemedText type="regular" style={styles.infoText}>{formatKycStatus(kycStatus)}</ThemedText>
+                </View>
+                <View style={styles.accountInfo}>
+                    <ThemedText type="regular">Grid User ID:</ThemedText>
+                    <View style={styles.idContainer}>
+                        <ThemedText type="regular" style={styles.infoText}>{formatGridUserId(gridUserId).replaceAll('\"', '')}</ThemedText>
+                        <TouchableOpacity onPress={copyToClipboard} style={styles.copyButton}>
+                            <Ionicons name="copy-outline" size={20} color={textColor} style={{ opacity: 0.6 }} />
+                        </TouchableOpacity>
                     </View>
                 </View>
             </View>
@@ -75,8 +76,8 @@ export default function SettingsScreen() {
                 <ThemedButton
                     title="Logout"
                     onPress={logout}
-                    variant="outline"
-                    textStyle={{ color: textColor }}
+                    variant="primary"
+                    textStyle={{ color: backgroundColor }}
                 />
             </View>
         </ScreenLayout>
@@ -127,5 +128,25 @@ const styles = StyleSheet.create({
     },
     copyButton: {
         padding: 4,
+    },
+    container: {
+        flex: 1,
+        width: '100%',
+    },
+    contentContainer: {
+        flexGrow: 1,
+    },
+    sectionHeaderContainer: {
+        paddingTop: Spacing.sm,
+        paddingHorizontal: Spacing.sm,
+        zIndex: 1,
+    },
+    groupTitle: {
+        opacity: 0.23,
+    },
+    emptyText: {
+        textAlign: 'center',
+        marginTop: Spacing.xl,
+        opacity: 0.5,
     },
 });
