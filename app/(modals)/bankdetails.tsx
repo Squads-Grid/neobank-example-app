@@ -208,7 +208,7 @@ function BankDetailsModal() {
                 <View style={styles.infoValueContainer}>
                     <ThemedText
                         type="regular"
-                        style={[styles.infoValue, { color: textColor }]}
+                        style={{ color: textColor }}
                         numberOfLines={0}
                     >
                         {detail.value}
@@ -243,7 +243,7 @@ function BankDetailsModal() {
                     <View style={{ flex: 1 }}>
                         <ThemedText
                             type="regular"
-                            style={[styles.infoValue, { color: textColor + 40 }]}
+                            style={{ color: textColor + 40, marginLeft: Spacing.sm }}
                             numberOfLines={0}
                         >
                             {selectedCurrency === 'eur' ? detail.textEUR : detail.textUSD}
@@ -425,11 +425,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginTop: Spacing.md
-    },
-    infoValue: {
-        marginBottom: Spacing.xxs,
-        paddingHorizontal: Spacing.md
+        marginBottom: Spacing.md
     },
     copyButton: {
         padding: Spacing.xxs,
