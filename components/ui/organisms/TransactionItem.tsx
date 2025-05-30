@@ -37,15 +37,15 @@ export function TransactionItem({ type, date, amount, isLast, onPress, address, 
                         {formattedAddress}
                     </ThemedText>
                     <ThemedText type="tiny" style={styles.date}> • {date}</ThemedText>
-                    {/* <Chip
+                    {/*<Chip
                         style={{
                             backgroundColor: `#000000` + 40,
                             ...styles.chip
                         }}
                         textStyle={styles.chipText}
                     >
-                        {status}
-                    </Chip> */}
+                        {status.replace('payment_', '')}
+                    </Chip>*/ }
                 </View>
             </View>
 

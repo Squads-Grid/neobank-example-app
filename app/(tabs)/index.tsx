@@ -101,9 +101,11 @@ function HomeScreenContent() {
     ];
 
     const formatTransfers = (transfers: TransferResponse) => {
-        const transfersToConsider = transfers.filter(transfer => ('Spl' in transfer && transfer.Spl.mint === process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS && transfer.Spl.confirmation_status === 'confirmed') || ('Bridge' in transfer && transfer.Bridge.state === 'payment_processed'));
+        const transfersToConsider = transfers.filter(transfer => ('Spl' in transfer && transfer.Spl.mint === process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS && transfer.Spl.confirmation_status === 'confirmed') || ('Bridge' in transfer && (transfer.Bridge.state === 'payment_processed' || transfer.Bridge.state === 'payment_submitted')));
+
 
         const transactions = transfersToConsider.map(transfer => {
+
             if ('Spl' in transfer) {
                 const splTransfer = transfer.Spl;
 

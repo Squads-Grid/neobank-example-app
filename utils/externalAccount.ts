@@ -76,6 +76,21 @@ export class ExternalAccountService {
         }
     }
 
+    static async deleteAccount(gridUserId: string, externalAccountId: string): Promise<void> {
+        try {
+            const storage = await StorageService.getItem<ExternalAccountStorage>(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
+            if (!storage) return;
+
+            // Remove the account from the storage
+            storage.accounts = storage.accounts.filter(acc => acc.grid_user_id !== gridUserId && acc.external_account_id !== externalAccountId);
+
+            // Save the updated storage
+            await StorageService.setItem(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS, storage);
+        } catch (error) {
+            console.error('Error deleting external account:', error);
+        }
+    }
+
     /**
      * Clear all external account mappings
      */
@@ -93,4 +108,5 @@ export class ExternalAccountService {
 export const storeExternalAccount = ExternalAccountService.storeAccount;
 export const getExternalAccountId = ExternalAccountService.getAccountId;
 export const getExternalAccountIds = ExternalAccountService.getAllAccounts;
-export const clearExternalAccounts = ExternalAccountService.clearAll; 
+export const clearExternalAccounts = ExternalAccountService.clearAll;
+export const deleteAccount = ExternalAccountService.deleteAccount;

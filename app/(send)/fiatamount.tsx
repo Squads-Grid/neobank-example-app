@@ -8,7 +8,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Chip, IconSymbol, ThemedText } from '@/components/ui/atoms';
 import { formatAmount } from '@/utils/helper';
 import { CountryCode, ExternalAccountMapping, ExternalAccountStorage, UsAccountType } from '@/types/Transaction';
-import { clearExternalAccounts, getExternalAccountId, getExternalAccountIds } from '@/utils/externalAccount';
+import { clearExternalAccounts, deleteAccount, getExternalAccountId, getExternalAccountIds } from '@/utils/externalAccount';
 
 interface Address {
     street_line_1: string;
@@ -64,11 +64,17 @@ export default function AmountScreen() {
     async function getExtAccount() {
         const ext = await getExternalAccountIds();
         ext?.accounts.forEach(account => {
+            if (account.label === "[object Object]") {
+                // Remove account with invalid label
+                deleteAccount(account.grid_user_id, account.external_account_id);
+            }
+
         })
         setExternalAccounts(ext?.accounts ?? []);
     }
 
     useEffect(() => {
+
 
         getExtAccount();
     }, []);
