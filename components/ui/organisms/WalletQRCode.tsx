@@ -37,7 +37,7 @@ export default function WalletQRCode({ walletAddress }: WalletQRCodeProps) {
             <ThemedText type="default" style={styles.qrCodeAddress}>{walletAddress}</ThemedText>
             <View style={styles.qrCodeSupportContainer}>
                 <IconSymbol name="info.circle" size={16} color="white" />
-                <ThemedText type="tiny" style={styles.qrCodeSupportText}>We don't support NFTs.</ThemedText>
+                <ThemedText type="tiny" style={styles.qrCodeSupportText}>We only support USDC.</ThemedText>
             </View>
             <TouchableOpacity
                 style={styles.qrCodeCopyContainer}
@@ -81,7 +81,8 @@ const styles = StyleSheet.create({
     },
     qrCodeSupportText: {
         color: 'white',
-        marginLeft: Spacing.xxs
+        marginLeft: Spacing.xxs,
+        paddingVertical: Spacing.xxs
     },
     qrCodeAddress: {
         color: 'white',
