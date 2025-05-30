@@ -12,6 +12,7 @@ import { ThemedButton, ThemedTextInput } from '@/components/ui/molecules';
 import { useAuth } from '@/contexts/AuthContext';
 import { useKyc } from '@/hooks/useKyc';
 import { KycParams } from '@/types/Kyc';
+import * as Sentry from '@sentry/react-native';
 
 function KYCModal() {
     const { textColor, backgroundColor } = useScreenTheme();
@@ -70,6 +71,7 @@ function KYCModal() {
 
         } catch (err) {
             console.error('Error starting KYC:', err);
+            Sentry.captureException(new Error(`Error starting KYC: ${err}. (modals)/kyc.tsx (handleSubmit)`));
         } finally {
             setIsSubmitting(false);
         }

@@ -18,7 +18,7 @@ import { ErrorCode } from '@/utils/errors';
 import { GridStamper } from '@/grid/authorization';
 import Toast from 'react-native-toast-message';
 import { ConfirmPayload } from '@/types/Transaction';
-
+import * as Sentry from '@sentry/react-native';
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
@@ -120,6 +120,7 @@ export default function ConfirmScreen() {
                 return;
             }
 
+            Sentry.captureException(new Error(`Failed to confirm payment: ${error}. (send)/confirm.tsx (handleConfirm)`));
             setIsLoading(false);
             throw error;
         }

@@ -2,6 +2,7 @@ import { KycLinkIds } from '@/types/Kyc';
 import * as SecureStore from 'expo-secure-store';
 import { AUTH_STORAGE_KEYS } from './auth';
 import { KycLinkId } from '@/types/Kyc';
+import * as Sentry from '@sentry/react-native';
 
 /**
  * Format a string amount as a currency string
@@ -17,6 +18,7 @@ export const formatAmount = (amount: string) => {
             maximumFractionDigits: 2
         });
     } catch (e) {
+        Sentry.captureException(new Error(`Error formatting amount: ${e}. (utils)/helper.ts (formatAmount)`));
         return '$0';
     }
 };

@@ -45,3 +45,4 @@ android**
 ios**
 
 private**
+.env.local

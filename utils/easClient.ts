@@ -4,6 +4,7 @@ import { handleError, ErrorCode } from './errors';
 import { KycResponse, KycParams } from '@/types/Kyc';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 import { ConfirmPayload } from '@/types/Transaction';
+import * as Sentry from '@sentry/react-native';
 
 class EasError extends Error {
     constructor(
@@ -57,7 +58,7 @@ export class EasClient {
             const response = await fetch(url, fetchOptions);
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
+                const errorData = await response.json().catch(() => console.error('Error parsing response:', response));
 
                 // Check if errorData has the expected structure
                 if (errorData?.details?.[0]?.code) {
@@ -72,15 +73,15 @@ export class EasClient {
                         handleError(code, true, false);
                     }
                 }
-                throw new EasError('Request failed', response.status, errorData);
+                Sentry.captureException(new Error(`EasClient: Request failed: ${errorData}. (utils)/easClient.ts (request) Endpoint: ${endpoint}, Options: ${JSON.stringify(options)}`));
+                throw new EasError('EasClient: Request failed', response.status, errorData);
             }
 
             const data = await response.json();
             return data;
         } catch (error) {
-            if (error instanceof EasError) {
-                throw error;
-            }
+            console.error('EasClient: Unexpected error in request():', error);
+            Sentry.captureException(new Error(`EasClient: Unexpected error in request(): ${error}. (utils)/easClient.ts (request) Endpoint: ${endpoint}, Options: ${JSON.stringify(options)}`));
             handleError(ErrorCode.UNKNOWN_ERROR, true, false);
             throw error;
         }

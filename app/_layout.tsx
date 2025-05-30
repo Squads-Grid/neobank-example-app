@@ -12,6 +12,25 @@ import { lightTheme, darkTheme } from '@/constants/Theme';
 import { ScreenThemeProvider } from '@/contexts/ScreenThemeContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ModalFlowProvider } from '@/contexts/ModalFlowContext';
+import * as Sentry from '@sentry/react-native';
+
+if (process.env.EXPO_PUBLIC_GRID_ENV === 'sandbox') {
+    Sentry.init({
+        dsn: 'https://45bf667b41c7be362e40a5b99c33e36a@o1065299.ingest.us.sentry.io/4509412854333441',
+
+        // Adds more context data to events (IP address, cookies, user, etc.)
+        // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+        sendDefaultPii: true,
+
+        // Configure Session Replay
+        replaysSessionSampleRate: 0.1,
+        replaysOnErrorSampleRate: 1,
+        integrations: [Sentry.mobileReplayIntegration(), Sentry.feedbackIntegration()],
+
+        // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+        // spotlight: __DEV__,
+    });
+}
 
 function AuthLayout() {
     const segments = useSegments();
@@ -75,10 +94,18 @@ const toastConfig = {
     )
 };
 
-export default function RootLayout() {
-    return (
-        <AuthProvider>
-            <AuthLayout />
-        </AuthProvider>
-    );
-}
+export default process.env.EXPO_PUBLIC_GRID_ENV === 'sandbox'
+    ? Sentry.wrap(function RootLayout() {
+        return (
+            <AuthProvider>
+                <AuthLayout />
+            </AuthProvider>
+        );
+    })
+    : function RootLayout() {
+        return (
+            <AuthProvider>
+                <AuthLayout />
+            </AuthProvider>
+        );
+    };

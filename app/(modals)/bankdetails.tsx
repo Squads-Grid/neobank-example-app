@@ -20,6 +20,7 @@ import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import { StorageService } from '@/utils/storage';
 import { Currency } from '@/types/Transaction';
+import * as Sentry from '@sentry/react-native';
 
 interface BankDetail {
     label: string;
@@ -91,6 +92,7 @@ function BankDetailsModal() {
             }, 2000);
         } catch (e) {
             setError('Failed to copy to clipboard');
+            Sentry.captureException(new Error(`Failed to copy to clipboard: ${e}. (modals)/bankdetails.tsx (handleCopy, label: ${label})`));
         }
     };
 
@@ -115,6 +117,7 @@ function BankDetailsModal() {
             }, 2000);
         } catch (e) {
             setError('Failed to copy to clipboard');
+            Sentry.captureException(new Error(`Failed to copy to clipboard: ${e}. (modals)/bankdetails.tsx (handleCopyAll)`));
         }
     };
 
@@ -149,6 +152,7 @@ function BankDetailsModal() {
             await fetchBankDetails();
         } catch (err) {
             console.error('Error creating virtual account:', err);
+            Sentry.captureException(new Error(`Failed to create virtual account: ${err}. (modals)/bankdetails.tsx (handleCreateBankAccount)`));
             setError('Failed to create virtual account');
         } finally {
             setIsCreatingAccount(false);

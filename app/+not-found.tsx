@@ -3,8 +3,10 @@ import { Link, Stack } from 'expo-router';
 import { StyleSheet } from 'react-native';
 
 import { ThemedText, ThemedView } from '@/components/ui/atoms';
+import * as Sentry from '@sentry/react-native';
 
 export default function NotFoundScreen() {
+    Sentry.captureException(new Error(`Not found screen. (+not-found.tsx)`)); // TODO: Remove this
     return (
         <>
             <Stack.Screen options={{ title: 'Oops!' }} />

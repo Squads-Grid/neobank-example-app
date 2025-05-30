@@ -1,6 +1,7 @@
 import { AUTH_STORAGE_KEYS } from './auth';
 import { ExternalAccountMapping, ExternalAccountStorage } from '@/types/Transaction';
 import { StorageService } from './storage';
+import * as Sentry from '@sentry/react-native';
 
 /**
  * Service for managing external account mappings
@@ -40,6 +41,7 @@ export class ExternalAccountService {
             // Save updated storage
             await StorageService.setItem(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS, storage);
         } catch (error) {
+            Sentry.captureException(new Error(`Error storing external account: ${error}. (utils)/externalAccount.ts (storeAccount) Label: ${label}`));
             console.error('Error storing external account:', error);
             throw error;
         }
@@ -58,6 +60,7 @@ export class ExternalAccountService {
             const mapping = storage.accounts.find(acc => acc.grid_user_id === gridUserId);
             return mapping?.external_account_id || null;
         } catch (error) {
+            Sentry.captureException(new Error(`Error getting external account: ${error}. (utils)/externalAccount.ts (getAccountId)`));
             console.error('Error getting external account:', error);
             return null;
         }
@@ -71,6 +74,7 @@ export class ExternalAccountService {
         try {
             return await StorageService.getItem<ExternalAccountStorage>(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
         } catch (error) {
+            Sentry.captureException(new Error(`Error getting external accounts: ${error}. (utils)/externalAccount.ts (getAllAccounts)`));
             console.error('Error getting external accounts:', error);
             return null;
         }
@@ -87,6 +91,7 @@ export class ExternalAccountService {
             // Save the updated storage
             await StorageService.setItem(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS, storage);
         } catch (error) {
+            Sentry.captureException(new Error(`Error deleting external account: ${error}. (utils)/externalAccount.ts (deleteAccount)`));
             console.error('Error deleting external account:', error);
         }
     }
@@ -98,6 +103,7 @@ export class ExternalAccountService {
         try {
             await StorageService.deleteItem(AUTH_STORAGE_KEYS.EXTERNAL_ACCOUNTS);
         } catch (error) {
+            Sentry.captureException(new Error(`Error clearing external accounts: ${error}. (utils)/externalAccount.ts (clearAll)`));
             console.error('Error clearing external accounts:', error);
             throw error;
         }

@@ -6,6 +6,7 @@ import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import { useAuth } from '@/contexts/AuthContext';
 import { MockDatabase } from '@/utils/mockDatabase';
 import { useModalFlow } from '@/contexts/ModalFlowContext';
+import * as Sentry from '@sentry/react-native';
 
 interface UseKycReturn {
     status: KycStatus | null;
@@ -54,6 +55,7 @@ export function useKyc(): UseKycReturn {
             await MockDatabase.updateUserKycLinkID(accountInfo.grid_user_id, response.data.id);
             return { kycLink: response.data.kyc_link, tosLink: response.data.tos_link };
         } catch (err) {
+            Sentry.captureException(new Error(`Failed to start KYC process: ${err}. (hooks)/useKyc.ts (startKyc)`));
             setError('Failed to start KYC process');
             throw err;
         } finally {
@@ -108,6 +110,7 @@ export function useKyc(): UseKycReturn {
                 }
             }
         } catch (err) {
+            Sentry.captureException(new Error(`Failed to check KYC status: ${err}. (hooks)/useKyc.ts (checkStatus)`));
             setError('Failed to check KYC status');
             setIsLoading(false);
         } finally {

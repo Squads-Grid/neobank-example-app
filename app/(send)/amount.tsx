@@ -8,9 +8,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { ThemedText } from '@/components/ui/atoms';
 import * as Clipboard from 'expo-clipboard';
 import { formatAmount } from '@/utils/helper';
-
-
-
+import * as Sentry from '@sentry/react-native';
 
 export default function AmountScreen() {
     const [amount, setAmount] = useState('0');
@@ -95,6 +93,7 @@ export default function AmountScreen() {
             }
         } catch (error) {
             console.error('Failed to get clipboard content:', error);
+            Sentry.captureException(new Error(`Failed to copy to clipboard: ${error}. (send)/amount.tsx (handleCopyRecipient)`));
         }
     };
 

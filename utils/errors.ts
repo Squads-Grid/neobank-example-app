@@ -57,7 +57,7 @@ export class AppError extends Error {
         }
 
         if (this.shouldLog) {
-            console.error(this.message);
+            console.error(`AppError: ${this.code} - ${this.message}`);
         }
     }
 }

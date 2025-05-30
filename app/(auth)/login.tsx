@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoginForm } from '@/components/LoginForm';
 import { ScreenHeaderText } from '@/components/ui/molecules';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { Button, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { WithScreenTheme } from '@/components/WithScreenTheme';
 import { ThemedScreen, StarburstBackground } from '@/components/ui/layout';
 import { ThemedActionText } from '@/components/ui/atoms';

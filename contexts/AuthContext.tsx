@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { AccountInfo, AuthContextType } from '@/types/Auth';
 import { authenticateUser, verifyOtpCode } from '@/utils/auth';
 import { AuthStorage } from '@/utils/storage/authStorage';
+import * as Sentry from '@sentry/react-native';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -33,6 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 }
             } catch (error) {
                 console.error('Error initializing auth:', error);
+                Sentry.captureException(new Error(`Error initializing auth: ${error}. (contexts)/AuthContext.tsx (initializeAuth)`));
                 setIsAuthenticated(false);
             } finally {
                 setIsLoading(false);
@@ -72,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             router.replace('/success');
             return true;
         } catch (error) {
+            Sentry.captureException(new Error(`Error verifying code: ${error}. (contexts)/AuthContext.tsx (verifyCode)`));
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             setAuthError(errorMessage);
             return false;
@@ -92,6 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Clear all stored auth data
             await AuthStorage.clearAuthData();
         } catch (error) {
+            Sentry.captureException(new Error(`Failed to logout: ${error}. (contexts)/AuthContext.tsx (logout)`));
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             setAuthError(errorMessage);
             throw error;
@@ -115,6 +119,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setAuthError(null);
             return otpId;
         } catch (error) {
+            Sentry.captureException(new Error(`Error authenticating: ${error}. (contexts)/AuthContext.tsx (authenticate)`));
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             setAuthError(errorMessage);
             throw error;

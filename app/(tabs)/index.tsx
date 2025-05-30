@@ -19,6 +19,7 @@ import { TransactionList } from '@/components/ui/organisms/TransactionList';
 import { StorageService } from '@/utils/storage';
 import { useWalletData } from '@/hooks/useWalletData';
 import { MockDatabase } from '@/utils/mockDatabase';
+import * as Sentry from '@sentry/react-native';
 
 const placeholder = require('@/assets/images/no-txn.png');
 
@@ -59,6 +60,7 @@ function HomeScreenContent() {
                 await fetchWalletData(updatedAccountInfo);
             } catch (err) {
                 console.error('Error initializing account:', err);
+                Sentry.captureException(new Error(`Error initializing account: ${err}. (tabs)/index.tsx (initializeAccount)`));
             }
         };
 
@@ -133,6 +135,7 @@ function HomeScreenContent() {
                 } as Transaction;
             } else {
                 console.log("🚀 ~ formatTransfers ~ unknown transfer:", transfer);
+                Sentry.captureException(new Error(`Unknown transfer: ${transfer}. (tabs)/index.tsx (formatTransfers)`));
             }
         });
 

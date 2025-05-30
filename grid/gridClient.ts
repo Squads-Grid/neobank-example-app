@@ -5,6 +5,7 @@ import { UserResponse } from '@/types/User';
 import { KycRequest, KycResponse } from '@/types/Kyc';
 import { v4 as uuidv4 } from 'uuid';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
+import * as Sentry from '@sentry/react-native';
 
 // TODO: USE RESPONSE TYPES NOT ANY
 
@@ -37,8 +38,9 @@ export class GridClient {
         endpoint: string,
         options: RequestInit = {}
     ): Promise<T> {
+        const url = `${this.baseUrl}${endpoint}`;
+
         try {
-            const url = `${this.baseUrl}${endpoint}`;
             const response = await fetch(url, {
                 ...options,
                 headers: {
@@ -48,14 +50,24 @@ export class GridClient {
             });
 
             if (!response.ok) {
-                // Optionally, try to read error text for debugging
-                const errorText = await response.text();
-                throw new Error(`Request failed: ${response.status} - ${errorText}`);
+                const errorData = await response.json().catch(() => console.error('Error parsing response:', response));
+
+                console.error('Request failed:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    url,
+                    errorData,
+                });
+                Sentry.captureException(new Error(`GridClient: Request failed with status ${response.status}: ${errorData}. (grid/gridClient.ts) (request) Endpoint: ${endpoint}, Options: ${JSON.stringify(options)}`));
+                throw new Error(`GridClient: Request failed with status ${response.status}: ${errorData}`);
             }
 
             const data = await response.json();
             return data;
+
         } catch (error) {
+            console.error('GridClient: Unexpected error in request():', error);
+            Sentry.captureException(new Error(`GridClient: Unexpected error in request(): ${error}. (grid/gridClient.ts) (request) Endpoint: ${endpoint}, Options: ${JSON.stringify(options)}`));
             throw error;
         }
     }

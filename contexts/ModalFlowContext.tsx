@@ -6,6 +6,7 @@ import { Currency } from '@/types/Transaction';
 import * as SecureStore from 'expo-secure-store';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import { MockDatabase } from '@/utils/mockDatabase';
+import * as Sentry from '@sentry/react-native';
 
 interface BankAccountDetails {
     currency: Currency;
@@ -129,6 +130,7 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
             SecureStore.setItemAsync(AUTH_STORAGE_KEYS.KYC_LINK, kycResponse.data.kyc_continuation_link);
             setKycStatus(kycResponse.data.status);
         } catch (err) {
+            Sentry.captureException(new Error(`Failed to fetch KYC status: ${err}. (contexts)/ModalFlowContext.tsx (fetchKycStatus)`));
             setError('Failed to fetch KYC status');
             console.error('Error fetching KYC status:', err);
         } finally {
@@ -175,6 +177,7 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
 export function useModalFlow() {
     const context = useContext(ModalFlowContext);
     if (context === undefined) {
+        Sentry.captureException(new Error(`useModalFlow must be used within a ModalFlowProvider. (contexts)/ModalFlowContext.tsx (useModalFlow)`));
         throw new Error('useModalFlow must be used within a ModalFlowProvider');
     }
     return context;

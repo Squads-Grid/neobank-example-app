@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import * as Sentry from '@sentry/react-native';
 
 interface UseResendTimerProps {
     initialSeconds?: number;
@@ -33,6 +34,7 @@ export function useResendTimer({ initialSeconds = 30, onResend }: UseResendTimer
             await onResend();
             setCountdown(initialSeconds);
         } catch (error) {
+            Sentry.captureException(new Error(`Failed to resend code: ${error}. (hooks)/useResendTimer.ts (handleResend)`));
             // If the resend fails, enable the button again
             setIsDisabled(false);
             // You might want to handle the error (show toast, etc.)

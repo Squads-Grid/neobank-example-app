@@ -1,6 +1,7 @@
 import { Keypair, AuthenticationRequest, OTPData, AccountInfo } from '@/types/Auth';
 import { easClient } from '@/utils/easClient';
 import { setupCryptoPolyfill } from '@/polyfills';
+import * as Sentry from '@sentry/react-native';
 
 
 export const validateEnv = () => {
@@ -26,6 +27,7 @@ export const generateKeyPairP256 = async (): Promise<{ publicKey: string; privat
 
         return keyPair;
     } catch (e) {
+        Sentry.captureException(new Error(`Failed to generate key pair: ${e}. (utils)/auth.ts (generateKeyPairP256)`));
         throw e;
     }
 };

@@ -19,6 +19,7 @@ import { GridStamper } from '@/grid/authorization';
 import { clearExternalAccounts, storeExternalAccount } from '@/utils/externalAccount';
 import Toast from 'react-native-toast-message';
 import { ErrorCode } from '@/types/Error';
+import * as Sentry from '@sentry/react-native';
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
@@ -203,10 +204,12 @@ export default function FiatConfirmScreen() {
                     logout();
                     return;
                 }
+                Sentry.captureException(new Error(`Failed to confirm payment: ${error}. (send)/fiatconfirm.tsx (handleConfirm)`));
                 throw error;
             }
         } catch (err) {
             console.error("Failed to sign transaction:", err);
+            Sentry.captureException(new Error(`Failed to sign transaction: ${err}. (send)/fiatconfirm.tsx (handleConfirm)`));
             Toast.show({
                 text1: 'An error occurred while processing your transaction. Please try again.',
                 type: 'error',

@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
+import * as Sentry from '@sentry/react-native';
 
 /**
  * Storage service for handling secure storage operations
@@ -16,6 +17,7 @@ export class StorageService {
             await SecureStore.setItemAsync(key, stringValue);
         } catch (error) {
             console.error(`Error setting item ${key}:`, error);
+            Sentry.captureException(new Error(`Error setting item ${key}: ${error}. (utils)/storage.ts (setItem)`));
             throw error;
         }
     }
@@ -32,6 +34,7 @@ export class StorageService {
             return JSON.parse(value) as T;
         } catch (error) {
             console.error(`Error getting item ${key}:`, error);
+            Sentry.captureException(new Error(`Error getting item ${key}: ${error}. (utils)/storage.ts (getItem)`));
             return null;
         }
     }
@@ -45,6 +48,7 @@ export class StorageService {
             await SecureStore.deleteItemAsync(key);
         } catch (error) {
             console.error(`Error deleting item ${key}:`, error);
+            Sentry.captureException(new Error(`Error deleting item ${key}: ${error}. (utils)/storage.ts (deleteItem)`));
             throw error;
         }
     }
@@ -60,6 +64,7 @@ export class StorageService {
             return value !== null;
         } catch (error) {
             console.error(`Error checking item ${key}:`, error);
+            Sentry.captureException(new Error(`Error checking item ${key}: ${error}. (utils)/storage.ts (hasItem)`));
             return false;
         }
     }
