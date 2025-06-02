@@ -11,6 +11,8 @@ import { CountryCode, ExternalAccountMapping, UsAccountType } from '@/types/Tran
 import { deleteAccount, getExternalAccountIds } from '@/utils/externalAccount';
 import { Address, AddressInput, ACHBankAccount, PersonalInformation, AccountLabel } from '@/types/ExternalAccounts';
 import { handleError, ErrorCode } from '@/utils/errors';
+import { useWalletData } from '@/hooks/useWalletData';
+import { useAuth } from '@/contexts/AuthContext';
 
 
 export default function AmountScreen() {
@@ -25,7 +27,8 @@ export default function AmountScreen() {
     const [accountLabel, setAccountLabel] = useState('');
     const [bankName, setBankName] = useState('');
     const [externalAccounts, setExternalAccounts] = useState<ExternalAccountMapping[]>([]);
-    // const [externalAccountId, setExternalAccountId] = useState<string>('');
+    const { accountInfo } = useAuth();
+    const { balance } = useWalletData(accountInfo);
 
     const [address, setAddress] = useState<AddressInput>({
         street_number: '',
@@ -103,61 +106,86 @@ export default function AmountScreen() {
         }
     };
 
-    const handleContinue = (label?: string, id?: string) => {
+    const handleExistingContinue = (label?: string, id?: string) => {
+
+        try {
+            // If both validations pass, navigate to the next screen
+            router.push({
+                pathname: '/fiatconfirm',
+                params: {
+                    amount,
+                    accountLabel: label,
+                    externalAccountId: id
+                }
+            });
+        } catch (error) {
+            console.error('Unexpected error:', error);
+            handleError(ErrorCode.UNKNOWN_ERROR, true, true);
+        }
+    }
+
+    const handleContinue = () => {
         if (step === 1) {
+            if (Number(amount) > balance) {
+                handleError(ErrorCode.INSUFFICIENT_BALANCE, true, true);
+                return;
+            }
+            if (Number(amount) < 1) {
+                handleError(ErrorCode.INVALID_AMOUNT, true, true);
+                return;
+            }
             setStep(2);
         } else {
+            let validationError = false;
+
             try {
-                let validationError = false;
+                PersonalInformation.parse({
+                    first_name: firstName,
+                    last_name: lastName
+                });
+            } catch (error) {
+                validationError = true;
+                handleError(ErrorCode.INVALID_NAME, true, true);
+            }
 
+            // Validate the address
+            try {
+                Address.parse(address);
+            } catch (error) {
+                validationError = true;
+                handleError(ErrorCode.INVALID_ADDRESS, true, true);
+            }
+
+            // Validate the bank account
+            try {
+                ACHBankAccount.parse({
+                    account_number: accountNumber,
+                    routing_number: routingNumber,
+                    bank_name: bankName
+                });
+            } catch (error) {
+                validationError = true;
+                handleError(ErrorCode.INVALID_BANK_ACCOUNT, true, true);
+            }
+
+            try {
+                AccountLabel.parse({
+                    label: accountLabel
+                });
+            } catch (error) {
+                validationError = true;
+                handleError(ErrorCode.INVALID_LABEL, true, true);
+            }
+
+
+            if (!validationError) {
+                // Format address with combined street number and name
+                const formattedAddress = {
+                    ...address,
+                    street_line_1: `${address.street_number} ${address.street_name}`.trim(),
+                    street_line_2: address.street_line_2
+                };
                 try {
-                    PersonalInformation.parse({
-                        first_name: firstName,
-                        last_name: lastName
-                    });
-                } catch (error) {
-                    validationError = true;
-                    handleError(ErrorCode.INVALID_NAME, true, true);
-                }
-
-                // Validate the address
-                try {
-                    Address.parse(address);
-                } catch (error) {
-                    validationError = true;
-                    handleError(ErrorCode.INVALID_ADDRESS, true, true);
-                }
-
-                // Validate the bank account
-                try {
-                    ACHBankAccount.parse({
-                        account_number: accountNumber,
-                        routing_number: routingNumber,
-                        bank_name: bankName
-                    });
-                } catch (error) {
-                    validationError = true;
-                    handleError(ErrorCode.INVALID_BANK_ACCOUNT, true, true);
-                }
-
-                try {
-                    AccountLabel.parse({
-                        label: accountLabel
-                    });
-                } catch (error) {
-                    validationError = true;
-                    handleError(ErrorCode.INVALID_LABEL, true, true);
-                }
-
-
-                if (!validationError) {
-                    // Format address with combined street number and name
-                    const formattedAddress = {
-                        ...address,
-                        street_line_1: `${address.street_number} ${address.street_name}`.trim(),
-                        street_line_2: address.street_line_2
-                    };
-
                     // If both validations pass, navigate to the next screen
                     router.push({
                         pathname: '/fiatconfirm',
@@ -173,14 +201,14 @@ export default function AmountScreen() {
                             title,
                             address: JSON.stringify(formattedAddress),
                             bankName,
-                            accountLabel: label,
-                            externalAccountId: id
+                            accountLabel: accountLabel,
+                            // externalAccountId: id
                         }
                     });
+                } catch (error) {
+                    console.error('Unexpected error:', error);
+                    handleError(ErrorCode.UNKNOWN_ERROR, true, true);
                 }
-            } catch (error) {
-                console.error('Unexpected error:', error);
-                handleError(ErrorCode.UNKNOWN_ERROR, true, true);
             }
         }
     };
@@ -209,8 +237,7 @@ export default function AmountScreen() {
                     variant="outline"
                     textStyle={{ color: textColor }}
                     onPress={() => {
-                        // setExternalAccountId(id);
-                        handleContinue(currentLabel, id);
+                        handleExistingContinue(currentLabel, id);
                     }} />
             </View>
         )

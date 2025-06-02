@@ -14,10 +14,10 @@ export enum ErrorCode {
     INVALID_ADDRESS = 'INVALID_ADDRESS',
     INVALID_BANK_ACCOUNT = 'INVALID_BANK_ACCOUNT',
     INVALID_LABEL = 'INVALID_LABEL',
+    INVALID_AMOUNT = 'INVALID_AMOUNT',
 
     // Transaction errors
     INSUFFICIENT_BALANCE = 'INSUFFICIENT_BALANCE',
-    INSUFFICIENT_FUNDS = 'INSUFFICIENT_FUNDS',
 
     // Network errors
     UNKNOWN_ERROR = 'UNKNOWN_ERROR',
@@ -39,11 +39,10 @@ export const ErrorMessages: Record<ErrorCode, string> = {
     [ErrorCode.INVALID_BANK_ACCOUNT]: 'Invalid bank account details. Please check your account number and routing number.',
     [ErrorCode.INVALID_NAME]: 'Invalid name. Please try again.',
     [ErrorCode.INVALID_LABEL]: 'Invalid label. Please try again.',
-
+    [ErrorCode.INVALID_AMOUNT]: 'Minimum amount is $1.',
 
     // Transaction errors
-    [ErrorCode.INSUFFICIENT_BALANCE]: 'Insufficient balance. Please add more funds.',
-    [ErrorCode.INSUFFICIENT_FUNDS]: 'Insufficient funds. Please add more funds.',
+    [ErrorCode.INSUFFICIENT_BALANCE]: 'Insufficient balance.',
 
     // Network errors
     [ErrorCode.UNKNOWN_ERROR]: 'An unknown error occurred. Please try again later.',

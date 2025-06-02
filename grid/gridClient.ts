@@ -1,7 +1,6 @@
 import { AuthenticationRequest, AuthenticationResponse, OTPData, VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
 import { ConfirmPayload, PreparePaymentIntentParams } from '@/types/Transaction';
-import { UserResponse } from '@/types/User';
 import { KycRequest, KycResponse } from '@/types/Kyc';
 import { v4 as uuidv4 } from 'uuid';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
@@ -116,7 +115,7 @@ export class GridClient {
     // Prepares a transaction.
     async preparePaymentIntent(request: PreparePaymentIntentParams, smartAccountAddress: string, useMpcProvider: boolean = false): Promise<any> {
         const endpoint = useMpcProvider ? `/${smartAccountAddress}/payment-intents?use-mpc-provider=true` : `/${smartAccountAddress}/payment-intents`;
-        return this.request<UserResponse>(endpoint, {
+        return this.request<any>(endpoint, {
             method: 'POST',
             headers: {
                 ...this.defaultHeaders,

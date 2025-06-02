@@ -9,6 +9,9 @@ import { ThemedText } from '@/components/ui/atoms';
 import * as Clipboard from 'expo-clipboard';
 import { formatAmount } from '@/utils/helper';
 import * as Sentry from '@sentry/react-native';
+import { useWalletData } from '@/hooks/useWalletData';
+import { useAuth } from '@/contexts/AuthContext';
+import { handleError, ErrorCode } from '@/utils/errors';
 
 export default function AmountScreen() {
     const [amount, setAmount] = useState('0');
@@ -16,6 +19,8 @@ export default function AmountScreen() {
     const [recipient, setRecipient] = useState('');
     const [name, setName] = useState('');
     const textColor = useThemeColor({}, 'text');
+    const { accountInfo } = useAuth();
+    const { balance } = useWalletData(accountInfo);
 
     const steps = [
         {
@@ -61,6 +66,10 @@ export default function AmountScreen() {
 
     const handleContinue = () => {
         if (step === 1) {
+            if (Number(amount) > balance) {
+                handleError(ErrorCode.INSUFFICIENT_BALANCE, true, true);
+                return;
+            }
             setStep(2);
         } else {
             // Navigate to the next screen with all the data

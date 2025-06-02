@@ -140,7 +140,6 @@ function HomeScreenContent() {
                     address: type === 'sent' ? transfer.Bridge.destination.external_account_id : accountInfo?.smart_account_address
                 } as Transaction;
             } else {
-                console.log("🚀 ~ formatTransfers ~ unknown transfer:", transfer);
                 Sentry.captureException(new Error(`Unknown transfer: ${transfer}. (tabs)/index.tsx (formatTransfers)`));
             }
         });

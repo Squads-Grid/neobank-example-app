@@ -18,7 +18,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { GridStamper } from '@/grid/authorization';
 import { clearExternalAccounts, storeExternalAccount } from '@/utils/externalAccount';
 import Toast from 'react-native-toast-message';
-import { ErrorCode } from '@/utils/errors';
+import { ErrorCode, handleError } from '@/utils/errors';
 import * as Sentry from '@sentry/react-native';
 
 // USDC has 6 decimals
@@ -146,10 +146,15 @@ export default function FiatConfirmScreen() {
 
                 // Store the external account ID with label
                 if (res.data.destination.external_account_id && accountInfo.grid_user_id) {
+                    if (accountLabel === "[object Object]") {
+                        handleError(ErrorCode.INVALID_LABEL, true, true);
+                        return;
+                    }
 
                     await storeExternalAccount(accountInfo.grid_user_id, res.data.destination.external_account_id, accountLabel);
 
                 }
+
 
                 if (!email) {
                     logout();
@@ -181,7 +186,7 @@ export default function FiatConfirmScreen() {
                     }),
                 };
 
-                await easClient.confirmPaymentIntent(
+                const response = await easClient.confirmPaymentIntent(
                     accountInfo.smart_account_address,
                     res.data.id,
                     confirmPayload,
