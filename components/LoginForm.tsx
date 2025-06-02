@@ -4,10 +4,11 @@ import { ThemedView, LoadingSpinner, ThemedText } from '@/components/ui/atoms';
 import { ThemedTextInput } from '@/components/ui/molecules';
 import { ScreenVerificationCodeInput } from '@/components/ui/organisms';
 import { Spacing } from '@/constants/Spacing';
-import { Weight } from '@/constants/Typography';
+import { Email } from '@/types/User';
+import { handleError, ErrorCode } from '@/utils/errors';
 
 interface LoginFormProps {
-    onSubmit: (email: string, code?: string) => void;
+    onSubmit: (email: string, code?: string, error?: string) => void;
     isLoading?: boolean;
     style?: ViewStyle;
     error?: string | null;
@@ -18,9 +19,12 @@ export function LoginForm({ onSubmit, isLoading = false, style, error }: LoginFo
     const [showCodeInput, setShowCodeInput] = useState(false);
 
     const handleEmailSubmit = () => {
-        if (email.trim()) {
+        try {
+            Email.parse(email);
             setShowCodeInput(true);
             onSubmit(email);
+        } catch (error) {
+            onSubmit(email, undefined, 'Invalid email. Please try again.');
         }
     };
 
@@ -56,13 +60,6 @@ export function LoginForm({ onSubmit, isLoading = false, style, error }: LoginFo
                                 Enter the code from your e-mail
                             </ThemedText>
                             <ScreenVerificationCodeInput onCodeComplete={handleCodeComplete} />
-                            {error && (
-                                <ThemedText
-                                    style={styles.errorText}
-                                >
-                                    {error}
-                                </ThemedText>
-                            )}
                         </>
                     )}
                 </ThemedView>
@@ -83,10 +80,5 @@ const styles = StyleSheet.create({
         marginBottom: Spacing.lg,
         maxWidth: 300,
         alignSelf: 'center',
-    },
-    errorText: {
-        textAlign: 'center',
-        marginTop: Spacing.md,
-        fontWeight: Weight.semiBoldWeight,
     }
 });

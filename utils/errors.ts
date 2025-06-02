@@ -7,6 +7,7 @@ export enum ErrorCode {
     OTP_EXPIRED = 'OTP_EXPIRED',
     OTP_RATE_LIMIT = 'OTP_RATE_LIMIT',
     SESSION_EXPIRED = 'SESSION_EXPIRED',
+    INVALID_EMAIL = 'INVALID_EMAIL',
 
     // Transaction errors
     INSUFFICIENT_BALANCE = 'INSUFFICIENT_BALANCE',
@@ -25,6 +26,7 @@ export const ErrorMessages: Record<ErrorCode, string> = {
     [ErrorCode.OTP_EXPIRED]: 'OTP expired. Please request a new one.',
     [ErrorCode.OTP_RATE_LIMIT]: 'Too many attempts. Please try again later.',
     [ErrorCode.SESSION_EXPIRED]: 'Session expired. Please log in again.',
+    [ErrorCode.INVALID_EMAIL]: 'Invalid email. Please try again.',
 
     // Transaction errors
     [ErrorCode.INSUFFICIENT_BALANCE]: 'Insufficient balance. Please add more funds.',

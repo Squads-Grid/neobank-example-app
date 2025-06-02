@@ -9,6 +9,8 @@ import { ThemedActionText } from '@/components/ui/atoms';
 import { useResendTimer } from '@/hooks/useResendTimer';
 import { Spacing } from '@/constants/Spacing';
 import { router } from 'expo-router';
+import { ErrorCode } from '@/utils/errors';
+import { handleError } from '@/utils/errors';
 
 function LoginScreen() {
     const [isLoading, setIsLoading] = useState(false);
@@ -49,18 +51,24 @@ function LoginScreen() {
         return result;
     };
 
-    const handleSubmit = async (submittedEmail: string, code?: string) => {
+    const handleSubmit = async (submittedEmail: string, code?: string, formError?: string) => {
         try {
             setIsLoading(true);
             setError(null);
             setEmail(submittedEmail);
+
+            if (formError) {
+                setError(formError);
+                handleError(ErrorCode.INVALID_EMAIL, true, true);
+                return;
+            }
+
             if (code && otpId) {
                 const isValid = await verify(code);
                 if (!isValid) {
                     setError('Invalid code');
                     return;
                 }
-
             } else {
                 await triggerAuthentication(submittedEmail);
             }
