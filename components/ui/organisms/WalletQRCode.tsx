@@ -76,6 +76,9 @@ const styles = StyleSheet.create({
     },
     qrCodeSupportText: {
         color: 'white',
+        marginLeft: Spacing.xs,
+        textAlign: 'center',
+        paddingVertical: Spacing.xxs,
     },
     qrCodeAddress: {
         color: 'white',
