@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { ThemedScreen } from '@/components/ui/layout';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
@@ -7,17 +7,11 @@ import { Keypad, ThemedButton, ThemedTextInput } from '@/components/ui/molecules
 import { router, useLocalSearchParams } from 'expo-router';
 import { Chip, IconSymbol, ThemedText } from '@/components/ui/atoms';
 import { formatAmount } from '@/utils/helper';
-import { CountryCode, ExternalAccountMapping, ExternalAccountStorage, UsAccountType } from '@/types/Transaction';
-import { clearExternalAccounts, deleteAccount, getExternalAccountId, getExternalAccountIds } from '@/utils/externalAccount';
+import { CountryCode, ExternalAccountMapping, UsAccountType } from '@/types/Transaction';
+import { deleteAccount, getExternalAccountIds } from '@/utils/externalAccount';
+import { Address, AddressInput, ACHBankAccount, PersonalInformation, AccountLabel } from '@/types/ExternalAccounts';
+import { handleError, ErrorCode } from '@/utils/errors';
 
-interface Address {
-    street_line_1: string;
-    street_line_2?: string;
-    city: string;
-    state: string;
-    postal_code?: string;
-    country: string;
-}
 
 export default function AmountScreen() {
     const [amount, setAmount] = useState('0');
@@ -31,15 +25,16 @@ export default function AmountScreen() {
     const [accountLabel, setAccountLabel] = useState('');
     const [bankName, setBankName] = useState('');
     const [externalAccounts, setExternalAccounts] = useState<ExternalAccountMapping[]>([]);
-    const [externalAccountId, setExternalAccountId] = useState<string>('');
+    // const [externalAccountId, setExternalAccountId] = useState<string>('');
 
-    const [address, setAddress] = useState<Address>({
-        street_line_1: '',
+    const [address, setAddress] = useState<AddressInput>({
+        street_number: '',
+        street_name: '',
         street_line_2: '',
         city: '',
         state: '',
         postal_code: '',
-        country: 'USA'
+        country: ''
     });
     const textColor = useThemeColor({}, 'text');
 
@@ -112,33 +107,81 @@ export default function AmountScreen() {
         if (step === 1) {
             setStep(2);
         } else {
-            // Navigate to the next screen with all the data
-            router.push({
-                pathname: '/fiatconfirm',
-                params: {
-                    amount,
-                    accountNumber,
-                    routingNumber,
-                    firstName,
-                    lastName,
-                    accountType,
-                    country,
-                    type,
-                    title,
-                    address: JSON.stringify(address),
-                    bankName,
-                    accountLabel: label,
-                    externalAccountId: id
-                }
-            });
-        }
-    };
+            try {
+                let validationError = false;
 
-    const handleBack = () => {
-        if (step === 2) {
-            setStep(1);
-        } else {
-            router.back();
+                try {
+                    PersonalInformation.parse({
+                        first_name: firstName,
+                        last_name: lastName
+                    });
+                } catch (error) {
+                    validationError = true;
+                    handleError(ErrorCode.INVALID_NAME, true, true);
+                }
+
+                // Validate the address
+                try {
+                    Address.parse(address);
+                } catch (error) {
+                    validationError = true;
+                    handleError(ErrorCode.INVALID_ADDRESS, true, true);
+                }
+
+                // Validate the bank account
+                try {
+                    ACHBankAccount.parse({
+                        account_number: accountNumber,
+                        routing_number: routingNumber,
+                        bank_name: bankName
+                    });
+                } catch (error) {
+                    validationError = true;
+                    handleError(ErrorCode.INVALID_BANK_ACCOUNT, true, true);
+                }
+
+                try {
+                    AccountLabel.parse({
+                        label: accountLabel
+                    });
+                } catch (error) {
+                    validationError = true;
+                    handleError(ErrorCode.INVALID_LABEL, true, true);
+                }
+
+
+                if (!validationError) {
+                    // Format address with combined street number and name
+                    const formattedAddress = {
+                        ...address,
+                        street_line_1: `${address.street_number} ${address.street_name}`.trim(),
+                        street_line_2: address.street_line_2
+                    };
+
+                    // If both validations pass, navigate to the next screen
+                    router.push({
+                        pathname: '/fiatconfirm',
+                        params: {
+                            amount,
+                            accountNumber,
+                            routingNumber,
+                            firstName,
+                            lastName,
+                            accountType,
+                            country,
+                            type,
+                            title,
+                            address: JSON.stringify(formattedAddress),
+                            bankName,
+                            accountLabel: label,
+                            externalAccountId: id
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Unexpected error:', error);
+                handleError(ErrorCode.UNKNOWN_ERROR, true, true);
+            }
         }
     };
 
@@ -166,7 +209,7 @@ export default function AmountScreen() {
                     variant="outline"
                     textStyle={{ color: textColor }}
                     onPress={() => {
-                        setExternalAccountId(id);
+                        // setExternalAccountId(id);
                         handleContinue(currentLabel, id);
                     }} />
             </View>
@@ -199,12 +242,26 @@ export default function AmountScreen() {
                     <View style={{ marginBottom: Spacing.lg }} />
 
                     <ThemedText type="regular" style={styles.sectionTitle}>Address</ThemedText>
-                    <ThemedTextInput
-                        style={styles.input}
-                        value={address.street_line_1}
-                        onChangeText={(text) => setAddress(prev => ({ ...prev, street_line_1: text }))}
-                        placeholder="e.g. Main 123"
-                    />
+                    <View style={styles.row}>
+                        <View style={styles.quarterWidth}>
+                            <ThemedTextInput
+                                style={styles.input}
+                                value={address.street_number}
+                                onChangeText={(text) => setAddress(prev => ({ ...prev, street_number: text }))}
+                                placeholder="123"
+                                keyboardType="numeric"
+                            />
+                        </View>
+                        <View style={styles.spacer} />
+                        <View style={styles.threeQuarterWidth}>
+                            <ThemedTextInput
+                                style={styles.input}
+                                value={address.street_name}
+                                onChangeText={(text) => setAddress(prev => ({ ...prev, street_name: text }))}
+                                placeholder="Main St"
+                            />
+                        </View>
+                    </View>
                     <View style={{ marginBottom: Spacing.sm }} />
                     <ThemedTextInput
                         style={styles.input}
@@ -250,7 +307,7 @@ export default function AmountScreen() {
                                 value={address.country}
                                 onChangeText={(text) => setAddress(prev => ({ ...prev, country: text }))}
                                 placeholder="USA"
-                                editable={false}
+                                editable={true}
                             />
                         </View>
                     </View>
@@ -424,5 +481,11 @@ const styles = StyleSheet.create({
     },
     input: {
         paddingVertical: Spacing.xxs,
+    },
+    quarterWidth: {
+        flex: 1,
+    },
+    threeQuarterWidth: {
+        flex: 3,
     },
 }); 

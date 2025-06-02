@@ -18,7 +18,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { GridStamper } from '@/grid/authorization';
 import { clearExternalAccounts, storeExternalAccount } from '@/utils/externalAccount';
 import Toast from 'react-native-toast-message';
-import { ErrorCode } from '@/types/Error';
+import { ErrorCode } from '@/utils/errors';
 import * as Sentry from '@sentry/react-native';
 
 // USDC has 6 decimals

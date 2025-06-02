@@ -9,6 +9,12 @@ export enum ErrorCode {
     SESSION_EXPIRED = 'SESSION_EXPIRED',
     INVALID_EMAIL = 'INVALID_EMAIL',
 
+    // External account errors
+    INVALID_NAME = 'INVALID_NAME',
+    INVALID_ADDRESS = 'INVALID_ADDRESS',
+    INVALID_BANK_ACCOUNT = 'INVALID_BANK_ACCOUNT',
+    INVALID_LABEL = 'INVALID_LABEL',
+
     // Transaction errors
     INSUFFICIENT_BALANCE = 'INSUFFICIENT_BALANCE',
     INSUFFICIENT_FUNDS = 'INSUFFICIENT_FUNDS',
@@ -27,6 +33,13 @@ export const ErrorMessages: Record<ErrorCode, string> = {
     [ErrorCode.OTP_RATE_LIMIT]: 'Too many attempts. Please try again later.',
     [ErrorCode.SESSION_EXPIRED]: 'Session expired. Please log in again.',
     [ErrorCode.INVALID_EMAIL]: 'Invalid email. Please try again.',
+
+    // External account errors
+    [ErrorCode.INVALID_ADDRESS]: 'Invalid address. Please try again.',
+    [ErrorCode.INVALID_BANK_ACCOUNT]: 'Invalid bank account details. Please check your account number and routing number.',
+    [ErrorCode.INVALID_NAME]: 'Invalid name. Please try again.',
+    [ErrorCode.INVALID_LABEL]: 'Invalid label. Please try again.',
+
 
     // Transaction errors
     [ErrorCode.INSUFFICIENT_BALANCE]: 'Insufficient balance. Please add more funds.',
