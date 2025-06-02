@@ -4,7 +4,7 @@ import { ThemedView, LoadingSpinner, ThemedText } from '@/components/ui/atoms';
 import { ThemedTextInput } from '@/components/ui/molecules';
 import { ScreenVerificationCodeInput } from '@/components/ui/organisms';
 import { Spacing } from '@/constants/Spacing';
-import { Email } from '@/types/User';
+import { Email } from '@/types/Auth';
 import { handleError, ErrorCode } from '@/utils/errors';
 
 interface LoginFormProps {
