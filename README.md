@@ -1,5 +1,8 @@
 # Neobank Example App (Grid API Demo)
 
+![neobank-example-app](https://github.com/user-attachments/assets/f5c6e770-36e6-43dc-953e-dd16369d2ab6)
+
+
 This is a demo React Native app built with [Expo](https://expo.dev/), designed to showcase the [Grid API]. It demonstrates authentication, KYC, virtual account creation, and more, using a modern Expo Router structure.
 
 > ⚠️ **Disclaimer:** This is a demo application intended for educational and demonstration purposes only. 
