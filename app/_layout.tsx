@@ -13,23 +13,28 @@ import { ScreenThemeProvider } from '@/contexts/ScreenThemeContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ModalFlowProvider } from '@/contexts/ModalFlowContext';
 import * as Sentry from '@sentry/react-native';
+import { sentryApiResponse } from '@/types/Sentry';
+import { EasClient } from '@/utils/easClient';
 
+// Sentry for error tracking
 if (process.env.EXPO_PUBLIC_GRID_ENV === 'production') {
-    Sentry.init({
-        dsn: 'https://45bf667b41c7be362e40a5b99c33e36a@o1065299.ingest.us.sentry.io/4509412854333441',
+    const initSentry = async () => {
+        try {
+            const easClient = new EasClient();
+            const response = await easClient.getSentryConfig();
+            const sentryConfig = sentryApiResponse.parse(response);
 
-        // Adds more context data to events (IP address, cookies, user, etc.)
-        // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
-        sendDefaultPii: true,
+            Sentry.init({
+                ...sentryConfig,
+                integrations: [Sentry.mobileReplayIntegration(), Sentry.feedbackIntegration()],
+            });
+        } catch (error) {
+            console.error('Failed to initialize Sentry:', error);
 
-        // Configure Session Replay
-        replaysSessionSampleRate: 0.1,
-        replaysOnErrorSampleRate: 1,
-        integrations: [Sentry.mobileReplayIntegration(), Sentry.feedbackIntegration()],
+        }
+    };
 
-        // uncomment the line below to enable Spotlight (https://spotlightjs.com)
-        // spotlight: __DEV__,
-    });
+    initSentry();
 }
 
 function AuthLayout() {
@@ -37,6 +42,8 @@ function AuthLayout() {
     const router = useRouter();
     const { isAuthenticated } = useAuth();
     const colorScheme = useColorScheme();
+
+
 
     useEffect(() => {
         if (isAuthenticated === null) return;

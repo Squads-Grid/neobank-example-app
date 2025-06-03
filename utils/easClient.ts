@@ -4,6 +4,7 @@ import { handleError, ErrorCode } from '@/utils/errors';
 import { KycResponse, KycParams } from '@/types/Kyc';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 import { ConfirmPayload } from '@/types/Transaction';
+import { SentryApiResponse } from '@/types/Sentry';
 // import * as Sentry from '@sentry/react-native'; 
 
 class EasError extends Error {
@@ -170,6 +171,12 @@ export class EasClient {
         return this.request<any>(`/confirm`, {
             method: 'POST',
             body: JSON.stringify({ smartAccountAddress, paymentIntentId, payload, useMpcProvider }),
+        });
+    }
+
+    async getSentryConfig(): Promise<SentryApiResponse> {
+        return this.request<SentryApiResponse>('/sentry', {
+            method: 'GET',
         });
     }
 }
