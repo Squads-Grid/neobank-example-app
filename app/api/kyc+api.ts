@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 export async function POST(request: Request) {
     try {
         const body = await request.json() as KycParams;
-        const idempotencyKey = uuidv4(); // TODO: move to client
 
         const kycParams: KycRequest = {
             type: "individual",
@@ -14,7 +13,7 @@ export async function POST(request: Request) {
         }
 
         const gridClient = new GridClient();
-        const response = await gridClient.getKYCLink(kycParams, idempotencyKey);
+        const response = await gridClient.getKYCLink(kycParams);
 
         return new Response(
             JSON.stringify(response),
