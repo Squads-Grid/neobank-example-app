@@ -5,7 +5,6 @@ import { ThemedText } from '@/components/ui/atoms';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Spacing } from '@/constants/Spacing';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { StarburstModalBackground } from '@/components/ui/layout';
 
 /**
  * Props for the ActionModal component
@@ -48,15 +47,6 @@ export function ActionModal({
         : 'rgba(177, 177, 177, 0.40)';
     const blurTint = colorScheme === 'dark' ? 'dark' : 'light';
 
-    // Memoize the starburst background to prevent re-renders
-    const starburstBackground = useMemo(() => (
-        useStarburstModal && (
-            <View style={styles.backgroundContainer}>
-                <StarburstModalBackground primaryColor={primaryColor} />
-            </View>
-        )
-    ), [useStarburstModal, primaryColor]);
-
     // Memoize the header to prevent re-renders
     const header = useMemo(() => (
         <View style={styles.header}>
@@ -77,7 +67,6 @@ export function ActionModal({
             <TouchableWithoutFeedback onPress={onClose}>
                 <BlurView intensity={20} style={[styles.overlay, { backgroundColor: overlayBackgroundColor }]} tint={blurTint}>
                     <View style={[styles.modalContainer, { backgroundColor: useStarburstModal ? '#000' : backgroundColor }]}>
-                        {starburstBackground}
                         {header}
                         <View style={styles.contentContainer}>
                             {children}
