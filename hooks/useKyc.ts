@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { KycStatus, KycParams, TosStatus } from '@/types/Kyc';
-import { easClient } from '@/utils/easClient';
+import { EasClient } from '@/utils/easClient';
 import { StorageService } from '@/utils/storage';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import { useAuth } from '@/contexts/AuthContext';
@@ -43,6 +43,7 @@ export function useKyc(): UseKycReturn {
         setIsLoading(true);
         setError(null);
         try {
+            const easClient = new EasClient();
             const response = await easClient.getKYCLink(params);
 
             StorageService.setItem(AUTH_STORAGE_KEYS.KYC_STATUS, response.data.kyc_status);
@@ -91,6 +92,7 @@ export function useKyc(): UseKycReturn {
 
                 return;
             }
+            const easClient = new EasClient();
             const response = await easClient.getKYCStatus(accountInfo.smart_account_address, user.kyc_link_id);
 
             const tosStatus = process.env.EXPO_PUBLIC_GRID_ENV === 'production' ? response.data.tos_status as TosStatus : 'approved';

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { KycStatus, KycLinkIds, KycLinkId } from '@/types/Kyc';
-import { easClient } from '@/utils/easClient';
+import { EasClient } from '@/utils/easClient';
 import { useAuth } from './AuthContext';
 import { Currency } from '@/types/Transaction';
 import * as SecureStore from 'expo-secure-store';
@@ -97,7 +97,9 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
         setError(null);
 
         try {
+            const easClient = new EasClient();
             const response = await easClient.getVirtualAccounts(accountInfo.smart_account_address);
+
             setBankAccountDetails(response.data);
         } catch (err) {
             setError('Failed to fetch bank details');
@@ -121,6 +123,7 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
                 return;
             }
 
+            const easClient = new EasClient();
             const kycResponse = await easClient.getKYCStatus(
                 accountInfo.smart_account_address,
                 kycLinkId

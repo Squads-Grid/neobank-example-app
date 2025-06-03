@@ -1,9 +1,11 @@
-import { gridClient } from "@/grid/gridClient";
+import { GridClient } from "@/grid/gridClient";
 import { ErrorCode } from "@/utils/errors";
 
 export async function POST(request: Request) {
     try {
         const { smartAccountAddress, paymentIntentId, payload, useMpcProvider } = await request.json();
+
+        const gridClient = new GridClient();
         const response = await gridClient.confirmPaymentIntent(smartAccountAddress, paymentIntentId, payload, useMpcProvider);
 
         return new Response(JSON.stringify(response), {

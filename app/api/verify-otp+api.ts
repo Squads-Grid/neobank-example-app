@@ -1,8 +1,10 @@
-import { gridClient } from "@/grid/gridClient";
+import { GridClient } from "@/grid/gridClient";
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
+
+        const gridClient = new GridClient();
         const response = await gridClient.verifyOtp(body);
 
         return new Response(JSON.stringify(response), {

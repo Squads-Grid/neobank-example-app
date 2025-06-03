@@ -1,5 +1,5 @@
 import { AccountInfo } from "@/types/Auth";
-import { easClient } from "./easClient";
+import { EasClient } from "./easClient";
 import { MpcProviderInfo, Permission } from "@/types/SmartAccounts";
 import { CreateSmartAccountRequest } from "@/types/SmartAccounts";
 
@@ -26,7 +26,7 @@ export const createSmartAccount = async (accountInfo: AccountInfo) => {
         grid_customer_id: null,
         mpc_provider_info: mpcProviderInfo
     };
-
+    const easClient = new EasClient();
     const response = await easClient.createSmartAccount(request);
     const data = response.data;
     return {

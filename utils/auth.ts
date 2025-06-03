@@ -1,5 +1,5 @@
 import { Keypair, AuthenticationRequest, OTPData, AccountInfo } from '@/types/Auth';
-import { easClient } from '@/utils/easClient';
+import { EasClient } from '@/utils/easClient';
 import { setupCryptoPolyfill } from '@/polyfills';
 import * as Sentry from '@sentry/react-native';
 
@@ -39,7 +39,7 @@ export const authenticateUser = async (email: string): Promise<{ otpId: string; 
         app_icon_url: "https://i.imgur.com/WeyHBEn.png",
         expiration: 900
     };
-
+    const easClient = new EasClient();
     const response = await easClient.authenticate(request);
 
     return {
@@ -60,7 +60,7 @@ export const verifyOtpCode = async (code: string, otpId: string, suborgId: strin
         expiration: 2700, // 45 minutes
         mpc_primary_id: suborgId
     };
-
+    const easClient = new EasClient();
     const response = await easClient.verifyOtp(otpData);
 
     // Use our generated keypair instead of expecting one from the server

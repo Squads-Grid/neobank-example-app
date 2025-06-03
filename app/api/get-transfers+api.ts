@@ -1,4 +1,4 @@
-import { gridClient } from "@/grid/gridClient";
+import { GridClient } from "@/grid/gridClient";
 
 export async function GET(request: Request) {
     try {
@@ -11,7 +11,10 @@ export async function GET(request: Request) {
                 headers: { "Content-Type": "application/json" }
             });
         }
+
+        const gridClient = new GridClient();
         const response = await gridClient.getTransfers(smartAccountAddress);
+
         return new Response(JSON.stringify(response), {
             status: 200,
             headers: { "Content-Type": "application/json" },

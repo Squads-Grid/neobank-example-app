@@ -1,5 +1,5 @@
 import { KycParams, KycRequest } from "@/types/Kyc";
-import { gridClient } from "@/grid/gridClient";
+import { GridClient } from "@/grid/gridClient";
 import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: Request) {
@@ -28,6 +28,7 @@ export async function POST(request: Request) {
             ...body
         }
 
+        const gridClient = new GridClient();
         const response = await gridClient.getKYCLink(kycParams, idempotencyKey);
 
         return new Response(

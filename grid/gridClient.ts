@@ -4,7 +4,7 @@ import { ConfirmPayload, PreparePaymentIntentParams } from '@/types/Transaction'
 import { KycRequest, KycResponse } from '@/types/Kyc';
 import { v4 as uuidv4 } from 'uuid';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
-import * as Sentry from '@sentry/react-native';
+// import * as Sentry from '@sentry/react-native';
 
 // TODO: USE RESPONSE TYPES NOT ANY
 
@@ -47,9 +47,11 @@ export class GridClient {
                     ...options.headers,
                 },
             });
+            console.log("🚀 ~ GridClient ~ response:", response)
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => console.error('Error parsing response:', response));
+                console.log("🚀 ~ GridClient ~ errorData:", errorData)
 
                 console.error('Request failed:', {
                     status: response.status,
@@ -57,7 +59,7 @@ export class GridClient {
                     url,
                     errorData,
                 });
-                Sentry.captureException(new Error(`GridClient: Request failed with status ${response.status}: ${errorData}. (grid/gridClient.ts) (request) Endpoint: ${endpoint}, Options: ${JSON.stringify(options)}`));
+                // Sentry.captureException(new Error(`GridClient: Request failed with status ${response.status}: ${errorData}. (grid/gridClient.ts) (request) Endpoint: ${endpoint}, Options: ${JSON.stringify(options)}`));
                 throw new Error(`GridClient: Request failed with status ${response.status}: ${errorData}`);
             }
 
@@ -66,7 +68,7 @@ export class GridClient {
 
         } catch (error) {
             console.error('GridClient: Unexpected error in request():', error);
-            Sentry.captureException(new Error(`GridClient: Unexpected error in request(): ${error}. (grid/gridClient.ts) (request) Endpoint: ${endpoint}, Options: ${JSON.stringify(options)}`));
+            // Sentry.captureException(new Error(`GridClient: Unexpected error in request(): ${error}. (grid/gridClient.ts) (request) Endpoint: ${endpoint}, Options: ${JSON.stringify(options)}`));
             throw error;
         }
     }
@@ -198,6 +200,3 @@ export class GridClient {
         });
     }
 }
-
-// Create a singleton instance
-export const gridClient = new GridClient(); 

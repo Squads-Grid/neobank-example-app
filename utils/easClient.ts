@@ -1,10 +1,10 @@
 import { AuthenticationRequest, AuthenticationResponse, Keypair, OTPData, VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
-import { handleError, ErrorCode } from './errors';
+import { handleError, ErrorCode } from '@/utils/errors';
 import { KycResponse, KycParams } from '@/types/Kyc';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 import { ConfirmPayload } from '@/types/Transaction';
-import * as Sentry from '@sentry/react-native';
+// import * as Sentry from '@sentry/react-native'; 
 
 class EasError extends Error {
     constructor(
@@ -57,8 +57,10 @@ export class EasClient {
 
             const response = await fetch(url, fetchOptions);
 
+
             if (!response.ok) {
                 const errorData = await response.json().catch(() => console.error('Error parsing response:', response));
+                console.log("🚀 ~ EasClient ~ errorData:", errorData)
 
                 // Check if errorData has the expected structure
                 if (errorData?.details?.[0]?.code) {
@@ -73,7 +75,7 @@ export class EasClient {
                         handleError(code, true, false);
                     }
                 }
-                Sentry.captureException(new Error(`EasClient: Request failed: ${errorData}. (utils)/easClient.ts (request) Endpoint: ${endpoint}, Options: ${JSON.stringify(options)}`));
+                // Sentry.captureException(new Error(`EasClient: Request failed: ${errorData}. (utils)/easClient.ts (request) Endpoint: ${endpoint}, Options: ${JSON.stringify(options)}`));
                 throw new EasError('EasClient: Request failed', response.status, errorData);
             }
 
@@ -81,7 +83,7 @@ export class EasClient {
             return data;
         } catch (error) {
             console.error('EasClient: Unexpected error in request():', error);
-            Sentry.captureException(new Error(`EasClient: Unexpected error in request(): ${error}. (utils)/easClient.ts (request) Endpoint: ${endpoint}, Options: ${JSON.stringify(options)}`));
+            // Sentry.captureException(new Error(`EasClient: Unexpected error in request(): ${error}. (utils)/easClient.ts (request) Endpoint: ${endpoint}, Options: ${JSON.stringify(options)}`));
             handleError(ErrorCode.UNKNOWN_ERROR, true, false);
             throw error;
         }
@@ -171,6 +173,3 @@ export class EasClient {
         });
     }
 }
-
-// Create a singleton instance
-export const easClient = new EasClient(); 

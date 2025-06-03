@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { TransferResponse } from '@/types/Transaction';
-import { easClient } from '@/utils/easClient';
+import { EasClient } from '@/utils/easClient';
 import { StorageService } from '@/utils/storage';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import { AccountInfo } from '@/types/Auth';
@@ -23,6 +23,7 @@ export function useWalletData(accountInfo: AccountInfo | null) {
 
         try {
             // Fetch balance and transactions in parallel
+            const easClient = new EasClient();
             const [balanceResult, transfersResult] = await Promise.all([
                 easClient.getBalance({ smartAccountAddress: accountInfoToUse.smart_account_address }),
                 easClient.getTransfers(accountInfoToUse.smart_account_address)

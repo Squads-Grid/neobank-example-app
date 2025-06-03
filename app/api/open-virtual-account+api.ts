@@ -1,9 +1,11 @@
 import { OpenVirtualAccountParams } from "@/types/VirtualAccounts";
-import { gridClient } from "@/grid/gridClient";
+import { GridClient } from "@/grid/gridClient";
 
 export async function POST(request: Request) {
     try {
         const body = await request.json() as OpenVirtualAccountParams;
+
+        const gridClient = new GridClient();
         const response = await gridClient.openVirtualAccount(body);
 
         return new Response(JSON.stringify(response), {

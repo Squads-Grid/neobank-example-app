@@ -14,7 +14,7 @@ import { IconSymbolName } from '@/components/ui/atoms/IconSymbol';
 import { Link } from 'expo-router';
 import { ThemedButton } from '@/components/ui/molecules';
 import * as Haptics from 'expo-haptics';
-import { easClient } from '@/utils/easClient';
+import { EasClient } from '@/utils/easClient';
 import { useAuth } from '@/contexts/AuthContext';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
@@ -146,6 +146,8 @@ function BankDetailsModal() {
                 gridUserId: gridUserId,
                 currency: selectedCurrency
             };
+
+            const easClient = new EasClient();
             await easClient.openVirtualAccount(accountParams);
 
             // Fetch updated bank details
