@@ -7,22 +7,7 @@ export async function POST(request: Request) {
         const body = await request.json() as KycParams;
         const idempotencyKey = uuidv4(); // TODO: move to client
 
-        const gridCustomerId = process.env.GRID_CUSTOMER_ID;
-        if (!gridCustomerId) {
-            return new Response(
-                JSON.stringify({
-                    error: "GRID_CUSTOMER_ID is not set",
-                    details: [{ code: "CONFIGURATION_ERROR" }]
-                }),
-                {
-                    status: 500,
-                    headers: { "Content-Type": "application/json" }
-                }
-            );
-        }
-
         const kycParams: KycRequest = {
-            grid_customer_id: gridCustomerId,
             type: "individual",
             endorsements: [],
             ...body

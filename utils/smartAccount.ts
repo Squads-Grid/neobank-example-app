@@ -23,7 +23,6 @@ export const createSmartAccount = async (accountInfo: AccountInfo) => {
             timelock: null,
         },
         grid_user_id: null,
-        grid_customer_id: null,
         mpc_provider_info: mpcProviderInfo
     };
     const easClient = new EasClient();

@@ -3,10 +3,9 @@ import { GridClient } from "@/grid/gridClient";
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const customerId = process.env.GRID_CUSTOMER_ID;
 
         const gridClient = new GridClient();
-        const response = await gridClient.createSmartAccount({ ...body, grid_customer_id: customerId });
+        const response = await gridClient.createSmartAccount(body);
 
         return new Response(JSON.stringify(response), {
             status: 200,

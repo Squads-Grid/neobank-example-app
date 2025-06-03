@@ -47,11 +47,9 @@ export class GridClient {
                     ...options.headers,
                 },
             });
-            console.log("🚀 ~ GridClient ~ response:", response)
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => console.error('Error parsing response:', response));
-                console.log("🚀 ~ GridClient ~ errorData:", errorData)
 
                 console.error('Request failed:', {
                     status: response.status,
@@ -127,13 +125,13 @@ export class GridClient {
         });
     }
 
-    async getKYCLink(request: KycRequest, idempotencyKey: string): Promise<KycResponse> {
+    async getKYCLink(request: KycRequest): Promise<KycResponse> {
 
         return this.request<KycResponse>(`/${request.smart_account_address}/kyc`, {
             method: 'POST',
             headers: {
                 ...this.defaultHeaders,
-                'x-idempotency-key': idempotencyKey
+                'x-idempotency-key': this.generateIdempotencyKey()
             },
             body: JSON.stringify(request),
         });

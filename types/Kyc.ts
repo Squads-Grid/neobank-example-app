@@ -22,7 +22,6 @@ export interface KycResponse {
 
 export interface KycRequest {
     grid_user_id: string;
-    grid_customer_id: string;
     smart_account_address: string;
     type: string;
     email: string;
