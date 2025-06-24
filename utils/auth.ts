@@ -1,4 +1,5 @@
-import { Keypair, AuthenticationRequest, OTPData, AccountInfo } from '@/types/Auth';
+import { Keypair, OTPData, AccountInfo } from '@/types/Auth';
+import { TurnkeyInitAuthRequest } from 'universal-auth/native';
 import { EasClient } from '@/utils/easClient';
 import { setupCryptoPolyfill } from '@/polyfills';
 import * as Sentry from '@sentry/react-native';
@@ -33,18 +34,18 @@ export const generateKeyPairP256 = async (): Promise<{ publicKey: string; privat
 };
 
 export const authenticateUser = async (email: string): Promise<{ otpId: string; mpcPrimaryId: string }> => {
-    const request: AuthenticationRequest = {
-        email,
-        app_name: "Bright",
-        app_icon_url: "https://i.imgur.com/WeyHBEn.png",
+    const request: TurnkeyInitAuthRequest = {
+        email: email,
+        appName: "Bright",
+        appIconUrl: "https://i.imgur.com/WeyHBEn.png",
         expiration: 900
     };
     const easClient = new EasClient();
     const response = await easClient.authenticate(request);
 
     return {
-        otpId: response.data.otp_id,
-        mpcPrimaryId: response.data.mpc_primary_id
+        otpId: response.data.otpId,
+        mpcPrimaryId: response.data.mpcPrimaryId
     };
 };
 

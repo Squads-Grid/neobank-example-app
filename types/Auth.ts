@@ -25,12 +25,12 @@ export interface OTPData {
     expiration: number;
 }
 
-export interface AuthenticationRequest {
-    email: string;
-    app_name: string;
-    app_icon_url: string;
-    expiration?: number;
-}
+// export interface AuthenticationRequest {
+//     email: string;
+//     app_name: string;
+//     app_icon_url: string;
+//     expiration?: number;
+// }
 
 export interface Keypair {
     publicKey: string;

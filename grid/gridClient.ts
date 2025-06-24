@@ -1,9 +1,10 @@
-import { AuthenticationRequest, AuthenticationResponse, OTPData, VerifyOtpResponse } from '@/types/Auth';
+import { AuthenticationResponse, OTPData, VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
 import { ConfirmPayload, PreparePaymentIntentParams } from '@/types/Transaction';
 import { KycRequest, KycResponse } from '@/types/Kyc';
 import { v4 as uuidv4 } from 'uuid';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
+import { TurnkeyInitAuthRequest, InitAuthResponse } from 'universal-auth/native';
 // import * as Sentry from '@sentry/react-native';
 
 // TODO: USE RESPONSE TYPES NOT ANY
@@ -81,8 +82,8 @@ export class GridClient {
     }
 
     // Auth endpoints
-    async authenticate(request: AuthenticationRequest): Promise<AuthenticationResponse> {
-        return this.request<AuthenticationResponse>('/auth', {
+    async authenticate(request: TurnkeyInitAuthRequest): Promise<InitAuthResponse> {
+        return this.request<InitAuthResponse>('/auth', {
             method: 'POST',
             headers: {
                 ...this.defaultHeaders,

@@ -60,6 +60,7 @@
         "react-native-webview": "13.13.5",
         "text-encoding": "^0.7.0",
         "tinycolor2": "^1.6.0",
+        "universal-auth": "file:../universal-auth/universal-auth-1.0.0.tgz",
         "uuid": "^11.1.0",
         "zod": "^3.25.28"
     },

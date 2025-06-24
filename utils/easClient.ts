@@ -1,10 +1,12 @@
-import { AuthenticationRequest, AuthenticationResponse, Keypair, OTPData, VerifyOtpResponse } from '@/types/Auth';
+import {  AuthenticationResponse, Keypair, OTPData, VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
 import { handleError, ErrorCode } from '@/utils/errors';
 import { KycResponse, KycParams } from '@/types/Kyc';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 import { ConfirmPayload } from '@/types/Transaction';
 import { SentryApiResponse } from '@/types/Sentry';
+import { TurnkeyInitAuthRequest, InitAuthResponse } from 'universal-auth/native';
+
 // import * as Sentry from '@sentry/react-native'; 
 
 class EasError extends Error {
@@ -91,8 +93,8 @@ export class EasClient {
     }
 
     // Creates an account if it doesn't already exist and triggers otp. If the account already exists, it just triggers otp.
-    async authenticate(request: AuthenticationRequest): Promise<AuthenticationResponse> {
-        return this.request<AuthenticationResponse>('/auth', {
+    async authenticate(request: TurnkeyInitAuthRequest): Promise<InitAuthResponse> {
+        return this.request<InitAuthResponse>('/auth', {
             method: 'POST',
             body: JSON.stringify(request),
         });
