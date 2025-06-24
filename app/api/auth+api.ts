@@ -17,7 +17,7 @@ export async function POST(request: Request) {
         });
     } catch (error: any) {
         console.log("🚀 ~ error:", error)
-        // Pass through the error data
+        // Pass through the error dataar
         return new Response(
             JSON.stringify(error),
             {

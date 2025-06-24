@@ -1,5 +1,5 @@
 import { AccountInfo } from '@/types/Auth';
-import { TurnkeyInitAuthRequest, TurnkeyCompleteAuthRequest, UniversalKeyPair, generateTurnkeyKeyPair } from 'universal-auth/native';
+import { TurnkeyInitAuthRequest, TurnkeyCompleteAuthRequest, UniversalKeyPair, createGridAuth } from 'universal-auth/native';
 import { EasClient } from '@/utils/easClient';
 // import { setupCryptoPolyfill } from '@/polyfills';
 // import * as Sentry from '@sentry/react-native';
@@ -53,7 +53,9 @@ export const verifyOtpCode = async (code: string, otpId: string, suborgId: strin
     console.log("🚀 ~ verifyOtpCode in auth.ts")
     // Generate a new keypair for the request
     // const keyPair = await generateKeyPairP256();xwxx
-    const keyPair = await generateTurnkeyKeyPair();
+    const gridAuth = createGridAuth({environment: 'sandbox'});
+    gridAuth.addProvider({ provider: 'turnkey' });
+    const keyPair = await gridAuth.generateKeyPair();
     console.log("🚀 ~ verifyOtpCode in auth.ts ~ keyPair:", keyPair)
 
     if (!keyPair.publicKeyUncompressed) {

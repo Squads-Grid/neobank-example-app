@@ -4,7 +4,6 @@ import { ConfirmPayload, PreparePaymentIntentParams } from '@/types/Transaction'
 import { KycRequest, KycResponse } from '@/types/Kyc';
 import { v4 as uuidv4 } from 'uuid';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
-import { TurnkeyInitAuthRequest, InitAuthResponse, TurnkeyCompleteAuthRequest } from 'universal-auth/native';
 // import * as Sentry from '@sentry/react-native';
 
 // TODO: USE RESPONSE TYPES NOT ANY
@@ -72,35 +71,9 @@ export class GridClient {
         }
     }
 
-
-
-
-
-
     generateIdempotencyKey(): string {
         return uuidv4();
     }
-
-    // // Auth endpoints
-    // async authenticate(request: TurnkeyInitAuthRequest): Promise<InitAuthResponse> {
-    //     return this.request<InitAuthResponse>('/auth', {
-    //         method: 'POST',
-    //         headers: {
-    //             ...this.defaultHeaders,
-    //         },
-    //         body: JSON.stringify(request),
-    //     });
-    // }
-
-    // async verifyOtp(data: TurnkeyCompleteAuthRequest): Promise<VerifyOtpResponse> {
-    //     return this.request<VerifyOtpResponse>('/verify-otp', {
-    //         method: 'POST',
-    //         headers: {
-    //             ...this.defaultHeaders,
-    //         },
-    //         body: JSON.stringify(data),
-    //     });
-    // }
 
     // Creates a smart account.
     async createSmartAccount(request: CreateSmartAccountRequest): Promise<CreateSmartAccountResponse> {

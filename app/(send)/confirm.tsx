@@ -15,10 +15,10 @@ import { decryptCredentialBundle } from '@turnkey/crypto';
 import { EasClient } from '@/utils/easClient';
 import { PreparePaymentIntentParams, SmartAccount, SolanaAddress } from '@/types/Transaction';
 import { ErrorCode } from '@/utils/errors';
-import { GridStamper } from '@/grid/authorization';
 import Toast from 'react-native-toast-message';
 import { ConfirmPayload } from '@/types/Transaction';
 import * as Sentry from '@sentry/react-native';
+import { createGridAuth } from 'universal-auth/native';
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
@@ -81,11 +81,10 @@ export default function ConfirmScreen() {
 
                 return;
             }
-            const decryptedData = decryptCredentialBundle(credentialsBundle, keypair.privateKey);
-            const stamper = new GridStamper(
-                decryptedData
-            );
-            const stamp = await stamper.stamp(JSON.parse(mpcPayload));
+            
+            const gridAuth = createGridAuth({environment: 'sandbox'});
+            gridAuth.addProvider({ provider: 'turnkey' });
+            const stamp = await gridAuth.authorize(credentialsBundle, JSON.parse(mpcPayload), keypair);
 
             const confirmPayload: ConfirmPayload = {
                 intentPayload: receivedPayload.intent_payload,
