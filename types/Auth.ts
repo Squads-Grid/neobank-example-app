@@ -1,13 +1,7 @@
+import { UniversalKeyPair } from 'universal-auth';
 import { z } from 'zod/v4';
 
 export const Email = z.email();
-
-export interface AuthenticationResponse {
-    data: {
-        otp_id: string;
-        mpc_primary_id: string;
-    };
-}
 
 export interface AccountInfo {
     mpc_primary_id: string;
@@ -17,34 +11,13 @@ export interface AccountInfo {
     grid_user_id: string;
 }
 
-export interface OTPData {
-    mpc_primary_id: string;
-    otp_id: string;
-    otp_code: string;
-    auth_public_key: string;
-    expiration: number;
-}
-
-// export interface AuthenticationRequest {
-//     email: string;
-//     app_name: string;
-//     app_icon_url: string;
-//     expiration?: number;
-// }
-
-export interface Keypair {
-    publicKey: string;
-    privateKey: string;
-    publicKeyUncompressed: string;
-}
-
 export interface AuthContextType {
     isAuthenticated: boolean | null;
     email: string | null;
     accountInfo: AccountInfo | null;
     setEmail: React.Dispatch<React.SetStateAction<string | null>>;
     setAccountInfo: React.Dispatch<React.SetStateAction<AccountInfo | null>>;
-    keypair: Keypair | null;
+    keypair: UniversalKeyPair | null;
     credentialsBundle: string | null;
     authError: string | null;
     authenticate: (email: string) => Promise<string>;
@@ -53,11 +26,3 @@ export interface AuthContextType {
     wallet: string | null;
     isLoading: boolean;
 }
-
-export interface VerifyOtpResponse {
-    data: {
-        credential_bundle: string;
-        // auth_keypair: Keypair;
-        account_info: AccountInfo;
-    };
-} 

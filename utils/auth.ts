@@ -1,8 +1,8 @@
-import { Keypair, OTPData, AccountInfo } from '@/types/Auth';
-import { TurnkeyInitAuthRequest } from 'universal-auth/native';
+import { AccountInfo } from '@/types/Auth';
+import { TurnkeyInitAuthRequest, TurnkeyCompleteAuthRequest, UniversalKeyPair, generateTurnkeyKeyPair } from 'universal-auth/native';
 import { EasClient } from '@/utils/easClient';
-import { setupCryptoPolyfill } from '@/polyfills';
-import * as Sentry from '@sentry/react-native';
+// import { setupCryptoPolyfill } from '@/polyfills';
+// import * as Sentry from '@sentry/react-native';
 
 
 export const validateEnv = () => {
@@ -11,27 +11,27 @@ export const validateEnv = () => {
     }
 };
 
-export const generateKeyPairForAuth = async (): Promise<Keypair> => {
-    const keypair = await generateKeyPairP256();
-    return {
-        publicKey: keypair.publicKey,
-        privateKey: keypair.privateKey,
-        publicKeyUncompressed: keypair.publicKeyUncompressed
-    };
-};
+// export const generateKeyPairForAuth = async (): Promise<Keypair> => {
+//     const keypair = await generateKeyPairP256();
+//     return {
+//         publicKey: keypair.publicKey,
+//         privateKey: keypair.privateKey,
+//         publicKeyUncompressed: keypair.publicKeyUncompressed
+//     };
+// };
 
-export const generateKeyPairP256 = async (): Promise<{ publicKey: string; privateKey: string, publicKeyUncompressed: string }> => {
-    setupCryptoPolyfill();
-    const { generateP256KeyPair } = await import("@turnkey/crypto");
-    try {
-        const keyPair = generateP256KeyPair();
+// export const generateKeyPairP256 = async (): Promise<{ publicKey: string; privateKey: string, publicKeyUncompressed: string }> => {
+//     setupCryptoPolyfill();
+//     const { generateP256KeyPair } = await import("@turnkey/crypto");
+//     try {
+//         const keyPair = generateP256KeyPair();
 
-        return keyPair;
-    } catch (e) {
-        Sentry.captureException(new Error(`Failed to generate key pair: ${e}. (utils)/auth.ts (generateKeyPairP256)`));
-        throw e;
-    }
-};
+//         return keyPair;
+//     } catch (e) {
+//         Sentry.captureException(new Error(`Failed to generate key pair: ${e}. (utils)/auth.ts (generateKeyPairP256)`));
+//         throw e;
+//     }
+// };
 
 export const authenticateUser = async (email: string): Promise<{ otpId: string; mpcPrimaryId: string }> => {
     const request: TurnkeyInitAuthRequest = {
@@ -42,27 +42,35 @@ export const authenticateUser = async (email: string): Promise<{ otpId: string; 
     };
     const easClient = new EasClient();
     const response = await easClient.authenticate(request);
-
+    console.log("🚀 ~ authenticateUser ~ response:", response)
     return {
         otpId: response.data.otpId,
         mpcPrimaryId: response.data.mpcPrimaryId
     };
 };
 
-export const verifyOtpCode = async (code: string, otpId: string, suborgId: string): Promise<{ credentialBundle: string; keypair: Keypair, accountInfo: AccountInfo }> => {
-
+export const verifyOtpCode = async (code: string, otpId: string, suborgId: string): Promise<{ credentialBundle: string; keypair: UniversalKeyPair, accountInfo: AccountInfo }> => {
+    console.log("🚀 ~ verifyOtpCode in auth.ts")
     // Generate a new keypair for the request
-    const keyPair = await generateKeyPairP256();
+    // const keyPair = await generateKeyPairP256();xwxx
+    const keyPair = await generateTurnkeyKeyPair();
+    console.log("🚀 ~ verifyOtpCode in auth.ts ~ keyPair:", keyPair)
 
-    const otpData: OTPData = {
-        otp_code: code,
-        otp_id: otpId,
-        auth_public_key: keyPair.publicKeyUncompressed,
+    if (!keyPair.publicKeyUncompressed) {
+        throw new Error('Failed to generate key pair');
+    }
+
+
+    const otpData: TurnkeyCompleteAuthRequest = {
+        otpCode: code,
+        otpId: otpId,
+        authPublicKey: keyPair.publicKeyUncompressed,
         expiration: 2700, // 45 minutes
-        mpc_primary_id: suborgId
+        mpcPrimaryId: suborgId
     };
     const easClient = new EasClient();
     const response = await easClient.verifyOtp(otpData);
+    console.log("🚀 ~ verifyOtpCode in auth.ts ~ response:", response)
 
     // Use our generated keypair instead of expecting one from the server
     return {

@@ -1,11 +1,10 @@
-import {  AuthenticationResponse, Keypair, OTPData, VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
 import { handleError, ErrorCode } from '@/utils/errors';
 import { KycResponse, KycParams } from '@/types/Kyc';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 import { ConfirmPayload } from '@/types/Transaction';
 import { SentryApiResponse } from '@/types/Sentry';
-import { TurnkeyInitAuthRequest, InitAuthResponse } from 'universal-auth/native';
+import { TurnkeyInitAuthRequest, InitAuthResponse, TurnkeyCompleteAuthRequest, CompleteAuthResponse } from 'universal-auth/native';
 
 // import * as Sentry from '@sentry/react-native'; 
 
@@ -101,8 +100,9 @@ export class EasClient {
     }
 
     // Verifies the otp code and returns the credential bundle.
-    async verifyOtp(data: OTPData): Promise<VerifyOtpResponse> {
-        return this.request<VerifyOtpResponse>('/verify-otp', {
+    async verifyOtp(data:  TurnkeyCompleteAuthRequest): Promise<CompleteAuthResponse> {
+        console.log("🚀 ~ eas verifyOtp")
+        return this.request<CompleteAuthResponse>('/verify-otp', {
             method: 'POST',
             body: JSON.stringify(data),
         });

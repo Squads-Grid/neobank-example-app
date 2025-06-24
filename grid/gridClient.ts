@@ -1,10 +1,10 @@
-import { AuthenticationResponse, OTPData, VerifyOtpResponse } from '@/types/Auth';
+// import {  VerifyOtpResponse } from '@/types/Auth';
 import { CreateSmartAccountRequest, CreateSmartAccountResponse } from '@/types/SmartAccounts';
 import { ConfirmPayload, PreparePaymentIntentParams } from '@/types/Transaction';
 import { KycRequest, KycResponse } from '@/types/Kyc';
 import { v4 as uuidv4 } from 'uuid';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
-import { TurnkeyInitAuthRequest, InitAuthResponse } from 'universal-auth/native';
+import { TurnkeyInitAuthRequest, InitAuthResponse, TurnkeyCompleteAuthRequest } from 'universal-auth/native';
 // import * as Sentry from '@sentry/react-native';
 
 // TODO: USE RESPONSE TYPES NOT ANY
@@ -81,26 +81,26 @@ export class GridClient {
         return uuidv4();
     }
 
-    // Auth endpoints
-    async authenticate(request: TurnkeyInitAuthRequest): Promise<InitAuthResponse> {
-        return this.request<InitAuthResponse>('/auth', {
-            method: 'POST',
-            headers: {
-                ...this.defaultHeaders,
-            },
-            body: JSON.stringify(request),
-        });
-    }
+    // // Auth endpoints
+    // async authenticate(request: TurnkeyInitAuthRequest): Promise<InitAuthResponse> {
+    //     return this.request<InitAuthResponse>('/auth', {
+    //         method: 'POST',
+    //         headers: {
+    //             ...this.defaultHeaders,
+    //         },
+    //         body: JSON.stringify(request),
+    //     });
+    // }
 
-    async verifyOtp(data: OTPData): Promise<VerifyOtpResponse> {
-        return this.request<VerifyOtpResponse>('/verify-otp', {
-            method: 'POST',
-            headers: {
-                ...this.defaultHeaders,
-            },
-            body: JSON.stringify(data),
-        });
-    }
+    // async verifyOtp(data: TurnkeyCompleteAuthRequest): Promise<VerifyOtpResponse> {
+    //     return this.request<VerifyOtpResponse>('/verify-otp', {
+    //         method: 'POST',
+    //         headers: {
+    //             ...this.defaultHeaders,
+    //         },
+    //         body: JSON.stringify(data),
+    //     });
+    // }
 
     // Creates a smart account.
     async createSmartAccount(request: CreateSmartAccountRequest): Promise<CreateSmartAccountResponse> {

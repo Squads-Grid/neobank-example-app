@@ -49,8 +49,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (!mpcPrimaryId) {
                 throw new Error('No mpcPrimaryId found');
             }
+            console.log("🚀 ~ verifyCode ~ mpcPrimaryId:", mpcPrimaryId)
 
             const { credentialBundle, keypair, accountInfo } = await verifyOtpCode(code, otpId, mpcPrimaryId);
+            console.log("🚀 ~ verifyCode ~ keypair:", keypair)
+            console.log("🚀 ~ verifyCode ~ credentialBundle:", credentialBundle)
+            console.log("🚀 ~ verifyCode ~ accountInfo:", accountInfo)
 
             if (!keypair || !keypair.privateKey || !keypair.publicKey) {
                 return false;
@@ -105,6 +109,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const authenticate = async (email: string): Promise<string> => {
         try {
             const { otpId, mpcPrimaryId } = await authenticateUser(email);
+            console.log("🚀 ~ authenticate ~ otpId:", otpId)
+            console.log("🚀 ~ authenticate ~ mpcPrimaryId:", mpcPrimaryId)
 
             // Store initial auth data
             await AuthStorage.saveAuthData({
