@@ -15,8 +15,8 @@ import { KycParams } from '@/types/Kyc';
 import * as Sentry from '@sentry/react-native';
 
 function KYCModal() {
-    const { textColor, backgroundColor } = useScreenTheme();
-    const { accountInfo, email } = useAuth();
+    const { textColor } = useScreenTheme();
+    const { user, email } = useAuth();
     const { status, isLoading, startKyc, checkStatus, tosStatus } = useKyc();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -44,28 +44,33 @@ function KYCModal() {
     };
 
     const handleInitialContinue = () => {
+        console.log("🚀 ~ handleInitialContinue ~ user:", user)
         setShowNameInputs(true);
     };
 
     const handleSubmit = async () => {
+        console.log("🚀 ~ handleSubmit ~ user:", user)
+        console.log("🚀 ~ handleSubmit ~ email:", email)
         Keyboard.dismiss();
         setIsSubmitting(true);
         setShowChecklist(true);
 
-        if (!accountInfo || !email) {
+        if (!user || !email) {
             return;
         }
 
         try {
             const params: KycParams = {
-                grid_user_id: accountInfo.grid_user_id,
-                smart_account_address: accountInfo.smart_account_address,
+                grid_user_id: user.grid_user_id!,
+                smart_account_address: user.address!,
                 email: email,
                 full_name: `${firstName} ${lastName}`.trim(),
                 redirect_uri: null
             };
 
-            const { kycLink, tosLink } = await startKyc(params);
+            const result = await startKyc(params);
+            console.log("🚀 ~ handleSubmit ~ result:", result)
+            const { kycLink, tosLink } = result;
             setKycUrl(kycLink);
             setTosUrl(tosLink);
 

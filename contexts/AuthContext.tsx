@@ -5,6 +5,7 @@ import { authenticateUser, verifyOtpCodeAndCreateAccount, registerUser, verifyOt
 import { AuthStorage } from '@/utils/storage/authStorage';
 import * as Sentry from '@sentry/react-native';
 import { GridClient, GridEnvironment, UniversalKeyPair, GridClientUserContext } from '@sqds/grid/native';
+import { MockDatabase } from '@/utils/mockDatabase';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -25,6 +26,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             try {
                 const user = await AuthStorage.getUser();
                 setUser(user);
+                const savedEmail = await AuthStorage.getEmail();
+                setEmail(savedEmail);
                 const isAuthenticated = await AuthStorage.isAuthenticated();
                 setIsAuthenticated(isAuthenticated);
 
@@ -59,6 +62,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             const result = await verifyOtpCodeAndCreateAccount(code, sessionSecrets, user);
             setUser(result);
+
+            // Create user in MockDatabase with email
+            if (result.grid_user_id && email) {
+                await MockDatabase.createUser(result.grid_user_id, email);
+            }
 
             setIsAuthenticated(true);
             await AuthStorage.saveIsAuthenticated(true);
@@ -100,6 +108,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const result = await verifyOtpCode(code, sessionSecrets, userData);
             setUser(result);
 
+            // Create user in MockDatabase with email
+            if (result.grid_user_id && email) {
+                await MockDatabase.createUser(result.grid_user_id, email);
+            }
+
             setIsAuthenticated(true);
             await AuthStorage.saveIsAuthenticated(true);
             setAuthError(null);
@@ -133,7 +146,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const result= await authenticateUser(email);
             console.log("🚀 ~ authenticate ~ result:", result)
             setUser(result);
+            setEmail(email);
             await AuthStorage.saveUserData(result);
+            await AuthStorage.saveEmail(email);
 
             setAuthError(null);
 
@@ -153,12 +168,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const result= await registerUser(email);
             console.log("🚀 ~ register ~ result in AuthContext:", result)
             setUser(result);
+            setEmail(email);
 
             // Store initial auth data
             await AuthStorage.saveUserData(result);
+            await AuthStorage.saveEmail(email);
 
             setMpcPrimaryId(mpcPrimaryId);
-            setEmail(email);
             setAuthError(null);
         } catch (error) {
             Sentry.captureException(new Error(`Error authenticating: ${error}. (contexts)/AuthContext.tsx (authenticate)`));
@@ -173,6 +189,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             value={{
                 isAuthenticated,
                 user,
+                email,
                 setEmail,
                 accountInfo,
                 setAccountInfo,

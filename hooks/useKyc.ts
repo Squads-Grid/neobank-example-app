@@ -25,7 +25,6 @@ interface UseKycReturn {
 }
 
 export function useKyc(): UseKycReturn {
-    const { accountInfo } = useAuth();
     const [status, setStatus] = useState<KycStatus | null>(null);
     const [tosStatus, setTosStatus] = useState<TosStatus | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -41,22 +40,35 @@ export function useKyc(): UseKycReturn {
     }, []);
 
     const startKyc = useCallback(async (params: KycParams) => {
+        console.log("🚀 ~ startKyc ~ params:", params)
         setIsLoading(true);
         setError(null);
         try {
             const easClient = new EasClient();
             const response = await easClient.getKYCLink(params);
+            console.log("🚀 ~ startKyc ~ response:", response);
+
+            console.log("🚀 ~ startKyc ~ response.data.kyc_status:", response.data.kyc_status)
+            console.log("🚀 ~ startKyc ~ response.data.tos_status:", response.data.tos_status)
+            console.log("🚀 ~ startKyc ~ response.data.id:", response.data.id)
+            console.log("🚀 ~ startKyc ~ response.data.kyc_link:", response.data.kyc_link)
+            console.log("🚀 ~ startKyc ~ response.data.tos_link:", response.data.tos_link)
 
             StorageService.setItem(AUTH_STORAGE_KEYS.KYC_STATUS, response.data.kyc_status);
+            console.log("🚀 ~ startKyc ~ 1")
 
             if (!user?.grid_user_id) {
                 throw new Error('Account information not found');
             }
+            console.log("🚀 ~ startKyc ~ 2")
 
             // Store the KYC link ID in the mock database
             await MockDatabase.updateUserKycLinkID(user.grid_user_id, response.data.id);
+            console.log("🚀 ~ startKyc ~ 3")
             return { kycLink: response.data.kyc_link, tosLink: response.data.tos_link };
+            
         } catch (err) {
+            console.log("🚀 ~ ================= startKyc ~ err:", err)
             Sentry.captureException(new Error(`Failed to start KYC process: ${err}. (hooks)/useKyc.ts (startKyc)`));
             setError('Failed to start KYC process');
             throw err;
@@ -119,15 +131,15 @@ export function useKyc(): UseKycReturn {
         } finally {
             setIsLoading(false);
         }
-    }, [accountInfo, fetchBankDetails]);
+    }, [user, fetchBankDetails]);
 
     const resetKyc = useCallback(async () => {
-        if (accountInfo?.grid_user_id) {
-            await MockDatabase.deleteUser(accountInfo.grid_user_id);
+        if (user?.grid_user_id) {
+            await MockDatabase.deleteUser(user.grid_user_id);
         }
         await StorageService.deleteItem(AUTH_STORAGE_KEYS.KYC_STATUS);
         setStatus('not_started');
-    }, [accountInfo]);
+    }, [user]);
 
     const isKycPending = status === 'under_review';
     const isKycRejected = status === 'rejected';

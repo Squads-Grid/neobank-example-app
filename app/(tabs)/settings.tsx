@@ -13,21 +13,20 @@ import * as Clipboard from 'expo-clipboard';
 import { useKyc } from '@/hooks/useKyc';
 
 export default function SettingsScreen() {
-    const { logout, user } = useAuth();
+    const { logout, user, email } = useAuth();
     const { status: kycStatus, checkStatus } = useKyc();
     const textColor = useThemeColor({}, 'text');
     const backgroundColor = useThemeColor({}, 'background');
     const [gridUserId, setGridUserId] = useState<string>('');
 
     useEffect(() => {
-        console.log("🚀 ~ useEffect ~ user:", user)
         const loadData = async () => {
             const id = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID);
             if (id) setGridUserId(id);
             await checkStatus();
         };
         loadData();
-    }, [checkStatus]);
+    }, []);
 
     const formatKycStatus = (status: string | null) => {
         if (!status) return 'Not Started';
@@ -54,6 +53,10 @@ export default function SettingsScreen() {
                     <ThemedText type="defaultSemiBold" style={styles.groupTitle}>
                         Account Details
                     </ThemedText>
+                </View>
+                <View style={styles.accountInfo}>
+                    <ThemedText type="regular">Email:</ThemedText>
+                    <ThemedText type="regular" style={styles.infoText}>{email}</ThemedText>
                 </View>
                 <View style={styles.accountInfo}>
                     <ThemedText type="regular">KYC Status:</ThemedText>

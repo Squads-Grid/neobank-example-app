@@ -13,6 +13,15 @@ export const AuthStorage = {
         return isAuthenticated === 'true';
     },
 
+    async saveEmail(email: string) {
+        await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.PERSISTENT_EMAIL, email);
+    },
+
+    async getEmail() {
+        const email = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.PERSISTENT_EMAIL);
+        return email;
+    },
+
     async saveUserData(user: any) {
         await Promise.all([
             SecureStore.setItemAsync(AUTH_STORAGE_KEYS.USER, JSON.stringify(user)),
@@ -96,7 +105,8 @@ export const AuthStorage = {
             SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.KYC_STATUS),
             SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.SESSION_SECRETS),
             SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.USER),
-            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED)
+            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED),
+            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.PERSISTENT_EMAIL)
         ]);
     }
 }; 

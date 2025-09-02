@@ -14,6 +14,7 @@ export interface AccountInfo {
 export interface AuthContextType {
     isAuthenticated: boolean | null;
     user: GridClientUserContext | null;
+    email: string | null;
     accountInfo: AccountInfo | null;
     setEmail: React.Dispatch<React.SetStateAction<string | null>>;
     setAccountInfo: React.Dispatch<React.SetStateAction<AccountInfo | null>>;
