@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import { AccountInfo, AuthContextType } from '@/types/Auth';
-import { authenticateUser, verifyOtpCodeAndCreateAccount, registerUser } from '@/utils/auth';
+import { authenticateUser, verifyOtpCodeAndCreateAccount, registerUser, verifyOtpCode } from '@/utils/auth';
 import { AuthStorage } from '@/utils/storage/authStorage';
 import * as Sentry from '@sentry/react-native';
 import { GridClient, GridEnvironment, UniversalKeyPair } from '@sqds/grid/native';
@@ -76,36 +76,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const verifyCode = async (code: string): Promise<boolean> => {
         try {
-            if (!mpcPrimaryId) {
-                throw new Error('No mpcPrimaryId found');
-            }
-            console.log("🚀 ~ verifyCode ~ mpcPrimaryId:", mpcPrimaryId)
+            const gridClient = new GridClient({
+                environment: 'sandbox' as GridEnvironment,
+                baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
+            });
+            const sessionSecrets = await gridClient.generateSessionSecrets();
 
-            // const { credentialBundle, keypair, accountInfo } = await verifyOtpCode(code, mpcPrimaryId);
-            // console.log("🚀 ~ verifyCode ~ keypair:", keypair)
-            // console.log("🚀 ~ verifyCode ~ credentialBundle:", credentialBundle)
-            // console.log("🚀 ~ verifyCode ~ accountInfo:", accountInfo)
+            await AuthStorage.saveSessionSecrets(sessionSecrets);
+            const user = await AuthStorage.getUser();
 
-            // // if (!keypair || !keypair.privateKey || !keypair.publicKey) {
-            // //     return false;
-            // // }
+            const result = await verifyOtpCode(code, sessionSecrets, user);
 
-            // await AuthStorage.saveAuthData({
-            //     keypair,
-            //     credentialsBundle: credentialBundle,
-            //     accountInfo,
-            //     email: email ?? '',
-            //     gridUserId: accountInfo.grid_user_id,
-            //     smartAccountAddress: accountInfo.smart_account_address,
-            // });
+            await setIsAuthenticated(true);
+            setAuthError(null);
+            await AuthStorage.saveUserData(result);
+            
+            console.log("🚀 ~ verifyCodeAndCreateAccount successful");
 
-            // setCredentialsBundle(credentialBundle);
-            // setKeypair(keypair as unknown as UniversalKeyPair); // TODO: fix this
-            // setIsAuthenticated(true);
-            // setAuthError(null);
-            // setAccountInfo(accountInfo);
-
-            // router.replace('/success');
             return true;
         } catch (error) {
             Sentry.captureException(new Error(`Error verifying code: ${error}. (contexts)/AuthContext.tsx (verifyCode)`));
@@ -141,16 +128,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const result= await authenticateUser(email);
             console.log("🚀 ~ authenticate ~ result:", result)
 
-            // Store initial auth data
-            await AuthStorage.saveAuthData({
-                keypair: null,
-                credentialsBundle: '',
-                accountInfo: {} as AccountInfo,
-                email,
-            });
+            // // Store initial auth data
+            // await AuthStorage.saveAuthData({
+            //     keypair: null,
+            //     credentialsBundle: '',
+            //     accountInfo: {} as AccountInfo,
+            //     email,
+            // });
 
-            setMpcPrimaryId(mpcPrimaryId);
-            setEmail(email);
+            // setMpcPrimaryId(mpcPrimaryId);
+            // setEmail(email);
             setAuthError(null);
 
 

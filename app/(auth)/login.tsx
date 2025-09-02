@@ -24,6 +24,7 @@ function LoginScreen() {
 
         setShowCodeInput(true);
         const result = await authenticate(emailToUse);
+        console.log("🚀 ~ triggerAuthentication ~ result:", result)
         // setOtpId(result);
     };
 
@@ -48,6 +49,7 @@ function LoginScreen() {
         const result = await verifyCode(
             code
         );
+        console.log("🚀 ~ verify ~ result:", result)
         return result;
     };
 

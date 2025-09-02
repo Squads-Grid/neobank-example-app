@@ -11,6 +11,7 @@ export async function POST(request: Request) {
         });
         
         const response = await gridClient.initAuth(body);
+        console.log("🚀 ~ response in auth+api.ts:", response)
 
         return new Response(JSON.stringify(response), {
             status: 200,

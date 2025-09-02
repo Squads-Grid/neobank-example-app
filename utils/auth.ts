@@ -35,47 +35,27 @@ export const verifyOtpCodeAndCreateAccount = async (code: string, sessionSecrets
 /**
  * existing user logs in.
  */
-export const authenticateUser = async (email: string): Promise<{ otpId: string; mpcPrimaryId: string }> => {
+export const authenticateUser = async (email: string): Promise<any> => {
     const request: {email: string} = {
         email: email,
     };
     const easClient = new EasClient();
     const response = await easClient.authenticate(request);
     console.log("🚀 ~ authenticateUser ~ response:", response)
-    return {
-        otpId: response.data.otpId,
-        mpcPrimaryId: response.data.mpcPrimaryId
-    };
+    return response;
 };
 
 
 
-export const verifyOtpCode = async (code: string, suborgId: string): Promise<{ credentialBundle: string; keypair: SessionSecrets, accountInfo: AccountInfo }> => {
-    console.log("🚀 ~ verifyOtpCode in auth.ts")
-    
-    const baseUrl = process.env.GRID_ENDPOINT;
-    if(!baseUrl) {
-        throw new Error('Missing required environment variables: GRID_ENDPOINT');
-    }
-    
-    const gridClient = new GridClient({
-        environment: 'sandbox' as GridEnvironment,
-        baseUrl
-    });
-    
-    const sessionSecrets = await gridClient.generateSessionSecrets();
-    console.log("🚀 ~ verifyOtpCode in auth.ts ~ sessionSecrets:", sessionSecrets)
+export const verifyOtpCode = async (otpCode: string, sessionSecrets: SessionSecrets, user: GridClientUserContext): Promise<any> => {
 
     const easClient = new EasClient();
+    const response = await easClient.verifyOtpCode({otpCode, sessionSecrets, user});
     // const response = await easClient.verifyOtp(otpData);
-    // console.log("🚀 ~ verifyOtpCode in auth.ts ~ response:", response)
+    console.log("🚀 ~ verifyOtpCode in auth.ts ~ response:", response)
 
     // Return the full session secrets array instead of single keypair
-    return {
-        credentialBundle: '',// response.data.credential_bundle,
-        keypair: sessionSecrets,
-        accountInfo: {} as AccountInfo //response.data.account_info
-    };
+    return response;
 };
 
 export const verifyOtpAndCreateAccount = async (code: string): Promise<void> => {
