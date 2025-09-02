@@ -1,12 +1,19 @@
-import { GridClient } from "@/grid/gridClient";
+import { GridClient, GridEnvironment } from '@sqds/grid';
 import { ErrorCode } from "@/utils/errors";
 
 export async function POST(request: Request) {
     try {
         const { smartAccountAddress, paymentIntentId, payload, useMpcProvider } = await request.json();
 
-        const gridClient = new GridClient();
-        const response = await gridClient.confirmPaymentIntent(smartAccountAddress, paymentIntentId, payload, useMpcProvider);
+        const gridClient = new GridClient({
+            apiKey: process.env.GRID_API_KEY!,
+            environment: 'sandbox' as GridEnvironment,
+            baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
+        });
+        const response = await gridClient.send({
+            address: smartAccountAddress,
+            signedTransactionPayload: payload
+        });
 
         return new Response(JSON.stringify(response), {
             status: 200,

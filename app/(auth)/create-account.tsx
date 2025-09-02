@@ -13,17 +13,20 @@ import { ErrorCode } from '@/utils/errors';
 import { handleError } from '@/utils/errors';
 import { useScreenTheme } from '@/contexts/ScreenThemeContext';
 
-function LoginScreen() {
+function CreateAccountScreen() {
     const [isLoading, setIsLoading] = useState(false);
     const [showCodeInput, setShowCodeInput] = useState(false);
     const [error, setError] = useState<string | null>(null);
     // const [otpId, setOtpId] = useState<string | null>(null);
-    const { authenticate, verifyCode, email, setEmail } = useAuth();
+    const { register, verifyCodeAndCreateAccount, email, setEmail } = useAuth();
     const { textColor } = useScreenTheme();
-    const triggerAuthentication = async (emailToUse: string) => {
+
+    const triggerSignUp = async (emailToUse: string) => {
 
         setShowCodeInput(true);
-        const result = await authenticate(emailToUse);
+        console.log("🚀 ~ triggerSignUp ~ emailToUse:", emailToUse)
+        const result = await register(emailToUse);
+        console.log("🚀 ~ triggerSignUp ~ result:", result)
         // setOtpId(result);
     };
 
@@ -32,7 +35,7 @@ function LoginScreen() {
             router.push('/(auth)/login');
             return;
         }
-        await triggerAuthentication(email);
+        await triggerSignUp(email);
     };
 
     const { countdown, isDisabled, handleResend: resend } = useResendTimer({
@@ -45,9 +48,12 @@ function LoginScreen() {
         //     throw new Error('No otpId found');
         // }
 
-        const result = await verifyCode(
-            code
+        console.log("🚀 ~ verify ~ code:", code)
+        const result = await verifyCodeAndCreateAccount(
+            code,
+            // otpId
         );
+        console.log("🚀 ~ verify ~ result:", result)
         return result;
     };
 
@@ -57,6 +63,7 @@ function LoginScreen() {
             setError(null);
             setEmail(submittedEmail);
 
+            console.log("🚀 ~ handleSubmit ~ formError:", formError)
             if (formError) {
                 setError(formError);
                 handleError(ErrorCode.INVALID_EMAIL, true, true);
@@ -69,10 +76,13 @@ function LoginScreen() {
                     setError('Invalid code');
                     return;
                 }
+                // Navigate to success after successful account creation
+                router.replace('/success');
             } else {
-                await triggerAuthentication(submittedEmail);
+                await triggerSignUp(submittedEmail);
             }
         } catch (error) {
+            console.log("🚀 ~ handleSubmit ~ error:", error)
             setError('An error occurred. Please try again.');
         } finally {
             setIsLoading(false);
@@ -92,12 +102,12 @@ function LoginScreen() {
                     <View style={{ flex: 1 }}>
                         <View style={styles.headerContainer}>
                             <ScreenHeaderText
-                                title="Login"
+                                title="Sign up"
                                 // subtitle="Your finances, upgraded"
                             />
                         </View>
                         {/* <View style={[styles.headerContainer, { alignItems: 'flex-start', paddingHorizontal: Spacing.lg, marginBottom: Spacing.lg}]}>
-                            <ThemedText type="large" style={{ color: textColor + 40 }}>Login to your account</ThemedText>
+                            <ThemedText type="large" style={{ color: textColor + 40 }}>Create your account</ThemedText>
                         </View> */}
                         <LoginForm
                             onSubmit={handleSubmit}
@@ -106,8 +116,8 @@ function LoginScreen() {
                         />
                         <View style={[styles.headerContainer, { alignItems: 'flex-start', paddingHorizontal: Spacing.lg, marginBottom: Spacing.lg, flexDirection: 'row', gap: Spacing.sm}]}>
                             <ThemedText type="default" style={{ color: textColor + 40, paddingVertical: Spacing.xs, marginTop: Spacing.xxs}}>Already have an account?</ThemedText>
-                            <Pressable onPress={() => router.push('/(auth)/create-account')}>
-                                <ThemedText type="link" style={{ color: textColor }}>Sign up</ThemedText>
+                            <Pressable onPress={() => router.push('/(auth)/login')}>
+                                <ThemedText type="link" style={{ color: textColor }}>Log in</ThemedText>
                             </Pressable>
                         </View>
                     </View>
@@ -129,7 +139,7 @@ function LoginScreen() {
     );
 }
 
-export default WithScreenTheme(LoginScreen, {
+export default WithScreenTheme(CreateAccountScreen, {
     backgroundColor: '#000000',
     textColor: '#FFFFFF',
     primaryColor: '#FFFFFF'

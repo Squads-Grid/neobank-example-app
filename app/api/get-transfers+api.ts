@@ -1,4 +1,4 @@
-import { GridClient } from "@/grid/gridClient";
+import { GridClient, GridEnvironment } from '@sqds/grid';
 
 export async function GET(request: Request) {
     try {
@@ -12,8 +12,16 @@ export async function GET(request: Request) {
             });
         }
 
-        const gridClient = new GridClient();
-        const response = await gridClient.getTransfers(smartAccountAddress);
+        // Note: The SDK doesn't currently have a direct method to list payment intents/transfers
+        // This functionality may need to be implemented in the SDK or handled differently
+        const gridClient = new GridClient({
+            apiKey: process.env.GRID_API_KEY!,
+            environment: 'sandbox' as GridEnvironment,
+            baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
+        });
+        
+        // Temporary: return empty array until SDK supports listing payment intents
+        const response = { data: [] };
 
         return new Response(JSON.stringify(response), {
             status: 200,

@@ -4,7 +4,7 @@ import { KycResponse, KycParams } from '@/types/Kyc';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 import { ConfirmPayload } from '@/types/Transaction';
 import { SentryApiResponse } from '@/types/Sentry';
-import { TurnkeyInitAuthRequest, InitAuthResponse, TurnkeyCompleteAuthRequest, CompleteAuthResponse } from 'universal-auth/native';
+import { InitAuthResponse, GridClientUserContext, SessionSecrets } from '@sqds/grid/native';
 
 // import * as Sentry from '@sentry/react-native'; 
 
@@ -33,6 +33,8 @@ export class EasClient {
 
     private validateEnv() {
         if (!process.env.EXPO_PUBLIC_API_ENDPOINT) {
+            console.log("🍓 missing in easClient.ts");
+
             throw new Error('Missing required environment variables: EXPO_PUBLIC_API_ENDPOINT');
         }
     }
@@ -92,19 +94,24 @@ export class EasClient {
     }
 
     // Creates an account if it doesn't already exist and triggers otp. If the account already exists, it just triggers otp.
-    async authenticate(request: TurnkeyInitAuthRequest): Promise<InitAuthResponse> {
+    async authenticate(request: {email: string}): Promise<InitAuthResponse> {
         return this.request<InitAuthResponse>('/auth', {
             method: 'POST',
             body: JSON.stringify(request),
         });
     }
 
-    // Verifies the otp code and returns the credential bundle.
-    async verifyOtp(data:  TurnkeyCompleteAuthRequest): Promise<CompleteAuthResponse> {
-        console.log("🚀 ~ eas verifyOtp")
-        return this.request<CompleteAuthResponse>('/verify-otp', {
+    async register(request: {email: string}): Promise<InitAuthResponse> {
+        return this.request<InitAuthResponse>('/register', {
             method: 'POST',
-            body: JSON.stringify(data),
+            body: JSON.stringify(request),
+        });
+    }
+
+    async verifyCodeAndCreateAccount(request: {otpCode: string, sessionSecrets: SessionSecrets, user: GridClientUserContext}): Promise<any> {
+        return this.request<InitAuthResponse>('/verify-otp-and-create-account', {
+            method: 'POST',
+            body: JSON.stringify(request),
         });
     }
 

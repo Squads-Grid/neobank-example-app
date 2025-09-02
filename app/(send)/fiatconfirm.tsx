@@ -11,7 +11,6 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { ButtonGroup } from '@/components/ui/molecules';
 import { Height, Size, Weight } from '@/constants/Typography';
 import { useAuth } from '@/contexts/AuthContext';
-import { decryptCredentialBundle } from '@turnkey/crypto';
 import { EasClient } from '@/utils/easClient';
 import { ConfirmPayload, SmartAccount } from '@/types/Transaction';
 import { v4 as uuidv4 } from 'uuid';
@@ -19,7 +18,7 @@ import { clearExternalAccounts, storeExternalAccount } from '@/utils/externalAcc
 import Toast from 'react-native-toast-message';
 import { ErrorCode, handleError } from '@/utils/errors';
 import * as Sentry from '@sentry/react-native';
-import { createGridAuth } from 'universal-auth';
+import { GridClient, GridEnvironment } from '@sqds/grid';
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
@@ -174,25 +173,18 @@ export default function FiatConfirmScreen() {
                     return;
                 }
 
-                const gridAuth = createGridAuth({environment: 'sandbox'});
-                gridAuth.addProvider({ provider: 'turnkey' });
-                const stamp = await gridAuth.authorize(credentialsBundle, JSON.parse(mpcPayload), keypair);
-                console.log("🚀 ~ handleConfirm ~ stamp:", stamp)
+                const gridClient = new GridClient({
+                    apiKey: process.env.EXPO_PUBLIC_GRID_API_KEY!,
+                    environment: 'sandbox' as GridEnvironment,
+                    baseUrl: process.env.EXPO_PUBLIC_GRID_ENDPOINT || 'http://localhost:50001'
+                });
 
-                const confirmPayload: ConfirmPayload = {
-                    intentPayload: receivedPayload.intent_payload,
-                    mpcPayload: JSON.stringify({
-                        requestParameters: JSON.parse(mpcPayload),
-                        stamp,
-                    }),
-                };
-
-                const response = await easClient.confirmPaymentIntent(
-                    accountInfo.smart_account_address,
-                    res.data.id,
-                    confirmPayload,
-                    true
-                );
+                // Use signAndSend instead of the old authorize flow
+                await gridClient.signAndSend({
+                    transactionPayload: receivedPayload,
+                    sessionSecrets: keypair as any, // keypair is now SessionSecrets array
+                    address: accountInfo.smart_account_address
+                });
 
                 router.push({
                     pathname: '/success',

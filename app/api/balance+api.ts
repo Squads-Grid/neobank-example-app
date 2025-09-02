@@ -1,12 +1,16 @@
-import { GridClient } from "@/grid/gridClient";
+import { GridClient, GridEnvironment } from '@sqds/grid';
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
         const smartAccountAddress = body.smartAccountAddress;
 
-        const gridClient = new GridClient();
-        const response = await gridClient.getBalance(smartAccountAddress);
+        const gridClient = new GridClient({
+            apiKey: process.env.GRID_API_KEY!,
+            environment: 'sandbox' as GridEnvironment,
+            baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
+        });
+        const response = await gridClient.getAccountBalances(smartAccountAddress);
 
         return Response.json(response);
     } catch (error) {

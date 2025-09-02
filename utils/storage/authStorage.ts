@@ -3,6 +3,29 @@ import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import { AccountInfo } from '@/types/Auth';
 
 export const AuthStorage = {
+
+    async saveUserData(user: any) {
+        await Promise.all([
+            SecureStore.setItemAsync(AUTH_STORAGE_KEYS.USER, JSON.stringify(user)),
+        ]);
+    },
+
+    async getUser() {
+        const user = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.USER);
+        return user ? JSON.parse(user) : null;
+    },
+
+    async saveSessionSecrets(sessionSecrets: any) {
+        await Promise.all([
+            SecureStore.setItemAsync(AUTH_STORAGE_KEYS.SESSION_SECRETS, JSON.stringify(sessionSecrets)),
+        ]);
+    },
+
+    async getSessionSecrets() {
+        const sessionSecrets = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.SESSION_SECRETS);
+        return sessionSecrets ? JSON.parse(sessionSecrets) : null;
+    },
+
     async saveAuthData(data: {
         keypair: any,
         credentialsBundle: string,

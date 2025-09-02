@@ -1,4 +1,4 @@
-import { UniversalKeyPair } from 'universal-auth';
+import { UniversalKeyPair } from '@sqds/grid/native';
 import { z } from 'zod/v4';
 
 export const Email = z.email();
@@ -20,8 +20,10 @@ export interface AuthContextType {
     keypair: UniversalKeyPair | null;
     credentialsBundle: string | null;
     authError: string | null;
-    authenticate: (email: string) => Promise<string>;
-    verifyCode: (code: string, otpId: string) => Promise<boolean>;
+    authenticate: (email: string) => Promise<void>;
+    register: (email: string) => Promise<void>;
+    verifyCode: (code: string) => Promise<boolean>;
+    verifyCodeAndCreateAccount: (code: string) => Promise<boolean>;
     logout: () => Promise<void>;
     wallet: string | null;
     isLoading: boolean;

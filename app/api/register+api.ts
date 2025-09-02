@@ -1,27 +1,25 @@
-import { GridClient, GridEnvironment, RequestVirtualAccountRequest } from '@sqds/grid';
+import { GridClient, GridEnvironment } from '@sqds/grid';
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        
-        const virtualAccountRequest: RequestVirtualAccountRequest = {
-            currency: body.currency,
-            grid_user_id: body.gridUserId
-        };
 
         const gridClient = new GridClient({
             apiKey: process.env.GRID_API_KEY!,
             environment: 'sandbox' as GridEnvironment,
             baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
         });
-        const response = await gridClient.requestVirtualAccount(body.smartAccountAddress, virtualAccountRequest);
+        
+        const response = await gridClient.createAccount(body);
+        console.log("🚀 ~ response in register+api.ts:", response)
 
         return new Response(JSON.stringify(response), {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
     } catch (error: any) {
-        // Pass through the error data
+        console.log("🚀 ~ error:", error)
+        // Pass through the error dataar
         return new Response(
             JSON.stringify(error),
             {

@@ -52,7 +52,7 @@ function AuthLayout() {
 
         if (!isAuthenticated && !inAuthGroup) {
             // Redirect to the sign-in page
-            router.replace('/login');
+            router.replace('/create-account');
         } else if (isAuthenticated && inAuthGroup) {
             // Redirect away from the sign-in page
             router.replace('/');

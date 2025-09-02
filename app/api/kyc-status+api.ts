@@ -1,12 +1,16 @@
-import { GridClient } from "@/grid/gridClient";
+import { GridClient, GridEnvironment } from '@sqds/grid';
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
         const { smart_account_address, kyc_id } = body;
 
-        const gridClient = new GridClient();
-        const response = await gridClient.getKYCStatus(smart_account_address, kyc_id);
+        const gridClient = new GridClient({
+            apiKey: process.env.GRID_API_KEY!,
+            environment: 'sandbox' as GridEnvironment,
+            baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
+        });
+        const response = await gridClient.getKycStatus(smart_account_address, kyc_id);
 
         return new Response(JSON.stringify(response), {
             status: 200,

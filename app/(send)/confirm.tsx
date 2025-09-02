@@ -11,14 +11,12 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { ButtonGroup } from '@/components/ui/molecules';
 import { Height, Size, Weight } from '@/constants/Typography';
 import { useAuth } from '@/contexts/AuthContext';
-import { decryptCredentialBundle } from '@turnkey/crypto';
 import { EasClient } from '@/utils/easClient';
 import { PreparePaymentIntentParams, SmartAccount, SolanaAddress } from '@/types/Transaction';
 import { ErrorCode } from '@/utils/errors';
 import Toast from 'react-native-toast-message';
-import { ConfirmPayload } from '@/types/Transaction';
 import * as Sentry from '@sentry/react-native';
-import { createGridAuth } from 'universal-auth/native';
+import { GridClient, GridEnvironment } from '@sqds/grid';
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
@@ -82,24 +80,17 @@ export default function ConfirmScreen() {
                 return;
             }
             
-            const gridAuth = createGridAuth({environment: 'sandbox'});
-            gridAuth.addProvider({ provider: 'turnkey' });
-            const stamp = await gridAuth.authorize(credentialsBundle, JSON.parse(mpcPayload), keypair);
+            const gridClient = new GridClient({
+                environment: 'sandbox' as GridEnvironment,
+                baseUrl: process.env.EXPO_PUBLIC_GRID_ENDPOINT || 'http://localhost:50001'
+            });
 
-            const confirmPayload: ConfirmPayload = {
-                intentPayload: receivedPayload.intent_payload,
-                mpcPayload: JSON.stringify({
-                    requestParameters: JSON.parse(mpcPayload),
-                    stamp,
-                }),
-            };
-
-            await easClient.confirmPaymentIntent(
-                accountInfo.smart_account_address,
-                res.data.id,
-                confirmPayload,
-                true
-            );
+            // Use signAndSend instead of the old authorize flow
+            await gridClient.signAndSend({
+                transactionPayload: receivedPayload,
+                sessionSecrets: keypair as any, // keypair is now SessionSecrets array
+                address: accountInfo.smart_account_address
+            });
 
             router.push({
                 pathname: '/success',

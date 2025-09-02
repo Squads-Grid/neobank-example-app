@@ -1,18 +1,21 @@
-import { KycParams, KycRequest } from "@/types/Kyc";
-import { GridClient } from "@/grid/gridClient";
+import { GridClient, GridEnvironment, RequestKycLinkRequest } from '@sqds/grid';
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json() as KycParams;
+        const body = await request.json();
 
-        const kycParams: KycRequest = {
+        const kycRequest: RequestKycLinkRequest = {
             type: "individual",
             endorsements: [],
             ...body
         }
 
-        const gridClient = new GridClient();
-        const response = await gridClient.getKYCLink(kycParams);
+        const gridClient = new GridClient({
+            apiKey: process.env.GRID_API_KEY!,
+            environment: 'sandbox' as GridEnvironment,
+            baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
+        });
+        const response = await gridClient.requestKycLink(body.smart_account_address, kycRequest);
 
         return new Response(
             JSON.stringify(response),
