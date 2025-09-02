@@ -4,16 +4,17 @@ import { EasClient } from '@/utils/easClient';
 import { StorageService } from '@/utils/storage';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import { AccountInfo } from '@/types/Auth';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function useWalletData(accountInfo: AccountInfo | null) {
     const [isLoading, setIsLoading] = useState(false);
     const [balance, setBalance] = useState(0);
     const [transfers, setTransfers] = useState<TransferResponse>([]);
     const [error, setError] = useState<string | null>(null);
+    const { user } = useAuth();
 
-    const fetchWalletData = async (accountInfoOverride?: AccountInfo) => {
-        const accountInfoToUse = accountInfoOverride || accountInfo;
-        if (!accountInfoToUse?.smart_account_address) {
+    const fetchWalletData = async () => {
+        if (!user?.address) {
             setError('Account info not found');
             return;
         }
@@ -25,12 +26,12 @@ export function useWalletData(accountInfo: AccountInfo | null) {
             // Fetch balance and transactions in parallel
             const easClient = new EasClient();
             const [balanceResult, transfersResult] = await Promise.all([
-                easClient.getBalance({ smartAccountAddress: accountInfoToUse.smart_account_address }),
-                easClient.getTransfers(accountInfoToUse.smart_account_address)
+                easClient.getBalance({ smartAccountAddress: user.address }).then((response) => response),
+                easClient.getTransfers(user.address)
             ]);
 
             // Handle balance
-            const balances = balanceResult.data.balances;
+            const balances = balanceResult.data.tokens;
             if (balances.length === 0) {
                 setBalance(0);
                 await StorageService.setItem(AUTH_STORAGE_KEYS.CACHED_BALANCE, '0');

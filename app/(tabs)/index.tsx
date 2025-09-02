@@ -25,7 +25,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 const placeholder = require('@/assets/images/no-txn.png');
 
 function HomeScreenContent() {
-    const { accountInfo, setAccountInfo, logout } = useAuth();
+    const { accountInfo, user } = useAuth();
     const { showReceiveModal, isReceiveModalVisible, hideAllModals } = useModalFlow();
     const [refreshing, setRefreshing] = useState(false);
     const [isSendModalVisible, setIsSendModalVisible] = useState(false);
@@ -59,7 +59,7 @@ function HomeScreenContent() {
                 // };
 
                 // setAccountInfo(updatedAccountInfo);
-                // await fetchWalletData(updatedAccountInfo);
+                await fetchWalletData();
             } catch (err) {
                 console.error('Error initializing account:', err);
                 Sentry.captureException(new Error(`Error initializing account: ${err}. (tabs)/index.tsx (initializeAccount)`));
@@ -224,7 +224,7 @@ function HomeScreenContent() {
                 <QRCodeModal
                     visible={isQRCodeModalVisible}
                     onClose={() => setIsQRCodeModalVisible(false)}
-                    walletAddress={accountInfo?.smart_account_address || ''}
+                    walletAddress={user?.address || ''}
                 />
 
                 <ComingSoonToast
