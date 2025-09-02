@@ -18,8 +18,9 @@ function LoginScreen() {
     const [showCodeInput, setShowCodeInput] = useState(false);
     const [error, setError] = useState<string | null>(null);
     // const [otpId, setOtpId] = useState<string | null>(null);
-    const { authenticate, verifyCode, email, setEmail } = useAuth();
+    const { authenticate, verifyCode, user} = useAuth();
     const { textColor } = useScreenTheme();
+
     const triggerAuthentication = async (emailToUse: string) => {
 
         setShowCodeInput(true);
@@ -29,11 +30,11 @@ function LoginScreen() {
     };
 
     const handleResend = async () => {
-        if (!email) {
+        if (!user?.email) {
             router.push('/(auth)/login');
             return;
         }
-        await triggerAuthentication(email);
+        await triggerAuthentication(user.email);
     };
 
     const { countdown, isDisabled, handleResend: resend } = useResendTimer({
@@ -46,18 +47,22 @@ function LoginScreen() {
         //     throw new Error('No otpId found');
         // }
 
-        const result = await verifyCode(
+        console.log("🚀 ~ verify ~ code:", code)
+        const success = await verifyCode(
             code
         );
-        console.log("🚀 ~ verify ~ result:", result)
-        return result;
+        if(success) {
+            router.replace('/success');
+        }
+        return success;
     };
 
     const handleSubmit = async (submittedEmail: string, code?: string, formError?: string) => {
+        
         try {
             setIsLoading(true);
             setError(null);
-            setEmail(submittedEmail);
+            // setEmail(submittedEmail);
 
             if (formError) {
                 setError(formError);

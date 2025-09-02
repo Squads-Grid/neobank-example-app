@@ -24,7 +24,7 @@ const USDC_DECIMALS = 6;
 export default function ConfirmScreen() {
     const textColor = useThemeColor({}, 'text');
     const [isLoading, setIsLoading] = useState(false);
-    const { accountInfo, credentialsBundle, keypair, email, logout } = useAuth();
+    const { accountInfo, credentialsBundle, keypair, user, logout } = useAuth();
 
     const { amount, recipient, name, type, title } = useLocalSearchParams<{
         amount: string;
@@ -71,7 +71,7 @@ export default function ConfirmScreen() {
 
             const receivedPayload = res.data;
             const mpcPayload = receivedPayload.mpc_payload;
-            if (!email) {
+            if (!user) {
                 logout();
                 router.push({
                     pathname: '/(auth)/login',

@@ -4,6 +4,15 @@ import { AccountInfo } from '@/types/Auth';
 
 export const AuthStorage = {
 
+    async saveIsAuthenticated(isAuthenticated: boolean) {
+        await SecureStore.setItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED, isAuthenticated ? 'true' : 'false');
+    },
+
+    async isAuthenticated() {
+        const isAuthenticated = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED);
+        return isAuthenticated === 'true';
+    },
+
     async saveUserData(user: any) {
         await Promise.all([
             SecureStore.setItemAsync(AUTH_STORAGE_KEYS.USER, JSON.stringify(user)),
@@ -85,6 +94,8 @@ export const AuthStorage = {
             SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID),
             SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS),
             SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.KYC_STATUS),
+            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.SESSION_SECRETS),
+            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.USER),
         ]);
     }
 }; 

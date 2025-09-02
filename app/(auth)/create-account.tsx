@@ -18,7 +18,7 @@ function CreateAccountScreen() {
     const [showCodeInput, setShowCodeInput] = useState(false);
     const [error, setError] = useState<string | null>(null);
     // const [otpId, setOtpId] = useState<string | null>(null);
-    const { register, verifyCodeAndCreateAccount, email, setEmail, isAuthenticated } = useAuth();
+    const { register, verifyCodeAndCreateAccount, user, setEmail, isAuthenticated } = useAuth();
     const { textColor } = useScreenTheme();
 
     const triggerSignUp = async (emailToUse: string) => {
@@ -31,11 +31,11 @@ function CreateAccountScreen() {
     };
 
     const handleResend = async () => {
-        if (!email) {
+        if (!user) {
             router.push('/(auth)/login');
             return;
         }
-        await triggerSignUp(email);
+        await triggerSignUp(user.email!);
     };
 
     const { countdown, isDisabled, handleResend: resend } = useResendTimer({

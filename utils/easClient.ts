@@ -116,6 +116,7 @@ export class EasClient {
     }
 
     async verifyOtpCode(request: {otpCode: string, sessionSecrets: SessionSecrets, user: GridClientUserContext}): Promise<any> {
+        console.log("🚀 ~ verifyOtpCode in easClient.ts ~ request:", request)
         return this.request<InitAuthResponse>('/verify-otp', {
             method: 'POST',
             body: JSON.stringify(request),

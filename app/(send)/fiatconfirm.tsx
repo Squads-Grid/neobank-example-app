@@ -35,7 +35,7 @@ interface Address {
 export default function FiatConfirmScreen() {
     const textColor = useThemeColor({}, 'text');
     const [isLoading, setIsLoading] = useState(false);
-    const { accountInfo, credentialsBundle, keypair, email, logout } = useAuth();
+    const { accountInfo, credentialsBundle, keypair, user, logout } = useAuth();
 
     const {
         amount,
@@ -155,7 +155,7 @@ export default function FiatConfirmScreen() {
                 }
 
 
-                if (!email) {
+                if (!user) {
                     logout();
                     router.push({
                         pathname: '/(auth)/login',
@@ -165,7 +165,7 @@ export default function FiatConfirmScreen() {
 
                 const receivedPayload = res.data;
                 const mpcPayload = receivedPayload.mpc_payload;
-                if (!email) {
+                if (!user) {
                     logout();
                     router.push({
                         pathname: '/(auth)/login',

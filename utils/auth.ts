@@ -41,7 +41,7 @@ export const authenticateUser = async (email: string): Promise<any> => {
     };
     const easClient = new EasClient();
     const response = await easClient.authenticate(request);
-    console.log("🚀 ~ authenticateUser ~ response:", response)
+    console.log("🚀 ~ authenticateUuuuuuuuuuser ~ response:", response)
     return response;
 };
 
@@ -49,6 +49,9 @@ export const authenticateUser = async (email: string): Promise<any> => {
 
 export const verifyOtpCode = async (otpCode: string, sessionSecrets: SessionSecrets, user: GridClientUserContext): Promise<any> => {
 
+    console.log("🚀 ~ verifyOtpCode in auth.ts ~ otpCode:", otpCode)
+    console.log("🚀 ~ verifyOtpCode in auth.ts ~ sessionSecrets:", sessionSecrets)
+    console.log("🚀 ~ verifyOtpCode in auth.ts ~ user:", user)
     const easClient = new EasClient();
     const response = await easClient.verifyOtpCode({otpCode, sessionSecrets, user});
     // const response = await easClient.verifyOtp(otpData);
