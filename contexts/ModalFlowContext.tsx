@@ -50,7 +50,7 @@ interface ModalFlowContextType {
 const ModalFlowContext = createContext<ModalFlowContextType | undefined>(undefined);
 
 export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
-    const { accountInfo } = useAuth();
+    const { user } = useAuth();
 
     // Modal visibility states
     const [isReceiveModalVisible, setIsReceiveModalVisible] = useState(false);
@@ -91,33 +91,33 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
 
     // Data fetching methods
     const fetchBankDetails = useCallback(async () => {
-        if (!accountInfo?.smart_account_address) return;
+        if (!user?.address) return;
 
         setIsLoading(true);
         setError(null);
 
         try {
             const easClient = new EasClient();
-            const response = await easClient.getVirtualAccounts(accountInfo.smart_account_address);
-
-            setBankAccountDetails(response.data);
+            const response = await easClient.getVirtualAccounts(user.address);
+            console.log("🚀 ~ fetchBankDetails ~ response:", response)
+            setBankAccountDetails(response);
         } catch (err) {
             setError('Failed to fetch bank details');
             console.error('Error fetching bank details:', err);
         } finally {
             setIsLoading(false);
         }
-    }, [accountInfo?.smart_account_address]);
+    }, [user?.address]);
 
     const fetchKycStatus = useCallback(async () => {
-        if (!accountInfo?.smart_account_address || !accountInfo?.grid_user_id) return;
+        if (!user?.address || !user?.grid_user_id) return;
 
         setIsLoading(true);
         setError(null);
 
         try {
-            const user = await MockDatabase.getUser(accountInfo.grid_user_id);
-            const kycLinkId = user?.kyc_link_id;
+            const userData = await MockDatabase.getUser(user.grid_user_id);
+            const kycLinkId = userData?.kyc_link_id;
             if (!kycLinkId) {
                 setKycStatus('not_started');
                 return;
@@ -125,7 +125,7 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
 
             const easClient = new EasClient();
             const kycResponse = await easClient.getKYCStatus(
-                accountInfo.smart_account_address,
+                user.address,
                 kycLinkId
             );
 
@@ -139,7 +139,7 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
         } finally {
             setIsLoading(false);
         }
-    }, [accountInfo?.smart_account_address, accountInfo?.grid_user_id]);
+    }, [user?.address, user?.grid_user_id]);
 
 
     const value = {

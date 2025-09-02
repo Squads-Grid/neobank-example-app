@@ -65,7 +65,7 @@ function BankDetailsModal() {
     const [error, setError] = useState<string | null>(contextError);
     const { backgroundColor, textColor } = useScreenTheme();
     const [copiedField, setCopiedField] = useState<string | null>(null);
-    const { accountInfo, logout } = useAuth();
+    const { user, logout } = useAuth();
     const [showToast, setShowToast] = useState(false);
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
 
@@ -128,13 +128,7 @@ function BankDetailsModal() {
             return;
         }
 
-        if (!accountInfo) {
-            logout();
-            return;
-        }
-
-        const gridUserId = await StorageService.getItem<string>(AUTH_STORAGE_KEYS.GRID_USER_ID);
-        if (!gridUserId) {
+        if (!user || !user.grid_user_id) {
             logout();
             return;
         }
@@ -142,13 +136,15 @@ function BankDetailsModal() {
         setIsCreatingAccount(true);
         try {
             const accountParams: OpenVirtualAccountParams = {
-                smartAccountAddress: accountInfo.smart_account_address,
-                gridUserId: gridUserId,
+                smartAccountAddress: user.address!,
+                gridUserId: user.grid_user_id!,
                 currency: selectedCurrency
             };
+            console.log("🚀 ~ handleCreateBankAccount ~ accountParams:", accountParams)
 
             const easClient = new EasClient();
-            await easClient.openVirtualAccount(accountParams);
+            const response = await easClient.openVirtualAccount(accountParams);
+            console.log("🚀 ~ handleCreateBankAccount ~ response:", response)
 
             // Fetch updated bank details
             await fetchBankDetails();
@@ -269,7 +265,7 @@ function BankDetailsModal() {
             );
         }
 
-        if (bankAccountDetails?.length === 1 && selectedCurrency === 'usd' && bankAccountDetails[0].source_deposit_instructions.currency === 'usd') {
+        if (bankAccountDetails?.length && bankAccountDetails?.length >= 1 && selectedCurrency === 'usd' && bankAccountDetails[0].source_deposit_instructions.currency === 'usd') {
             const bankDetails: BankDetail[] = [
                 { label: 'Bank Name', value: bankAccountDetails[0].source_deposit_instructions.bank_name },
                 { label: 'Account Number', value: bankAccountDetails[0].source_deposit_instructions.bank_account_number },
