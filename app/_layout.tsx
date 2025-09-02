@@ -47,6 +47,7 @@ function AuthLayout() {
 
     useEffect(() => {
         if (isAuthenticated === null) return;
+        console.log("🍓 ~ useEffect ~ isAuthenticated:", isAuthenticated)
 
         const inAuthGroup = segments[0] === '(auth)';
 

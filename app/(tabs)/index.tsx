@@ -35,31 +35,31 @@ function HomeScreenContent() {
     const textColor = useThemeColor({}, 'text');
 
     useEffect(() => {
-        if (!accountInfo || !accountInfo.smart_account_signer_public_key) {
-            logout();
-            return;
-        }
+        // if (!accountInfo || !accountInfo.smart_account_signer_public_key) {
+        //     logout();
+        //     return;
+        // }
 
         const initializeAccount = async () => {
             try {
-                const account = await createSmartAccount(accountInfo);
-                await StorageService.setItem(AUTH_STORAGE_KEYS.GRID_USER_ID, account.grid_user_id);
-                await StorageService.setItem(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, account.smart_account_address);
+                // const account = await createSmartAccount(accountInfo);
+                // await StorageService.setItem(AUTH_STORAGE_KEYS.GRID_USER_ID, account.grid_user_id);
+                // await StorageService.setItem(AUTH_STORAGE_KEYS.SMART_ACCOUNT_ADDRESS, account.smart_account_address);
 
-                // Only create user if they don't exist
-                const existingUser = await MockDatabase.getUser(account.grid_user_id);
-                if (!existingUser) {
-                    await MockDatabase.createUser(account.grid_user_id);
-                }
+                // // Only create user if they don't exist
+                // const existingUser = await MockDatabase.getUser(account.grid_user_id);
+                // if (!existingUser) {
+                //     await MockDatabase.createUser(account.grid_user_id);
+                // }
 
-                const updatedAccountInfo = {
-                    ...accountInfo,
-                    smart_account_address: account.smart_account_address,
-                    grid_user_id: account.grid_user_id
-                };
+                // const updatedAccountInfo = {
+                //     ...accountInfo,
+                //     smart_account_address: account.smart_account_address,
+                //     grid_user_id: account.grid_user_id
+                // };
 
-                setAccountInfo(updatedAccountInfo);
-                await fetchWalletData(updatedAccountInfo);
+                // setAccountInfo(updatedAccountInfo);
+                // await fetchWalletData(updatedAccountInfo);
             } catch (err) {
                 console.error('Error initializing account:', err);
                 Sentry.captureException(new Error(`Error initializing account: ${err}. (tabs)/index.tsx (initializeAccount)`));

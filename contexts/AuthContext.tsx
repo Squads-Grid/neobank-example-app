@@ -59,10 +59,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             const result = await verifyOtpCodeAndCreateAccount(code, sessionSecrets, user);
 
-            await AuthStorage.saveUserData(result);
-            setIsAuthenticated(true);
+            await setIsAuthenticated(true);
             setAuthError(null);
-            console.log("🚀 ~ verifyCodeAndCreateAccount successful")
+            await AuthStorage.saveUserData(result);
+            
+            console.log("🚀 ~ verifyCodeAndCreateAccount successful");
 
             return true;
         } catch (error) {

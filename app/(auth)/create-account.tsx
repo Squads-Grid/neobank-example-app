@@ -18,7 +18,7 @@ function CreateAccountScreen() {
     const [showCodeInput, setShowCodeInput] = useState(false);
     const [error, setError] = useState<string | null>(null);
     // const [otpId, setOtpId] = useState<string | null>(null);
-    const { register, verifyCodeAndCreateAccount, email, setEmail } = useAuth();
+    const { register, verifyCodeAndCreateAccount, email, setEmail, isAuthenticated } = useAuth();
     const { textColor } = useScreenTheme();
 
     const triggerSignUp = async (emailToUse: string) => {
@@ -49,12 +49,15 @@ function CreateAccountScreen() {
         // }
 
         console.log("🚀 ~ verify ~ code:", code)
-        const result = await verifyCodeAndCreateAccount(
+        const success = await verifyCodeAndCreateAccount(
             code,
             // otpId
         );
-        console.log("🚀 ~ verify ~ result:", result)
-        return result;
+        console.log("🤔 isAuthenticated:", isAuthenticated);
+        if (success) {
+            router.replace('/success');
+        }
+        return success;
     };
 
     const handleSubmit = async (submittedEmail: string, code?: string, formError?: string) => {
