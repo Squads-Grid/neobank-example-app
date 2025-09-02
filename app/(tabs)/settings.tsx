@@ -13,13 +13,14 @@ import * as Clipboard from 'expo-clipboard';
 import { useKyc } from '@/hooks/useKyc';
 
 export default function SettingsScreen() {
-    const { logout, email } = useAuth();
+    const { logout, user } = useAuth();
     const { status: kycStatus, checkStatus } = useKyc();
     const textColor = useThemeColor({}, 'text');
     const backgroundColor = useThemeColor({}, 'background');
     const [gridUserId, setGridUserId] = useState<string>('');
 
     useEffect(() => {
+        console.log("🚀 ~ useEffect ~ user:", user)
         const loadData = async () => {
             const id = await SecureStore.getItemAsync(AUTH_STORAGE_KEYS.GRID_USER_ID);
             if (id) setGridUserId(id);
@@ -55,17 +56,13 @@ export default function SettingsScreen() {
                     </ThemedText>
                 </View>
                 <View style={styles.accountInfo}>
-                    <ThemedText type="regular">Email:</ThemedText>
-                    <ThemedText type="regular" style={styles.infoText}>{email}</ThemedText>
-                </View>
-                <View style={styles.accountInfo}>
                     <ThemedText type="regular">KYC Status:</ThemedText>
                     <ThemedText type="regular" style={styles.infoText}>{formatKycStatus(kycStatus)}</ThemedText>
                 </View>
                 <View style={styles.accountInfo}>
                     <ThemedText type="regular">Grid User ID:</ThemedText>
                     <View style={styles.idContainer}>
-                        <ThemedText type="regular" style={styles.infoText}>{formatGridUserId(gridUserId).replaceAll('\"', '')}</ThemedText>
+                        <ThemedText type="regular" style={styles.infoText}>{formatGridUserId(user?.grid_user_id ?? '').replaceAll('\"', '')}</ThemedText>
                         <TouchableOpacity onPress={copyToClipboard} style={styles.copyButton}>
                             <Ionicons name="copy-outline" size={20} color={textColor} style={{ opacity: 0.6 }} />
                         </TouchableOpacity>

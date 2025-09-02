@@ -96,6 +96,7 @@ export const AuthStorage = {
             SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.KYC_STATUS),
             SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.SESSION_SECRETS),
             SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.USER),
+            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED)
         ]);
     }
 }; 
