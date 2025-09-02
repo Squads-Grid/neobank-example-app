@@ -32,6 +32,7 @@ export function useKyc(): UseKycReturn {
     const [error, setError] = useState<string | null>(null);
     const [isBankLoading, setIsBankLoading] = useState(false);
     const { fetchBankDetails } = useModalFlow();
+    const { user } = useAuth();
 
     // Initialize status from storage when hook mounts
     useEffect(() => {
@@ -48,12 +49,12 @@ export function useKyc(): UseKycReturn {
 
             StorageService.setItem(AUTH_STORAGE_KEYS.KYC_STATUS, response.data.kyc_status);
 
-            if (!accountInfo?.grid_user_id) {
+            if (!user?.grid_user_id) {
                 throw new Error('Account information not found');
             }
 
             // Store the KYC link ID in the mock database
-            await MockDatabase.updateUserKycLinkID(accountInfo.grid_user_id, response.data.id);
+            await MockDatabase.updateUserKycLinkID(user.grid_user_id, response.data.id);
             return { kycLink: response.data.kyc_link, tosLink: response.data.tos_link };
         } catch (err) {
             Sentry.captureException(new Error(`Failed to start KYC process: ${err}. (hooks)/useKyc.ts (startKyc)`));
@@ -62,10 +63,10 @@ export function useKyc(): UseKycReturn {
         } finally {
             setIsLoading(false);
         }
-    }, [accountInfo]);
+    }, [user]);
 
     const checkStatus = useCallback(async () => {
-        if (!accountInfo?.grid_user_id) {
+        if (!user?.grid_user_id) {
             setError('Account information not found');
             setIsLoading(false);
             return;
@@ -74,26 +75,26 @@ export function useKyc(): UseKycReturn {
         setIsLoading(true);
         setError(null);
         try {
-            const user = await MockDatabase.getUser(accountInfo.grid_user_id);
-            if (!user) {
+            const userData = await MockDatabase.getUser(user.grid_user_id);
+            if (!userData) {
                 setStatus('not_started');
                 setIsLoading(false);
                 return;
             }
 
-            if (!user?.kyc_link_id) {
+            if (!userData?.kyc_link_id) {
                 setStatus('not_started');
                 setIsLoading(false);
                 return;
             }
-            if (!accountInfo.smart_account_address) {
+            if (!user.address) {
                 setError('Account information not found');
                 setIsLoading(false);
 
                 return;
             }
             const easClient = new EasClient();
-            const response = await easClient.getKYCStatus(accountInfo.smart_account_address, user.kyc_link_id);
+            const response = await easClient.getKYCStatus(user.address, userData.kyc_link_id);
 
             const tosStatus = process.env.EXPO_PUBLIC_GRID_ENV === 'production' ? response.data.tos_status as TosStatus : 'approved';
             const newStatus = response.data.status as KycStatus;
