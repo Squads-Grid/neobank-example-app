@@ -33,7 +33,6 @@ export class EasClient {
 
     private validateEnv() {
         if (!process.env.EXPO_PUBLIC_API_ENDPOINT) {
-            console.log("🍓 missing in easClient.ts");
 
             throw new Error('Missing required environment variables: EXPO_PUBLIC_API_ENDPOINT');
         }
@@ -64,7 +63,6 @@ export class EasClient {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => console.error('Error parsing response:', response));
-                console.log("🚀 ~ EasClient ~ errorData:", errorData)
 
                 // Check if errorData has the expected structure
                 if (errorData?.details?.[0]?.code) {
@@ -116,7 +114,6 @@ export class EasClient {
     }
 
     async verifyOtpCode(request: {otpCode: string, sessionSecrets: SessionSecrets, user: any}): Promise<any> {
-        console.log("🚀 ~ verifyOtpCode in easClient.ts ~ request:", request)
         return this.request<InitAuthResponse>('/verify-otp', {
             method: 'POST',
             body: JSON.stringify(request),

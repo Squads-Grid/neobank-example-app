@@ -145,17 +145,16 @@ export default function FiatConfirmScreen() {
             try {
                 const transactionData = await easClient.preparePaymentIntent(payload, user.address, true);
 
-                console.log("🚀 ~ transactionData in fiatconfirm.tsx:", JSON.stringify(transactionData, null, 2))
                 // Store the external account ID with label
-                // if (res.data.destination.external_account_id && user.grid_user_id) {
-                //     if (accountLabel === "[object Object]") {
-                //         handleError(ErrorCode.INVALID_LABEL, true, true);
-                //         return;
-                //     }
+                if (transactionData.data.destination.external_account_id && user.grid_user_id) {
+                    if (accountLabel === "[object Object]") {
+                        handleError(ErrorCode.INVALID_LABEL, true, true);
+                        return;
+                    }
 
-                //     await storeExternalAccount(user.grid_user_id, res.data.destination.external_account_id, accountLabel);
+                    await storeExternalAccount(user.grid_user_id, transactionData.data.destination.external_account_id, accountLabel);
 
-                // }
+                }
 
 
                 if (!user) {

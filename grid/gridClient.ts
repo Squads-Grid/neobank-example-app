@@ -29,7 +29,6 @@ export class GridClient {
 
     private validateEnv() {
         if (!process.env.GRID_ENDPOINT || !process.env.GRID_API_KEY) {
-            console.log("🍓 missing in gridClient.ts");
             throw new Error('Missing required environment variables. Please check your .env file.');
         }
     }

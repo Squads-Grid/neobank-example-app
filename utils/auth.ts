@@ -17,16 +17,13 @@ export const validateEnv = () => {
 export const registerUser = async (email: string): Promise<any> => {
     const easClient = new EasClient();
     const response = await easClient.register({email: email});
-    console.log("🚀 ~ register ~ response:", response)
     return response;
 };
 
 export const verifyOtpCodeAndCreateAccount = async (code: string, sessionSecrets: SessionSecrets, user: any): Promise<any> => {
-    console.log("🚀 ~ verifyOtpCodeAndCreateAccount in auth.ts")
 
     const easClient = new EasClient();
     const response = await easClient.verifyCodeAndCreateAccount({otpCode: code, sessionSecrets: sessionSecrets, user: user});
-    console.log("🚀 ~ verifyOtpCodeAndCreateAccount in auth.ts ~ response:", response)
 
     // Return the full session secrets array instead of single keypair
     return response;
@@ -41,7 +38,6 @@ export const authenticateUser = async (email: string): Promise<any> => {
     };
     const easClient = new EasClient();
     const response = await easClient.authenticate(request);
-    console.log("🚀 ~ authenticateUuuuuuuuuuser ~ response:", response)
     return response;
 };
 
@@ -49,13 +45,9 @@ export const authenticateUser = async (email: string): Promise<any> => {
 
 export const verifyOtpCode = async (otpCode: string, sessionSecrets: SessionSecrets, user: any): Promise<any> => {
 
-    console.log("🚀 ~ verifyOtpCode in auth.ts ~ otpCode:", otpCode)
-    console.log("🚀 ~ verifyOtpCode in auth.ts ~ sessionSecrets:", sessionSecrets)
-    console.log("🚀 ~ verifyOtpCode in auth.ts ~ user:", user)
     const easClient = new EasClient();
     const response = await easClient.verifyOtpCode({otpCode, sessionSecrets, user});
     // const response = await easClient.verifyOtp(otpData);
-    console.log("🚀 ~ verifyOtpCode in auth.ts ~ response:", response)
 
     // Return the full session secrets array instead of single keypair
     return response;

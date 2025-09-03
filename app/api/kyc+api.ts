@@ -1,7 +1,6 @@
 import { GridClient, GridEnvironment, RequestKycLinkRequest } from '@sqds/grid';
 
 export async function POST(request: Request) {
-    console.log("🚀 ~ kyc+api.ts")
     try {
         const body = await request.json();
 
@@ -17,7 +16,6 @@ export async function POST(request: Request) {
             baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
         });
         const response = await gridClient.requestKycLink(body.smart_account_address, kycRequest);
-        console.log("🚀 ~ response in kyc+api.ts:", response)
 
         return new Response(
             JSON.stringify(response),

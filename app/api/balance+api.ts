@@ -11,7 +11,6 @@ export async function POST(request: Request) {
             baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
         });
         const response = await gridClient.getAccountBalances(smartAccountAddress);
-        console.log("🚀 ~ response in balance+api.ts:", response)
 
         return Response.json(response);
     } catch (error) {

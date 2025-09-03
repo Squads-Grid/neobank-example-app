@@ -99,7 +99,6 @@ export function ModalFlowProvider({ children }: { children: React.ReactNode }) {
         try {
             const easClient = new EasClient();
             const response = await easClient.getVirtualAccounts(user.address);
-            console.log("🚀 ~ fetchBankDetails ~ response:", response)
             setBankAccountDetails(response);
         } catch (err) {
             setError('Failed to fetch bank details');

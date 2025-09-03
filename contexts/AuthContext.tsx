@@ -49,7 +49,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [user]);
 
     const verifyCodeAndCreateAccount = async (code: string): Promise<boolean> => {
-        console.log("🚀 ~ verifyCodeAndCreateAccount ~ code:", code)
         try {
             const gridClient = new GridClient({
                 environment: 'sandbox' as GridEnvironment,
@@ -73,8 +72,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setAuthError(null);
             await AuthStorage.saveUserData(result);
             
-            console.log("🚀 ~ verifyCodeAndCreateAccount successful");
-
             return true;
         } catch (error) {
             Sentry.captureException(new Error(`Error verifying code: ${error}. (contexts)/AuthContext.tsx (verifyCode)`));
@@ -85,25 +82,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const verifyCode = async (code: string): Promise<boolean> => {
-        console.log("🚀 ~ verifyCode ~ code:", code)
         try {
             const gridClient = new GridClient({
                 environment: 'sandbox' as GridEnvironment,
                 baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
             });
             const sessionSecrets = await gridClient.generateSessionSecrets();
-            console.log("🚀 ~ verifyCode ~ sessionSecrets:", sessionSecrets)
 
             await AuthStorage.saveSessionSecrets(sessionSecrets);
 
             const userData = await AuthStorage.getUser();
-            console.log("🚀 ~ verifyCode ~ userData:", userData)
 
             if (!userData) {
-                console.log("🚀 ~ verifyCode ~ user not found!!!!!!!!!!!!!!")
                 throw new Error('User not found');
                 }
-                console.log("🚀 ~ verifyCode ~ user found:", userData)
 
             const result = await verifyOtpCode(code, sessionSecrets, userData);
             setUser(result);
@@ -118,7 +110,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setAuthError(null);
             await AuthStorage.saveUserData(result);
             
-            console.log("🚀 ~ verifyCodeAndCreateAccount successful");
 
             return true;
         } catch (error) {
@@ -144,7 +135,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const authenticate = async (email: string): Promise<void> => {
         try {
             const result= await authenticateUser(email);
-            console.log("🚀 ~ authenticate ~ result:", result)
             setUser(result);
             setEmail(email);
             await AuthStorage.saveUserData(result);
@@ -154,7 +144,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
         } catch (error) {
-            console.log("🚀 ~ authenticate ~ error:", error)
             Sentry.captureException(new Error(`Error authenticating: ${error}. (contexts)/AuthContext.tsx (authenticate)`));
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             setAuthError(errorMessage);
@@ -163,10 +152,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const register = async (email: string): Promise<void> => {
-        console.log("🚀 ~ register ~ email in AuthContext:", email)
         try {
             const result= await registerUser(email);
-            console.log("🚀 ~ register ~ result in AuthContext:", result)
             setUser(result);
             setEmail(email);
 

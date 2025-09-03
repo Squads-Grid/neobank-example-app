@@ -44,13 +44,10 @@ function KYCModal() {
     };
 
     const handleInitialContinue = () => {
-        console.log("🚀 ~ handleInitialContinue ~ user:", user)
         setShowNameInputs(true);
     };
 
     const handleSubmit = async () => {
-        console.log("🚀 ~ handleSubmit ~ user:", user)
-        console.log("🚀 ~ handleSubmit ~ email:", email)
         Keyboard.dismiss();
         setIsSubmitting(true);
         setShowChecklist(true);
@@ -69,7 +66,6 @@ function KYCModal() {
             };
 
             const result = await startKyc(params);
-            console.log("🚀 ~ handleSubmit ~ result:", result)
             const { kycLink, tosLink } = result;
             setKycUrl(kycLink);
             setTosUrl(tosLink);

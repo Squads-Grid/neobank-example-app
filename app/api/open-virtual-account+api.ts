@@ -15,7 +15,6 @@ export async function POST(request: Request) {
             baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
         });
         const response = await gridClient.requestVirtualAccount(body.smartAccountAddress, virtualAccountRequest);
-        console.log("🚀 ~ response in open-virtual-account+api.ts:", response)
 
         return new Response(JSON.stringify(response), {
             status: 200,

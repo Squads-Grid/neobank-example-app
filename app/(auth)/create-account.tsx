@@ -24,10 +24,7 @@ function CreateAccountScreen() {
     const triggerSignUp = async (emailToUse: string) => {
 
         setShowCodeInput(true);
-        console.log("🚀 ~ triggerSignUp ~ emailToUse:", emailToUse)
         const result = await register(emailToUse);
-        console.log("🚀 ~ triggerSignUp ~ result:", result)
-        // setOtpId(result);
     };
 
     const handleResend = async () => {
@@ -44,16 +41,10 @@ function CreateAccountScreen() {
     });
 
     const verify = async (code: string): Promise<boolean> => {
-        // if (!otpId) {
-        //     throw new Error('No otpId found');
-        // }
-
-        console.log("🚀 ~ verify ~ code:", code)
+    
         const success = await verifyCodeAndCreateAccount(
             code,
-            // otpId
         );
-        console.log("🤔 isAuthenticated:", isAuthenticated);
         if (success) {
             router.replace('/success');
         }
@@ -66,7 +57,6 @@ function CreateAccountScreen() {
             setError(null);
             setEmail(submittedEmail);
 
-            console.log("🚀 ~ handleSubmit ~ formError:", formError)
             if (formError) {
                 setError(formError);
                 handleError(ErrorCode.INVALID_EMAIL, true, true);
@@ -85,7 +75,6 @@ function CreateAccountScreen() {
                 await triggerSignUp(submittedEmail);
             }
         } catch (error) {
-            console.log("🚀 ~ handleSubmit ~ error:", error)
             setError('An error occurred. Please try again.');
         } finally {
             setIsLoading(false);

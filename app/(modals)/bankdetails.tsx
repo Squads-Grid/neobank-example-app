@@ -140,16 +140,13 @@ function BankDetailsModal() {
                 gridUserId: user.grid_user_id!,
                 currency: selectedCurrency
             };
-            console.log("🚀 ~ handleCreateBankAccount ~ accountParams:", accountParams)
 
             const easClient = new EasClient();
             const response = await easClient.openVirtualAccount(accountParams);
-            console.log("🚀 ~ handleCreateBankAccount ~ response:", response)
 
             // Fetch updated bank details
             await fetchBankDetails();
         } catch (err) {
-            console.error('Error creating virtual account:', err);
             Sentry.captureException(new Error(`Failed to create virtual account: ${err}. (modals)/bankdetails.tsx (handleCreateBankAccount)`));
             setError('Failed to create virtual account');
         } finally {
