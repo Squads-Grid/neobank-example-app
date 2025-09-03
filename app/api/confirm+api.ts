@@ -3,19 +3,21 @@ import { ErrorCode } from "@/utils/errors";
 
 export async function POST(request: Request) {
     try {
-        const { smartAccountAddress, paymentIntentId, payload, useMpcProvider } = await request.json();
+        const { address, signedTransactionPayload } = await request.json();
 
         const gridClient = new GridClient({
             apiKey: process.env.GRID_API_KEY!,
             environment: 'sandbox' as GridEnvironment,
             baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
         });
-        const response = await gridClient.send({
-            address: smartAccountAddress,
-            signedTransactionPayload: payload
-        });
 
-        return new Response(JSON.stringify(response), {
+        // Use signAndSend instead of the old authorize flow
+        const signature = await gridClient.send({
+            signedTransactionPayload,
+            address
+        });         
+
+        return new Response(JSON.stringify(signature), {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
@@ -25,10 +27,11 @@ export async function POST(request: Request) {
         const errorMessage = error.message || '';
         const errorData = error.data || {};
 
-        if (errorMessage.includes('API_KEY_EXPIRED') ||
+        if (errorMessage.includes('API_KEY_EXPIRED') || 
+        error.message.includes('session key is expired') ||
             (errorData.details && errorData.details.some((detail: any) =>
                 detail.turnkeyErrorCode === 'API_KEY_EXPIRED' ||
-                detail.message?.includes('expired api key')
+                detail.message?.includes('expired api key') 
             ))) {
             return new Response(
                 JSON.stringify({

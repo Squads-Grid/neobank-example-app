@@ -1,4 +1,4 @@
-import { GridClientUserContext, UniversalKeyPair } from '@sqds/grid/native';
+import { UniversalKeyPair } from '@sqds/grid/native';
 import { z } from 'zod/v4';
 
 export const Email = z.email();
@@ -13,7 +13,7 @@ export interface AccountInfo {
 
 export interface AuthContextType {
     isAuthenticated: boolean | null;
-    user: GridClientUserContext | null;
+    user: any | null;
     email: string | null;
     accountInfo: AccountInfo | null;
     setEmail: React.Dispatch<React.SetStateAction<string | null>>;

@@ -4,7 +4,7 @@ import { KycResponse, KycParams } from '@/types/Kyc';
 import { OpenVirtualAccountParams } from '@/types/VirtualAccounts';
 import { ConfirmPayload } from '@/types/Transaction';
 import { SentryApiResponse } from '@/types/Sentry';
-import { InitAuthResponse, GridClientUserContext, SessionSecrets } from '@sqds/grid/native';
+import { InitAuthResponse, SessionSecrets } from '@sqds/grid/native';
 
 // import * as Sentry from '@sentry/react-native'; 
 
@@ -108,14 +108,14 @@ export class EasClient {
         });
     }
 
-    async verifyCodeAndCreateAccount(request: {otpCode: string, sessionSecrets: SessionSecrets, user: GridClientUserContext}): Promise<any> {
+    async verifyCodeAndCreateAccount(request: {otpCode: string, sessionSecrets: SessionSecrets, user: any}): Promise<any> {
         return this.request<InitAuthResponse>('/verify-otp-and-create-account', {
             method: 'POST',
             body: JSON.stringify(request),
         });
     }
 
-    async verifyOtpCode(request: {otpCode: string, sessionSecrets: SessionSecrets, user: GridClientUserContext}): Promise<any> {
+    async verifyOtpCode(request: {otpCode: string, sessionSecrets: SessionSecrets, user: any}): Promise<any> {
         console.log("🚀 ~ verifyOtpCode in easClient.ts ~ request:", request)
         return this.request<InitAuthResponse>('/verify-otp', {
             method: 'POST',
@@ -183,11 +183,11 @@ export class EasClient {
         });
     }
 
-    async confirmPaymentIntent(smartAccountAddress: string, paymentIntentId: string, payload?: ConfirmPayload, useMpcProvider: boolean = false): Promise<any> {
+    async confirmPaymentIntent(payload?: any): Promise<any> {
 
         return this.request<any>(`/confirm`, {
             method: 'POST',
-            body: JSON.stringify({ smartAccountAddress, paymentIntentId, payload, useMpcProvider }),
+            body: JSON.stringify(payload),
         });
     }
 

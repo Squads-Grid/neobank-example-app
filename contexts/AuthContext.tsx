@@ -4,7 +4,7 @@ import { AccountInfo, AuthContextType } from '@/types/Auth';
 import { authenticateUser, verifyOtpCodeAndCreateAccount, registerUser, verifyOtpCode } from '@/utils/auth';
 import { AuthStorage } from '@/utils/storage/authStorage';
 import * as Sentry from '@sentry/react-native';
-import { GridClient, GridEnvironment, UniversalKeyPair, GridClientUserContext } from '@sqds/grid/native';
+import { GridClient, GridEnvironment } from '@sqds/grid/native';
 import { MockDatabase } from '@/utils/mockDatabase';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [wallet, setWallet] = useState<string | null>(null);
     const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
     const [mpcPrimaryId, setMpcPrimaryId] = useState<string | null>(null);
-    const [user, setUser] = useState<GridClientUserContext | null>(null);
+    const [user, setUser] = useState<any | null>(null);
 
     useEffect(() => {
         const initializeAuth = async () => {

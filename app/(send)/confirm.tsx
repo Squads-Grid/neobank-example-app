@@ -16,7 +16,9 @@ import { PreparePaymentIntentParams, SmartAccount, SolanaAddress } from '@/types
 import { ErrorCode } from '@/utils/errors';
 import Toast from 'react-native-toast-message';
 import * as Sentry from '@sentry/react-native';
-import { GridClient, GridEnvironment } from '@sqds/grid';
+import { CreatePaymentIntentRequest, GridClient, GridEnvironment } from '@sqds/grid';
+import { StorageService } from '@/utils/storage';
+import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
@@ -24,7 +26,7 @@ const USDC_DECIMALS = 6;
 export default function ConfirmScreen() {
     const textColor = useThemeColor({}, 'text');
     const [isLoading, setIsLoading] = useState(false);
-    const { accountInfo, credentialsBundle, keypair, user, logout } = useAuth();
+    const { user, logout } = useAuth();
 
     const { amount, recipient, name, type, title } = useLocalSearchParams<{
         amount: string;
@@ -37,7 +39,8 @@ export default function ConfirmScreen() {
     const handleConfirm = async () => {
         setIsLoading(true);
         try {
-            if (!accountInfo || !credentialsBundle || !keypair) {
+            const sessionSecrets = await StorageService.getItem(AUTH_STORAGE_KEYS.SESSION_SECRETS);
+            if (!user || !user.address || !sessionSecrets) {
                 logout();
                 router.push({
                     pathname: '/(auth)/login',
@@ -46,31 +49,23 @@ export default function ConfirmScreen() {
                 return;
             }
 
-            const source: SmartAccount = {
-                smart_account_address: accountInfo.smart_account_address,
-                currency: 'usdc',
-                authorities: [accountInfo.smart_account_signer_public_key],
-            }
-
-            const destination: SolanaAddress = {
-                address: recipient,
-                currency: 'usdc',
-            }
-            // Convert amount to USDC base units (multiply by 10^6)
-            const amountInBaseUnits = Math.round(parseFloat(amount) * Math.pow(10, USDC_DECIMALS)).toString();
-
-            const prepareTransactionParams: PreparePaymentIntentParams = {
-                amount: amountInBaseUnits,
-                grid_user_id: accountInfo.grid_user_id,
-                source: source,
-                destination: destination
+            const prepareTransactionParams: CreatePaymentIntentRequest = {
+                amount: (Number(amount) * 1000000).toString(), // Convert to USDC base units
+                grid_user_id: user.grid_user_id!,
+                source: {
+                    account: user.address,
+                    currency: "usdc"
+                },
+                destination: {
+                    address: recipient,
+                    currency: "usdc"
+                }
             };
+
             const easClient = new EasClient();
 
-            const res = await easClient.preparePaymentIntent(prepareTransactionParams, accountInfo.smart_account_address, true);
+            const transactionData = await easClient.preparePaymentIntent(prepareTransactionParams, user.address, true);
 
-            const receivedPayload = res.data;
-            const mpcPayload = receivedPayload.mpc_payload;
             if (!user) {
                 logout();
                 router.push({
@@ -85,13 +80,18 @@ export default function ConfirmScreen() {
                 baseUrl: process.env.EXPO_PUBLIC_GRID_ENDPOINT || 'http://localhost:50001'
             });
 
-            // Use signAndSend instead of the old authorize flow
-            await gridClient.signAndSend({
-                transactionPayload: receivedPayload,
-                sessionSecrets: keypair as any, // keypair is now SessionSecrets array
-                address: accountInfo.smart_account_address
-            });
+            const signedPayload = await gridClient.sign({
+                sessionSecrets: sessionSecrets as any,
+                session: user.authentication,
+                transactionPayload: transactionData.data.transactionPayload!
+              })
 
+              const payload = {
+                signedTransactionPayload: signedPayload,
+                address: user.address
+              }
+
+            const signature = await easClient.confirmPaymentIntent(payload);
             router.push({
                 pathname: '/success',
                 params: { amount, type, title },

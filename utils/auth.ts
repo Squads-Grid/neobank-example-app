@@ -1,5 +1,5 @@
 import { AccountInfo } from '@/types/Auth';
-import { SessionSecrets, GridClient, GridEnvironment, GridClientUserContext } from '@sqds/grid';
+import { SessionSecrets } from '@sqds/grid';
 import { EasClient } from '@/utils/easClient';
 // import { setupCryptoPolyfill } from '@/polyfills';
 // import * as Sentry from '@sentry/react-native';
@@ -21,7 +21,7 @@ export const registerUser = async (email: string): Promise<any> => {
     return response;
 };
 
-export const verifyOtpCodeAndCreateAccount = async (code: string, sessionSecrets: SessionSecrets, user: GridClientUserContext): Promise<GridClientUserContext> => {
+export const verifyOtpCodeAndCreateAccount = async (code: string, sessionSecrets: SessionSecrets, user: any): Promise<any> => {
     console.log("🚀 ~ verifyOtpCodeAndCreateAccount in auth.ts")
 
     const easClient = new EasClient();
@@ -47,7 +47,7 @@ export const authenticateUser = async (email: string): Promise<any> => {
 
 
 
-export const verifyOtpCode = async (otpCode: string, sessionSecrets: SessionSecrets, user: GridClientUserContext): Promise<any> => {
+export const verifyOtpCode = async (otpCode: string, sessionSecrets: SessionSecrets, user: any): Promise<any> => {
 
     console.log("🚀 ~ verifyOtpCode in auth.ts ~ otpCode:", otpCode)
     console.log("🚀 ~ verifyOtpCode in auth.ts ~ sessionSecrets:", sessionSecrets)
