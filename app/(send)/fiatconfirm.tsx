@@ -19,6 +19,8 @@ import Toast from 'react-native-toast-message';
 import { ErrorCode, handleError } from '@/utils/errors';
 import * as Sentry from '@sentry/react-native';
 import { GridClient, GridEnvironment } from '@sqds/grid';
+import { AUTH_STORAGE_KEYS } from '@/utils/auth';
+import { StorageService } from '@/utils/storage';
 
 // USDC has 6 decimals
 const USDC_DECIMALS = 6;
@@ -75,7 +77,9 @@ export default function FiatConfirmScreen() {
     const handleConfirm = async () => {
         setIsLoading(true);
         try {
-            if (!accountInfo || !credentialsBundle || !keypair) {
+            const sessionSecrets = await StorageService.getItem(AUTH_STORAGE_KEYS.SESSION_SECRETS);
+
+            if (!user || !user.address || !sessionSecrets) {
                 logout();
                 router.push({
                     pathname: '/(auth)/login',
@@ -85,20 +89,19 @@ export default function FiatConfirmScreen() {
             }
 
             const source: SmartAccount = {
-                smart_account_address: accountInfo.smart_account_address,
+                smart_account_address: user.address,
                 currency: 'usdc',
-                authorities: [accountInfo.smart_account_signer_public_key],
+                authorities: [user.smart_account_signer_public_key],
             }
 
             // Convert amount to USDC base units (multiply by 10^6)
             const amountInBaseUnits = Math.round(parseFloat(amount) * Math.pow(10, USDC_DECIMALS)).toString();
             const payload = externalAccountId ? {
                 amount: amountInBaseUnits,
-                grid_user_id: accountInfo.grid_user_id,
+                grid_user_id: user.grid_user_id,
                 source: {
-                    smart_account_address: accountInfo.smart_account_address,
-                    currency: "usdc",
-                    authorities: [accountInfo.smart_account_signer_public_key]
+                    account: user.address,
+                    currency: "usdc"
                 },
                 destination: {
                     payment_rail: "ach_push",
@@ -109,11 +112,10 @@ export default function FiatConfirmScreen() {
             }
                 : {
                     amount: amountInBaseUnits,
-                    grid_user_id: accountInfo.grid_user_id,
+                    grid_user_id: user.grid_user_id,
                     source: {
-                        smart_account_address: accountInfo.smart_account_address,
-                        currency: "usdc",
-                        authorities: [accountInfo.smart_account_signer_public_key]
+                        account: user.address,
+                        currency: "usdc"
                     },
                     destination: {
                         payment_rail: "ach_push",
@@ -141,18 +143,19 @@ export default function FiatConfirmScreen() {
 
             const easClient = new EasClient();
             try {
-                const res = await easClient.preparePaymentIntent(payload, accountInfo.smart_account_address, true);
+                const transactionData = await easClient.preparePaymentIntent(payload, user.address, true);
 
+                console.log("🚀 ~ transactionData in fiatconfirm.tsx:", JSON.stringify(transactionData, null, 2))
                 // Store the external account ID with label
-                if (res.data.destination.external_account_id && accountInfo.grid_user_id) {
-                    if (accountLabel === "[object Object]") {
-                        handleError(ErrorCode.INVALID_LABEL, true, true);
-                        return;
-                    }
+                // if (res.data.destination.external_account_id && user.grid_user_id) {
+                //     if (accountLabel === "[object Object]") {
+                //         handleError(ErrorCode.INVALID_LABEL, true, true);
+                //         return;
+                //     }
 
-                    await storeExternalAccount(accountInfo.grid_user_id, res.data.destination.external_account_id, accountLabel);
+                //     await storeExternalAccount(user.grid_user_id, res.data.destination.external_account_id, accountLabel);
 
-                }
+                // }
 
 
                 if (!user) {
@@ -163,8 +166,8 @@ export default function FiatConfirmScreen() {
                     return;
                 }
 
-                const receivedPayload = res.data;
-                const mpcPayload = receivedPayload.mpc_payload;
+                // const receivedPayload = res.data;
+                // const mpcPayload = receivedPayload.mpc_payload;
                 if (!user) {
                     logout();
                     router.push({
@@ -174,16 +177,25 @@ export default function FiatConfirmScreen() {
                 }
 
                 const gridClient = new GridClient({
-                    apiKey: process.env.EXPO_PUBLIC_GRID_API_KEY!,
                     environment: 'sandbox' as GridEnvironment,
                     baseUrl: process.env.EXPO_PUBLIC_GRID_ENDPOINT || 'http://localhost:50001'
                 });
 
-                // Use signAndSend instead of the old authorize flow
-                await gridClient.signAndSend({
-                    transactionPayload: receivedPayload,
-                    sessionSecrets: keypair as any, // keypair is now SessionSecrets array
-                    address: accountInfo.smart_account_address
+                const signedPayload = await gridClient.sign({
+                    sessionSecrets: sessionSecrets as any,
+                    session: user.authentication,
+                    transactionPayload: transactionData.data.transactionPayload!
+                  })
+    
+                  const confirmPayload = {
+                    signedTransactionPayload: signedPayload,
+                    address: user.address
+                  }
+    
+                const signature = await easClient.confirmPaymentIntent(confirmPayload);
+                router.push({
+                    pathname: '/success',
+                    params: { amount, type, title },
                 });
 
                 router.push({
