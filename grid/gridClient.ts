@@ -14,7 +14,7 @@ export class GridClient {
 
     constructor() {
         this.validateEnv();
-        const endpoint = process.env.GRID_ENDPOINT || '';
+        const endpoint = process.env.GRID_ENDPOINT;
 
 
         this.baseUrl = `${endpoint}`;

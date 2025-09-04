@@ -16,7 +16,8 @@ import { PreparePaymentIntentParams, SmartAccount, SolanaAddress } from '@/types
 import { ErrorCode } from '@/utils/errors';
 import Toast from 'react-native-toast-message';
 import * as Sentry from '@sentry/react-native';
-import { CreatePaymentIntentRequest, GridClient, GridEnvironment } from '@sqds/grid';
+import { CreatePaymentIntentRequest } from '@sqds/grid';
+import { SDKGridClient } from '../../grid/sdkClient';
 import { StorageService } from '@/utils/storage';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 
@@ -75,10 +76,7 @@ export default function ConfirmScreen() {
                 return;
             }
             
-            const gridClient = new GridClient({
-                environment: 'sandbox' as GridEnvironment,
-                baseUrl: process.env.EXPO_PUBLIC_GRID_ENDPOINT || 'http://localhost:50001'
-            });
+            const gridClient = SDKGridClient.getFrontendClient();
 
             const signedPayload = await gridClient.sign({
                 sessionSecrets: sessionSecrets as any,

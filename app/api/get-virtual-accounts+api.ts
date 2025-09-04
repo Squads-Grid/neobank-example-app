@@ -1,4 +1,4 @@
-import { GridClient, GridEnvironment } from '@sqds/grid';
+import { SDKGridClient } from '../../grid/sdkClient';
 
 export async function GET(request: Request) {
     try {
@@ -11,11 +11,7 @@ export async function GET(request: Request) {
                 headers: { "Content-Type": "application/json" }
             });
         }
-        const gridClient = new GridClient({
-            apiKey: process.env.GRID_API_KEY!,
-            environment: 'sandbox' as GridEnvironment,
-            baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
-        });
+        const gridClient = SDKGridClient.getInstance();
         const response = await gridClient.getVirtualAccounts(smartAccountAddress);
 
         return new Response(JSON.stringify(response), {

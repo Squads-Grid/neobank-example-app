@@ -1,15 +1,11 @@
-import { GridClient, GridEnvironment } from '@sqds/grid';
+import { SDKGridClient } from '../../grid/sdkClient';
 import { ErrorCode } from "@/utils/errors";
 
 export async function POST(request: Request) {
     try {
         const { address, signedTransactionPayload } = await request.json();
 
-        const gridClient = new GridClient({
-            apiKey: process.env.GRID_API_KEY!,
-            environment: 'sandbox' as GridEnvironment,
-            baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
-        });
+        const gridClient = SDKGridClient.getInstance();
 
         // Use signAndSend instead of the old authorize flow
         const signature = await gridClient.send({
@@ -23,6 +19,7 @@ export async function POST(request: Request) {
         });
 
     } catch (error: any) {
+        console.error('Error confirming payment:', error);
         // Check if it's a Turnkey API key expired error
         const errorMessage = error.message || '';
         const errorData = error.data || {};

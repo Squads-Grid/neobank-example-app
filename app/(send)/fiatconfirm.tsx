@@ -18,7 +18,7 @@ import { clearExternalAccounts, storeExternalAccount } from '@/utils/externalAcc
 import Toast from 'react-native-toast-message';
 import { ErrorCode, handleError } from '@/utils/errors';
 import * as Sentry from '@sentry/react-native';
-import { GridClient, GridEnvironment } from '@sqds/grid';
+import { SDKGridClient } from '../../grid/sdkClient';
 import { AUTH_STORAGE_KEYS } from '@/utils/auth';
 import { StorageService } from '@/utils/storage';
 
@@ -175,10 +175,7 @@ export default function FiatConfirmScreen() {
                     return;
                 }
 
-                const gridClient = new GridClient({
-                    environment: 'sandbox' as GridEnvironment,
-                    baseUrl: process.env.EXPO_PUBLIC_GRID_ENDPOINT || 'http://localhost:50001'
-                });
+                const gridClient = SDKGridClient.getFrontendClient();
 
                 const signedPayload = await gridClient.sign({
                     sessionSecrets: sessionSecrets as any,

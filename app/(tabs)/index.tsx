@@ -111,7 +111,6 @@ function HomeScreenContent() {
     const formatTransfers = useCallback((transfers: TransferResponse) => {
         for (const transfer of transfers) {
             if ('Spl' in transfer && transfer.Spl.confirmation_status === 'confirmed') {
-                console.log("🍓 splTransfer in formatTransfers:", JSON.stringify(transfer, null, 2))
             } 
         }
         const transfersToConsider = transfers.filter(transfer => ('Spl' in transfer && transfer.Spl.mint === process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS && ['confirmed'].includes(transfer.Spl.confirmation_status) ) || ('Bridge' in transfer && (transfer.Bridge.state === 'payment_processed' || transfer.Bridge.state === 'payment_submitted')));

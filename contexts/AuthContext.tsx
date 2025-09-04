@@ -4,7 +4,7 @@ import { AccountInfo, AuthContextType } from '@/types/Auth';
 import { authenticateUser, verifyOtpCodeAndCreateAccount, registerUser, verifyOtpCode } from '@/utils/auth';
 import { AuthStorage } from '@/utils/storage/authStorage';
 import * as Sentry from '@sentry/react-native';
-import { GridClient, GridEnvironment } from '@sqds/grid/native';
+import { SDKGridClient } from '../grid/sdkClient';
 import { MockDatabase } from '@/utils/mockDatabase';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,10 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const verifyCodeAndCreateAccount = async (code: string): Promise<boolean> => {
         try {
-            const gridClient = new GridClient({
-                environment: 'sandbox' as GridEnvironment,
-                baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
-            });
+            const gridClient = SDKGridClient.getFrontendClient();
             const sessionSecrets = await gridClient.generateSessionSecrets();
 
             await AuthStorage.saveSessionSecrets(sessionSecrets);
@@ -83,10 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const verifyCode = async (code: string): Promise<boolean> => {
         try {
-            const gridClient = new GridClient({
-                environment: 'sandbox' as GridEnvironment,
-                baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
-            });
+            const gridClient = SDKGridClient.getFrontendClient();
             const sessionSecrets = await gridClient.generateSessionSecrets();
 
             await AuthStorage.saveSessionSecrets(sessionSecrets);

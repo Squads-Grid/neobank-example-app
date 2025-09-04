@@ -1,4 +1,5 @@
-import { GridClient, GridEnvironment, RequestVirtualAccountRequest } from '@sqds/grid';
+import { RequestVirtualAccountRequest } from '@sqds/grid';
+import { SDKGridClient } from '../../grid/sdkClient';
 
 export async function POST(request: Request) {
     try {
@@ -9,11 +10,7 @@ export async function POST(request: Request) {
             grid_user_id: body.gridUserId
         };
 
-        const gridClient = new GridClient({
-            apiKey: process.env.GRID_API_KEY!,
-            environment: 'sandbox' as GridEnvironment,
-            baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
-        });
+        const gridClient = SDKGridClient.getInstance();
         const response = await gridClient.requestVirtualAccount(body.smartAccountAddress, virtualAccountRequest);
 
         return new Response(JSON.stringify(response), {

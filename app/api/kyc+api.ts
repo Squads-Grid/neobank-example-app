@@ -1,4 +1,5 @@
-import { GridClient, GridEnvironment, RequestKycLinkRequest } from '@sqds/grid';
+import { RequestKycLinkRequest } from '@sqds/grid';
+import { SDKGridClient } from '../../grid/sdkClient';
 
 export async function POST(request: Request) {
     try {
@@ -10,11 +11,7 @@ export async function POST(request: Request) {
             ...body
         }
 
-        const gridClient = new GridClient({
-            apiKey: process.env.GRID_API_KEY!,
-            environment: 'sandbox' as GridEnvironment,
-            baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
-        });
+        const gridClient = SDKGridClient.getInstance();
         const response = await gridClient.requestKycLink(body.smart_account_address, kycRequest);
 
         return new Response(
