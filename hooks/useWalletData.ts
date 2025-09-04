@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { TransferResponse } from '@/types/Transaction';
 import { EasClient } from '@/utils/easClient';
 import { StorageService } from '@/utils/storage';
@@ -13,7 +13,7 @@ export function useWalletData(accountInfo: AccountInfo | null) {
     const [error, setError] = useState<string | null>(null);
     const { user } = useAuth();
 
-    const fetchWalletData = async () => {
+    const fetchWalletData = useCallback(async () => {
         if (!user?.address) {
             setError('Account info not found');
             return;
@@ -55,7 +55,7 @@ export function useWalletData(accountInfo: AccountInfo | null) {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [user?.address]);
 
     // Load cached balance on mount
     useEffect(() => {

@@ -20,8 +20,7 @@ export async function GET(request: Request) {
             baseUrl: process.env.GRID_ENDPOINT || 'http://localhost:50001'
         });
         
-        // Temporary: return empty array until SDK supports listing payment intents
-        const response = { data: [] };
+        const response = await gridClient.getTransfers(smartAccountAddress);
 
         return new Response(JSON.stringify(response), {
             status: 200,

@@ -1,3 +1,5 @@
+import { SplTransfer } from "@sqds/grid/native";
+
 /**
  * Core transaction data interface
  */
@@ -209,23 +211,23 @@ export interface TransferSource {
     blockchain_memo?: string;
 }
 
-export interface SplTransfer {
-    id: string;
-    grid_user_id: string;
-    main_account_address: string;
-    mint: string;
-    is_token_2022: boolean;
-    signature: string;
-    confirmation_status: ConfirmationStatus;
-    from_address: string;
-    to_address: string;
-    amount: string;
-    ui_amount: string;
-    decimals: number;
-    confirmed_at: string | null;
-    created_at: string;
-    updated_at: string;
-}
+// export interface SplTransfer {
+//     id: string;
+//     grid_user_id: string;
+//     main_account_address: string;
+//     mint: string;
+//     is_token_2022: boolean;
+//     signature: string;
+//     confirmation_status: ConfirmationStatus;
+//     from_address: string;
+//     to_address: string;
+//     amount: string;
+//     ui_amount: string;
+//     decimals: number;
+//     confirmed_at: string | null;
+//     created_at: string;
+//     updated_at: string;
+// }
 
 export interface ReturnDetails {
     // Add fields as needed

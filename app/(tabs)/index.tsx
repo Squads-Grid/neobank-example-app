@@ -1,6 +1,6 @@
 import { Platform, StyleSheet, View, Image, ScrollView, RefreshControl } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { LoadingSpinner, ThemedText } from '@/components/ui/atoms';
 import { Spacing } from '@/constants/Spacing';
 import { CircleButtonGroup } from '@/components/ui/molecules';
@@ -67,7 +67,7 @@ function HomeScreenContent() {
         };
 
         initializeAccount();
-    }, []);
+    }, [fetchWalletData]);
 
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
@@ -81,36 +81,40 @@ function HomeScreenContent() {
         }
     }, [fetchWalletData]);
 
-    const actions: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void; color?: string; textColor?: string }[] = [
+    const actions = useMemo(() => [
         {
-            icon: 'add-outline',
+            icon: 'add-outline' as keyof typeof Ionicons.glyphMap,
             label: 'Add',
             onPress: showReceiveModal,
         },
         {
-            icon: 'arrow-forward-outline',
+            icon: 'arrow-forward-outline' as keyof typeof Ionicons.glyphMap,
             label: 'Send',
             onPress: () => setIsSendModalVisible(true),
         },
         {
-            icon: 'calendar-outline',
+            icon: 'calendar-outline' as keyof typeof Ionicons.glyphMap,
             label: 'Scheduled',
             onPress: () => showToast("Scheduled payments coming soon!"),
             color: textColor + 40,
             textColor: textColor + 40
         },
         {
-            icon: 'cash-outline',
+            icon: 'cash-outline' as keyof typeof Ionicons.glyphMap,
             label: 'Invest',
             onPress: () => showToast("Investment features coming soon!"),
             color: textColor + 40,
             textColor: textColor + 40
         }
-    ];
+    ], [showReceiveModal, setIsSendModalVisible, showToast, textColor]);
 
-    const formatTransfers = (transfers: TransferResponse) => {
-        const transfersToConsider = transfers.filter(transfer => ('Spl' in transfer && transfer.Spl.mint === process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS && transfer.Spl.confirmation_status === 'confirmed') || ('Bridge' in transfer && (transfer.Bridge.state === 'payment_processed' || transfer.Bridge.state === 'payment_submitted')));
-
+    const formatTransfers = useCallback((transfers: TransferResponse) => {
+        for (const transfer of transfers) {
+            if ('Spl' in transfer && transfer.Spl.confirmation_status === 'confirmed') {
+                console.log("🍓 splTransfer in formatTransfers:", JSON.stringify(transfer, null, 2))
+            } 
+        }
+        const transfersToConsider = transfers.filter(transfer => ('Spl' in transfer && transfer.Spl.mint === process.env.EXPO_PUBLIC_USDC_MINT_ADDRESS && ['confirmed'].includes(transfer.Spl.confirmation_status) ) || ('Bridge' in transfer && (transfer.Bridge.state === 'payment_processed' || transfer.Bridge.state === 'payment_submitted')));
 
         const transactions = transfersToConsider.map(transfer => {
 
@@ -121,15 +125,14 @@ function HomeScreenContent() {
                     id: splTransfer.id,
                     amount: parseFloat(splTransfer.ui_amount),
                     status: splTransfer.confirmation_status,
-                    type: splTransfer.from_address === accountInfo?.smart_account_address ? 'sent' as const : 'received' as const,
+                    type: splTransfer.direction === 'outflow' ? 'sent' as const : 'received' as const,
                     date: new Date(splTransfer.created_at),
-                    address: splTransfer.from_address === accountInfo?.smart_account_address
+                    address: splTransfer.from_address === user?.address
                         ? splTransfer.to_address
                         : splTransfer.from_address
                 } as Transaction;
             } else if ('Bridge' in transfer) {
-
-                const type = transfer.Bridge.source_deposit_instructions?.from_address === accountInfo?.smart_account_address ? 'sent' as const : 'received' as const;
+                const type = transfer.Bridge.source.from_address === user?.address ? 'sent' as const : 'received' as const;
 
                 return {
                     id: transfer.Bridge.id,
@@ -137,7 +140,7 @@ function HomeScreenContent() {
                     status: transfer.Bridge.state,
                     type: type,
                     date: new Date(transfer.Bridge.created_at),
-                    address: type === 'sent' ? transfer.Bridge.destination.external_account_id : accountInfo?.smart_account_address
+                    address: type === 'sent' ? transfer.Bridge.destination.external_account_id : user?.address
                 } as Transaction;
             } else {
                 Sentry.captureException(new Error(`Unknown transfer: ${transfer}. (tabs)/index.tsx (formatTransfers)`));
@@ -173,7 +176,11 @@ function HomeScreenContent() {
                 const dateB = new Date(b.data[0].date);
                 return dateB.getTime() - dateA.getTime();
             });
-    };
+    }, [user?.address]);
+
+    const formattedTransactions = useMemo(() => {
+        return formatTransfers(transfers);
+    }, [formatTransfers, transfers]);
 
     return (
         <ThemedScreen>
@@ -197,7 +204,7 @@ function HomeScreenContent() {
 
                     {isLoading ? <LoadingSpinner /> : (transfers.length > 0 ? (
                         <TransactionList
-                            transactions={formatTransfers(transfers)}
+                            transactions={formattedTransactions}
                         />
                     ) : (
                         <View style={styles.emptyContainer}>
