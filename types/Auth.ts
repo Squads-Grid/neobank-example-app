@@ -28,4 +28,5 @@ export interface AuthContextType {
     logout: () => Promise<void>;
     wallet: string | null;
     isLoading: boolean;
+    isLoggingOut: boolean;
 }

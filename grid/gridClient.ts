@@ -14,7 +14,7 @@ export class GridClient {
 
     constructor() {
         this.validateEnv();
-        const endpoint = process.env.GRID_ENDPOINT;
+        const endpoint = process.env.EXPO_PUBLIC_GRID_ENDPOINT;
 
 
         this.baseUrl = `${endpoint}`;
@@ -28,7 +28,7 @@ export class GridClient {
     }
 
     private validateEnv() {
-        if (!process.env.GRID_ENDPOINT || !process.env.GRID_API_KEY) {
+        if (!process.env.EXPO_PUBLIC_GRID_ENDPOINT || !process.env.GRID_API_KEY) {
             throw new Error('Missing required environment variables. Please check your .env file.');
         }
     }

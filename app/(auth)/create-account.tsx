@@ -41,7 +41,6 @@ function CreateAccountScreen() {
     });
 
     const verify = async (code: string): Promise<boolean> => {
-    
         const success = await verifyCodeAndCreateAccount(
             code,
         );
@@ -106,7 +105,7 @@ function CreateAccountScreen() {
                             isLoading={isLoading}
                             error={error}
                         />
-                        <View style={[styles.headerContainer, { alignItems: 'flex-start', paddingHorizontal: Spacing.lg, marginBottom: Spacing.lg, flexDirection: 'row', gap: Spacing.sm}]}>
+                        <View style={[styles.headerContainer, { alignItems: 'flex-start',  marginTop: Spacing.lg, paddingHorizontal: Spacing.lg, marginBottom: Spacing.lg, flexDirection: 'row', gap: Spacing.sm}]}>
                             <ThemedText type="default" style={{ color: textColor + 40, paddingVertical: Spacing.xs, marginTop: Spacing.xxs}}>Already have an account?</ThemedText>
                             <Pressable onPress={() => router.push('/(auth)/login')}>
                                 <ThemedText type="link" style={{ color: textColor }}>Log in</ThemedText>

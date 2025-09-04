@@ -46,3 +46,5 @@ ios**
 
 private**
 .env.local
+
+eas.json

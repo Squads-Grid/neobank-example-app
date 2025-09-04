@@ -4,8 +4,8 @@ let clientInstance: GridClient | null = null;
 
 export class SDKGridClient {
     private static validateBackendEnv() {
-        if (!process.env.GRID_ENDPOINT || !process.env.GRID_API_KEY) {
-            throw new Error('Missing required backend environment variables: GRID_ENDPOINT and GRID_API_KEY must be set.');
+        if (!process.env.EXPO_PUBLIC_GRID_ENDPOINT || !process.env.GRID_API_KEY) {
+            throw new Error('Missing required backend environment variables: EXPO_PUBLIC_GRID_ENDPOINT and GRID_API_KEY must be set.');
         }
     }
 
@@ -34,7 +34,7 @@ export class SDKGridClient {
             clientInstance = new GridClient({
                 apiKey: process.env.GRID_API_KEY!,
                 environment,
-                baseUrl: process.env.GRID_ENDPOINT!
+                baseUrl: process.env.EXPO_PUBLIC_GRID_ENDPOINT!
             });
         }
         return clientInstance;

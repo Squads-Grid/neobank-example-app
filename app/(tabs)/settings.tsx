@@ -2,7 +2,7 @@ import { ThemedText } from '@/components/ui/atoms';
 import { ThemedButton } from '@/components/ui/molecules';
 import { useAuth } from '@/contexts/AuthContext';
 import { ScreenLayout } from '@/components/ui/layout';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Spacing } from '@/constants/Spacing';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import * as SecureStore from 'expo-secure-store';
@@ -13,7 +13,7 @@ import * as Clipboard from 'expo-clipboard';
 import { useKyc } from '@/hooks/useKyc';
 
 export default function SettingsScreen() {
-    const { logout, user, email } = useAuth();
+    const { logout, user, email, isLoggingOut } = useAuth();
     const { status: kycStatus, checkStatus } = useKyc();
     const textColor = useThemeColor({}, 'text');
     const backgroundColor = useThemeColor({}, 'background');
@@ -74,11 +74,18 @@ export default function SettingsScreen() {
             </View>
             <View style={styles.footer}>
                 <ThemedButton
-                    title="Logout"
+                    title={isLoggingOut ? "Logging out..." : "Logout"}
                     onPress={logout}
                     variant="primary"
                     textStyle={{ color: backgroundColor }}
+                    disabled={isLoggingOut}
                 />
+                {isLoggingOut && (
+                    <View style={styles.logoutSpinner}>
+                        <ActivityIndicator size="small" color={textColor} />
+                        <ThemedText style={styles.logoutText}>Logging you out...</ThemedText>
+                    </View>
+                )}
             </View>
         </ScreenLayout>
     );
@@ -149,5 +156,16 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: Spacing.xl,
         opacity: 0.5,
+    },
+    logoutSpinner: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: Spacing.sm,
+        gap: Spacing.xs,
+    },
+    logoutText: {
+        fontSize: 14,
+        opacity: 0.7,
     },
 });

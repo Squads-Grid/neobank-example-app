@@ -20,6 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
     const [mpcPrimaryId, setMpcPrimaryId] = useState<string | null>(null);
     const [user, setUser] = useState<any | null>(null);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     useEffect(() => {
         const initializeAuth = async () => {
@@ -55,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             await AuthStorage.saveSessionSecrets(sessionSecrets);
             const user = await AuthStorage.getUser();
-
+            
             const result = await verifyOtpCodeAndCreateAccount(code, sessionSecrets, user);
             setUser(result);
 
@@ -115,14 +116,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const logout = async () => {
+        setIsLoggingOut(true);
         try {
             // Clear all stored auth data
             await AuthStorage.clearAuthData();
+            
+            // Reset authentication state
+            setIsAuthenticated(false);
+            setUser(null);
+            setEmail(null);
+            setAccountInfo(null);
+            setCredentialsBundle(null);
+            setKeypair(null);
+            setWallet(null);
+            setMpcPrimaryId(null);
+            
+            // Navigate to start/login screen
+            router.replace('/');
         } catch (error) {
             Sentry.captureException(new Error(`Failed to logout: ${error}. (contexts)/AuthContext.tsx (logout)`));
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
             setAuthError(errorMessage);
             throw error;
+        } finally {
+            setIsLoggingOut(false);
         }
     };
 
@@ -184,6 +201,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 logout,
                 wallet,
                 isLoading,
+                isLoggingOut,
             }}
         >
             {children}
