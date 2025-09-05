@@ -1,16 +1,12 @@
 # Bank Deposits
 
-The bank deposit process is implemented in [`app/(modals)/bankdetails.tsx`](../app/(modals)/bankdetails.tsx) - Virtual bank account details and creation
+The bank deposit process is implemented in [`app/(modals)/bankdetails.tsx`](../app/(modals)/bankdetails.tsx) using the [@sqds/grid SDK](https://www.npmjs.com/package/@sqds/grid).
 
 ### Step 1: Virtual Account Creation
 
 When the user creates a new virtual bank account, the app:
 
-1. Calls the virtual account creation endpoint:
-   ```
-   POST /v0/grid/smart-accounts/<SMART_ACCOUNT_ADDRESS>/virtual-accounts
-   ```
-   with payload:
+1. Uses the Grid SDK's `requestVirtualAccount()` method via [`app/api/open-virtual-account+api.ts`](../app/api/open-virtual-account+api.ts):
    ```typescript
    {
      currency: 'usd' | 'eur';  // Currency for the virtual account
@@ -18,10 +14,7 @@ When the user creates a new virtual bank account, the app:
    }
    ```
 
-2. Fetches the bank account details using:
-   ```
-   GET /v0/grid/smart-accounts/<SMART_ACCOUNT_ADDRESS>/virtual-accounts
-   ```
+2. Fetches the bank account details using the SDK via [`app/api/get-virtual-accounts+api.ts`](../app/api/get-virtual-accounts+api.ts)
    which returns:
    ```typescript
    {
@@ -35,6 +28,26 @@ When the user creates a new virtual bank account, the app:
      }
    }
    ```
+
+### SDK Implementation
+
+The backend API routes use the Grid SDK:
+
+```typescript
+import { SDKGridClient } from '../../grid/sdkClient';
+import { RequestVirtualAccountRequest } from '@sqds/grid';
+
+// Creating a virtual account
+const gridClient = SDKGridClient.getInstance();
+const virtualAccountRequest: RequestVirtualAccountRequest = {
+    currency: 'usd',
+    grid_user_id: 'user-grid-id'
+};
+const response = await gridClient.requestVirtualAccount(smartAccountAddress, virtualAccountRequest);
+
+// Fetching virtual account details
+const accounts = await gridClient.getVirtualAccounts(smartAccountAddress);
+```
 
 ### Deposit Process
 

@@ -1,52 +1,114 @@
 # USDC Transfers
 
-The USDC transfer process is implemented in two main screens:
+The USDC transfer process is implemented using the [@sqds/grid SDK](https://www.npmjs.com/package/@sqds/grid) in two main screens:
 
 1. [`app/(send)/amount.tsx`](../app/(send)/amount.tsx) - Amount entry and recipient details
 2. [`app/(send)/confirm.tsx`](../app/(send)/confirm.tsx) - Payment authorization and execution
 
-### Step 1: Payment Intent Preparation
+## Transfer Process
 
-When the user hits the confirm button, the app will request the payment intent, authorize it and submit it. This step:
+### Step 1: Create Payment Intent (Backend)
 
-1. Calls the 
-2. Authorizes the payment 
-3. Submits the payment intent for processing using the `v0/grid/smart-accounts/<SMART_ACCOUNT_ADDRESS>/payment-intents?use-mpc-provider=true`
+When the user enters transfer details, the app creates a payment intent using the SDK's `createPaymentIntent()` method via [`app/api/prepare-payment-intent+api.ts`](../app/api/prepare-payment-intent+api.ts):
 
-When the user confirms, the app:
+```typescript
+// Backend API with API key
+import { CreatePaymentIntentRequest } from '@sqds/grid';
+import { SDKGridClient } from '../../grid/sdkClient';
 
-1. Prepares the payment intent using the `v0/grid/smart-accounts/<SMART_ACCOUNT_ADDRESS>/payment-intents?use-mpc-provider=true`:
-   ```typescript
-   {
-     amount: string;          // Amount in USDC base units
-     grid_user_id: string;    // User's Grid ID for reference by the grid api
-     source: {
-       smart_account_address: string; // This is the wallet that handles the funds
-       currency: 'usdc';
-       authorities: string[<Solanan Address>]; // Solana address that authorizes the payment
-     };
-     destination: {
-       address: string;       // Recipient's Solana address
-       currency: 'usdc';
-     }
-   }
-   ```
+const gridClient = SDKGridClient.getInstance(); // Uses API key
+const response = await gridClient.createPaymentIntent(smartAccountAddress, paymentRequest);
+```
 
-2. Authorize the payment using [`grid/authoriazation.ts`](../grid/authorization.ts):
-   - Decrypts the credential bundle
-   - Creates a stamp using `GridStamper`
-   - Signs the MPC payload
+#### Payment Request Structure
 
-3. Submits the payment intent to the `v0/grid/smart-accounts/<SMART_ACCOUNT_ADDRESS>/payment-intents?use-mpc-provider=true` endpoint with:
-   ```typescript
-   {
-     intentPayload: string;
-     mpcPayload: {
-       requestParameters: object;
-       stamp: {
-         publicKey: string;
-         signature: string;
-       }
-     }
-   }
-   ```
+```typescript
+{
+  amount: string;          // Amount in USDC base units
+  grid_user_id: string;    // User's Grid ID
+  source: {
+    smart_account_address: string; // Sender's smart account
+    currency: 'usdc';
+    authorities: string[];   // Authorized signer addresses
+  };
+  destination: {
+    address: string;       // Recipient's Solana address
+    currency: 'usdc';
+  }
+}
+```
+
+### Step 2: Sign Transaction (Frontend)
+
+When the user confirms the transfer, the frontend signs the transaction locally using session secrets:
+
+```typescript
+// Frontend client WITHOUT API key (secure - no key exposure)
+import { SDKGridClient } from './grid/sdkClient';
+
+const gridClient = SDKGridClient.getFrontendClient(); // No API key
+const signedPayload = await gridClient.sign({
+  sessionSecrets: sessionSecrets,
+  session: user.authentication,
+  transactionPayload: transactionData.data.transactionPayload
+});
+```
+
+**Critical Security Points:**
+- **Frontend uses `sign()` only** - never exposes API key to frontend
+- **Session secrets enable local signing** - private keys never leave the device
+
+### Step 3: Send Transaction (Backend)
+
+The signed payload is sent to the backend which submits it using the SDK's `send()` method via [`app/api/confirm+api.ts`](../app/api/confirm+api.ts):
+
+```typescript
+// Backend API with API key
+const gridClient = SDKGridClient.getInstance(); // Uses API key
+const signature = await gridClient.send({
+  signedTransactionPayload: signedPayload,
+  address: smartAccountAddress
+});
+```
+
+## Security Architecture 
+
+The Grid SDK uses a secure three-step process that separates signing from sending:
+
+- **Frontend Signing**: Uses `getFrontendClient()` with `sign()` - no API key required or exposed
+- **Backend Operations**: Uses `getInstance()` with API key for `createPaymentIntent()` and `send()`
+- **Session Secrets**: Enable secure local signing without exposing private keys
+- **Type Safety**: Uses TypeScript interfaces from `@sqds/grid` for all requests
+- **Error Handling**: Built-in error handling for session expiration and other common scenarios
+
+## Complete Implementation Flow
+
+```typescript
+// 1. Backend: Create payment intent
+export async function POST(request: Request) {
+    const { payload, smartAccountAddress } = await request.json();
+    const gridClient = SDKGridClient.getInstance(); // With API key
+    const response = await gridClient.createPaymentIntent(smartAccountAddress, payload);
+    return Response.json(response);
+}
+
+// 2. Frontend: Sign transaction (secure - no API key exposure)
+const frontendClient = SDKGridClient.getFrontendClient(); // No API key
+const signedPayload = await frontendClient.sign({
+    sessionSecrets,
+    session: user.authentication,
+    transactionPayload: transactionData.data.transactionPayload
+});
+
+// 3. Backend: Send signed transaction
+export async function POST(request: Request) {
+    const { address, signedTransactionPayload } = await request.json();
+    const gridClient = SDKGridClient.getInstance(); // With API key
+    const signature = await gridClient.send({
+        signedTransactionPayload,
+        address
+    });
+    return Response.json(signature);
+}
+```
+
