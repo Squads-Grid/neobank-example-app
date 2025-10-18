@@ -5,6 +5,8 @@
 
 This is a demo React Native app built with [Expo](https://expo.dev/), designed to showcase the [@sqds/grid SDK](https://www.npmjs.com/package/@sqds/grid). It demonstrates authentication, KYC, virtual account creation, and more, using a modern Expo Router structure and the official Grid SDK.
 
+> **Note:** This branch supports Expo SDK 54. Expo recommends using [development builds](https://docs.expo.dev/develop/development-builds/introduction/) for production apps, as Expo Go only supports the latest SDK version. See the [Expo SDK upgrade guide](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/) for more information.
+
 > ⚠️ **Disclaimer:** This is a demo application intended for educational and demonstration purposes only. 
 
 ## Table of Contents
@@ -91,29 +93,6 @@ npm install -g expo-cli
 ```
 
 You can also use `npx` for most commands if you don't want to install globally.
-
----
-
-#### Development Builds vs Expo Go
-
-**For Development:** You can use [Expo Go](https://expo.dev/client) for quick testing during development.
-
-**For Production:** Use [development builds](https://docs.expo.dev/develop/development-builds/introduction/) instead of Expo Go. Expo Go only supports the latest SDK version, and previous SDK versions are not supported. Development builds provide:
-- Backwards compatibility for older SDK versions on EAS services
-- Better stability for production apps
-- Custom native modules support
-
-To create a development build:
-```sh
-npx expo install expo-dev-client
-npx expo run:ios
-# or
-npx expo run:android
-```
-
-For more information on upgrading Expo SDK versions, see the [Expo SDK upgrade guide](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/).
-
----
 
 ### 3. **Install dependencies**
 
