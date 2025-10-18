@@ -59,7 +59,7 @@ export class EasClient {
             }
 
             const response = await fetch(url, fetchOptions);
-
+ 
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => console.error('Error parsing response:', response));
@@ -81,8 +81,11 @@ export class EasClient {
                 throw new EasError('EasClient: Request failed', response.status, errorData);
             }
 
-            const data = await response.json();
-            return data;
+            const res = await response.json();
+            if (res.success === false) {
+                throw new EasError('EasClient: Request failed', res.error);
+            }
+            return res;
         } catch (error) {
             console.error('EasClient: Unexpected error in request():', error);
             // Sentry.captureException(new Error(`EasClient: Unexpected error in request(): ${error}. (utils)/easClient.ts (request) Endpoint: ${endpoint}, Options: ${JSON.stringify(options)}`));

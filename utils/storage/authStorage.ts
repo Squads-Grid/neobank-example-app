@@ -106,7 +106,8 @@ export const AuthStorage = {
             SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.SESSION_SECRETS),
             SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.USER),
             SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.IS_AUTHENTICATED),
-            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.PERSISTENT_EMAIL)
+            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.PERSISTENT_EMAIL),
+            SecureStore.deleteItemAsync(AUTH_STORAGE_KEYS.CACHED_BALANCE)
         ]);
     }
 }; 

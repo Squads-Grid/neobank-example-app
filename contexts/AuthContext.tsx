@@ -58,17 +58,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const user = await AuthStorage.getUser();
             
             const result = await verifyOtpCodeAndCreateAccount(code, sessionSecrets, user);
-            setUser(result);
+            setUser(result.data);
 
             // Create user in MockDatabase with email
-            if (result.grid_user_id && email) {
-                await MockDatabase.createUser(result.grid_user_id, email);
+            if (result.data.grid_user_id && email) {
+                await MockDatabase.createUser(result.data.grid_user_id, email);
             }
 
             setIsAuthenticated(true);
             await AuthStorage.saveIsAuthenticated(true);
             setAuthError(null);
-            await AuthStorage.saveUserData(result);
+            await AuthStorage.saveUserData(result.data);
             
             return true;
         } catch (error) {
@@ -93,17 +93,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 }
 
             const result = await verifyOtpCode(code, sessionSecrets, userData);
-            setUser(result);
+            setUser(result.data);
 
             // Create user in MockDatabase with email
-            if (result.grid_user_id && email) {
-                await MockDatabase.createUser(result.grid_user_id, email);
+            if (result.data.grid_user_id && email) {
+                await MockDatabase.createUser(result.data.grid_user_id, email);
             }
 
             setIsAuthenticated(true);
             await AuthStorage.saveIsAuthenticated(true);
             setAuthError(null);
-            await AuthStorage.saveUserData(result);
+            await AuthStorage.saveUserData(result.data);
             
 
             return true;
@@ -132,7 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setMpcPrimaryId(null);
             
             // Navigate to start/login screen
-            router.replace('/');
+            router.replace('/(auth)/start');
         } catch (error) {
             Sentry.captureException(new Error(`Failed to logout: ${error}. (contexts)/AuthContext.tsx (logout)`));
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
@@ -146,9 +146,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const authenticate = async (email: string): Promise<void> => {
         try {
             const result= await authenticateUser(email);
-            setUser(result);
+            if(!result.success) {
+                throw new Error(result.error);
+            }
+
+            setUser(result.data);
             setEmail(email);
-            await AuthStorage.saveUserData(result);
+            await AuthStorage.saveUserData(result.data);
             await AuthStorage.saveEmail(email);
 
             setAuthError(null);
@@ -165,11 +169,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const register = async (email: string): Promise<void> => {
         try {
             const result= await registerUser(email);
-            setUser(result);
+
+            if(!result.success) {
+                throw new Error(result.error);
+            }
+
+            setUser(result.data);
             setEmail(email);
 
             // Store initial auth data
-            await AuthStorage.saveUserData(result);
+            await AuthStorage.saveUserData(result.data);
             await AuthStorage.saveEmail(email);
 
             setMpcPrimaryId(mpcPrimaryId);
