@@ -94,8 +94,24 @@ You can also use `npx` for most commands if you don't want to install globally.
 
 ---
 
-**Optional:**  
-You can install the [Expo Go app](https://expo.dev/client) on your iOS or Android device to preview the app instantly.
+#### Development Builds vs Expo Go
+
+**For Development:** You can use [Expo Go](https://expo.dev/client) for quick testing during development.
+
+**For Production:** Use [development builds](https://docs.expo.dev/develop/development-builds/introduction/) instead of Expo Go. Expo Go only supports the latest SDK version, and previous SDK versions are not supported. Development builds provide:
+- Backwards compatibility for older SDK versions on EAS services
+- Better stability for production apps
+- Custom native modules support
+
+To create a development build:
+```sh
+npx expo install expo-dev-client
+npx expo run:ios
+# or
+npx expo run:android
+```
+
+For more information on upgrading Expo SDK versions, see the [Expo SDK upgrade guide](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/).
 
 ---
 

@@ -55,7 +55,7 @@ function AuthLayout() {
             router.replace('/create-account');
         } else if (isAuthenticated && inAuthGroup) {
             // Redirect away from the sign-in page
-            router.replace('/');
+            router.replace('/(tabs)');
         }
     }, [isAuthenticated, segments]);
 
