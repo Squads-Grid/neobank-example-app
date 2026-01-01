@@ -62,7 +62,7 @@ const sessionSecrets = await gridClient.generateSessionSecrets();
 ```env
 GRID_API_KEY=your_grid_api_key_here           # Backend only - never expose to frontend
 EXPO_PUBLIC_GRID_ENV=sandbox                  # 'sandbox' or 'production'
-EXPO_PUBLIC_GRID_ENDPOINT=your_custom_endpoint # Optional: for custom Grid endpoints
+EXPO_PUBLIC_GRID_ENDPOINT=https://grid.squads.xyz # Base URL of the Grid API (use custom endpoint if needed)
 ```
 
 ## Grid SDK Features
